@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت مالی{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">مدیریت مالی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-chart-pie text-primary"></i>
+                مدیریت مالی
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-university fa-3x text-primary"></i>
+                </div>
+                <h5 class="card-title">مدیریت بانک‌ها</h5>
+                <p class="card-text">مدیریت حساب‌های بانکی و تراکنش‌های مالی</p>
+                <a href="{{ url_for('financial_banks') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-calculator fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title">بودجه‌بندی</h5>
+                <p class="card-text">برنامه‌ریزی و کنترل بودجه سالانه</p>
+                <a href="{{ url_for('financial_budget') }}" class="btn btn-success">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-money-check fa-3x text-warning"></i>
+                </div>
+                <h5 class="card-title">مدیریت چک‌ها</h5>
+                <p class="card-text">ثبت و پیگیری چک‌های دریافتی و پرداختی</p>
+                <a href="{{ url_for('financial_checks') }}" class="btn btn-warning">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-credit-card fa-3x text-danger"></i>
+                </div>
+                <h5 class="card-title">پرداخت‌ها</h5>
+                <p class="card-text">ثبت و مدیریت پرداخت‌های انجام شده</p>
+                <a href="{{ url_for('financial_payments') }}" class="btn btn-danger">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-receipt fa-3x text-info"></i>
+                </div>
+                <h5 class="card-title">دریافت‌ها</h5>
+                <p class="card-text">ثبت و مدیریت دریافت‌های نقدی</p>
+                <a href="{{ url_for('financial_receipts') }}" class="btn btn-info">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-chart-bar fa-3x text-secondary"></i>
+                </div>
+                <h5 class="card-title">گزارشات مالی</h5>
+                <p class="card-text">گزارشات جامع مالی و تحلیلی</p>
+                <a href="{{ url_for('financial_reports') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> ورود
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

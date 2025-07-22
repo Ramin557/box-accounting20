@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}سیستم حسابداری{% endblock %}</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <!-- Dark Mode CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-mode.css') }}">
+    <!-- Custom Select Component CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-select.css') }}">
+    <!-- UI Enhancements CSS (Back Button, Persian Calendar, Currency) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-enhancements.css') }}">
+    
+    <!-- CSS Variables for better theme management -->
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            --border-radius: 15px;
+            --transition: all 0.3s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bs-body-bg, #f8f9fa);
+            color: var(--bs-body-color, #212529);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Dark Mode Toggle Button Styles */
+        .dark-mode-toggle {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-icon {
+            position: relative;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .toggle-icon .sun-icon,
+        .toggle-icon .moon-icon {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .toggle-icon .moon-icon {
+            position: relative;
+        }
+        
+        /* Dark Mode Theme (managed by dark-mode.js, not data-bs-theme) */
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: #007bff !important;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding-top: 1rem;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin: 0.2rem 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        .sidebar .nav-link i {
+            margin-left: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            padding: 2rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .stat-card .stat-label {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table thead th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .breadcrumb {
+            background: none;
+            padding: 0;
+        }
+        
+        .breadcrumb-item.active {
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar">
+                <div class="text-center py-3">
+                    <h4 class="text-white">
+                        <i class="fas fa-calculator"></i>
+                        سیستم حسابداری
+                    </h4>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                <nav class="nav flex-column">
+                    <!-- داشبورد -->
+                    <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        داشبورد
+                    </a>
+                    
+                    <!-- مدیریت اطلاعات پایه -->
+                    <a class="nav-link {% if request.endpoint.startswith('customers') %}active{% endif %}" href="{{ url_for('customers') }}">
+                        <i class="fas fa-users"></i>
+                        مشتریان
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint.startswith('products') %}active{% endif %}" href="{{ url_for('products') }}">
+                        <i class="fas fa-box"></i>
+                        محصولات
+                    </a>
+                    
+                    <!-- عملیات تجاری -->
+                    <a class="nav-link {% if request.endpoint.startswith('orders') %}active{% endif %}" href="{{ url_for('orders') }}">
+                        <i class="fas fa-shopping-cart"></i>
+                        سفارشات
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint.startswith('invoices') %}active{% endif %}" href="{{ url_for('invoices') }}">
+                        <i class="fas fa-file-invoice"></i>
+                        فاکتورها
+                    </a>
+                    
+                    <!-- گزارشات -->
+                    <a class="nav-link {% if request.endpoint.startswith('reports') or request.endpoint == 'tax_reports' %}active{% endif %}" href="{{ url_for('tax_reports') }}">
+                        <i class="fas fa-chart-line"></i>
+                        گزارشات
+                    </a>
+                    
+                    <!-- RBAC Management (for users with appropriate permissions) -->
+                    {% if has_permission('manage_users') or has_permission('manage_roles') %}
+                    <hr class="text-white-50">
+                    <div class="px-3 py-2">
+                        <small class="text-white-50">مدیریت دسترسی</small>
+                    </div>
+                    
+                    {% if has_permission('manage_users') %}
+                    <a class="nav-link {% if request.endpoint.startswith('rbac_users') %}active{% endif %}" href="{{ url_for('rbac_users') }}">
+                        <i class="fas fa-users-cog"></i>
+                        مدیریت کاربران
+                    </a>
+                    {% endif %}
+                    
+                    {% if has_permission('manage_roles') %}
+                    <a class="nav-link {% if request.endpoint.startswith('rbac_roles') %}active{% endif %}" href="{{ url_for('rbac_roles') }}">
+                        <i class="fas fa-user-shield"></i>
+                        نقش‌ها و دسترسی‌ها
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                    
+                    <hr class="text-white-50">
+                    
+                    <a class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}">
+                        <i class="fas fa-cog"></i>
+                        تنظیمات
+                    </a>
+                    
+                </nav>
+                
+                <!-- Bottom Navigation -->
+                <div class="sidebar-bottom mt-auto p-3">
+                    <!-- Dark Mode Toggle - managed by dark-mode.js -->
+                    <div class="text-center mb-2">
+                        <button id="darkModeToggle" class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                            <span class="toggle-icon">
+                                <i class="fas fa-sun sun-icon" style="opacity: 0;"></i>
+                                <i class="fas fa-moon moon-icon" style="opacity: 1;"></i>
+                            </span>
+                            حالت تاریک
+                        </button>
+                    </div>
+                    
+                    <!-- Logout -->
+                    <a class="nav-link text-center" href="{{ url_for('logout') }}">
+                        <i class="fas fa-sign-out-alt"></i> خروج
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                {% if current_user.is_authenticated %}
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        {% block breadcrumb %}
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">داشبورد</a></li>
+                                {% block breadcrumb_items %}{% endblock %}
+                            </ol>
+                        </nav>
+                        {% endblock %}
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <span class="text-muted me-3">
+                            خوش آمدید، {{ current_user.full_name }}
+                            <span class="badge bg-primary">{{ current_user.get_role_display_name() }}</span>
+                        </span>
+                        
+
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if current_user.is_admin() %}
+                                    <li><a class="dropdown-item" href="{{ url_for('admin_panel') }}"><i class="fas fa-tools"></i> پنل مدیریت</a></li>
+                                {% endif %}
+                                
+                                {% if has_permission('manage_users') or has_permission('manage_roles') %}
+                                    <li><h6 class="dropdown-header">مدیریت دسترسی</h6></li>
+                                    {% if has_permission('manage_users') %}
+                                        <li><a class="dropdown-item" href="{{ url_for('rbac_users') }}"><i class="fas fa-users-cog"></i> کاربران</a></li>
+                                    {% endif %}
+                                    {% if has_permission('manage_roles') %}
+                                        <li><a class="dropdown-item" href="{{ url_for('rbac_roles') }}"><i class="fas fa-user-shield"></i> نقش‌ها</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('rbac_permissions') }}"><i class="fas fa-key"></i> دسترسی‌ها</a></li>
+                                    {% endif %}
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                
+                                <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-user-cog"></i> تنظیمات</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                    {% if category == 'error' %}
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    {% elif category == 'success' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% elif category == 'warning' %}
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle"></i>
+                                    {% endif %}
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Page Content -->
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
+    
+    <!-- Prevent MetaMask injection errors -->
+    <script>
+        // Handle unhandled promise rejections from browser extensions
+        window.addEventListener('unhandledrejection', function(event) {
+            // Suppress MetaMask-related errors
+            if (event.reason && (
+                event.reason.message && event.reason.message.includes('MetaMask') ||
+                event.reason.toString().includes('MetaMask') ||
+                event.reason.toString().includes('inpage.js')
+            )) {
+                event.preventDefault();
+                console.log('Suppressed MetaMask extension error (not related to accounting system)');
+            }
+        });
+        
+        // Prevent MetaMask from trying to inject into our accounting system
+        if (typeof window.ethereum !== 'undefined') {
+            console.log('MetaMask detected - accounting system will function normally');
+        }
+        
+        // Dark mode will be handled by dark-mode.js
+        // Legacy function for template compatibility - now removed in favor of dark-mode.js
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

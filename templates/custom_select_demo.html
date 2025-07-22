@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block title %}کامپوننت انتخابی پیشرفته - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">نمایش کامپوننت انتخابی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-list-ul text-primary"></i>
+                کامپوننت انتخابی قابل ویرایش
+            </h2>
+            <div class="btn-group">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info">
+                    <i class="fas fa-arrow-right"></i>
+                    بازگشت به داشبورد
+                </a>
+                <a href="{{ url_for('features_demo') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-cogs"></i>
+                    سایر ویژگی‌ها
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Introduction Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    معرفی کامپوننت انتخابی پیشرفته
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    این کامپوننت جایگزین مدرن و حرفه‌ای برای عنصر select معمولی HTML است که به کاربران امکان مدیریت کامل گزینه‌ها را می‌دهد.
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary mb-3">ویژگی‌های کلیدی:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                افزودن گزینه‌های جدید به صورت زنده
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                ویرایش گزینه‌های موجود
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                حذف گزینه‌های غیرضروری
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                جستجوی سریع در گزینه‌ها
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                ذخیره خودکار در localStorage
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                پشتیبانی کامل از RTL و فارسی
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-success mb-3">مزایای استفاده:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                تجربه کاربری بهتر
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                کاهش نیاز به صفحات جداگانه برای مدیریت
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                انتقال‌های نرم و انیمیشن‌های زیبا
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                سازگاری با حالت تیره
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                پشتیبانی از دسترسی‌پذیری (Accessibility)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                قابلیت تنظیم و سفارشی‌سازی بالا
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Live Demo Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-play-circle"></i>
+                    نمایش زنده کامپوننت
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Category Selection Demo -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-primary">انتخاب دسته‌بندی محصول:</h6>
+                        <div class="form-group">
+                            <label for="category-select">دسته‌بندی</label>
+                            <div data-custom-select='{"storageKey": "productCategories", "placeholder": "دسته‌بندی محصول را انتخاب کنید", "addNewText": "افزودن دسته‌بندی جدید"}'>
+                                <select class="form-control" id="category-select">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="جعبه‌های کوچک">جعبه‌های کوچک</option>
+                                    <option value="جعبه‌های متوسط">جعبه‌های متوسط</option>
+                                    <option value="جعبه‌های بزرگ">جعبه‌های بزرگ</option>
+                                    <option value="جعبه‌های ویژه">جعبه‌های ویژه</option>
+                                </select>
+                            </div>
+                            <small class="form-text text-muted">گزینه‌ها را اضافه، ویرایش یا حذف کنید</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Unit Selection Demo -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-primary">انتخاب واحد اندازه‌گیری:</h6>
+                        <div class="form-group">
+                            <label for="unit-select">واحد</label>
+                            <div data-custom-select='{"storageKey": "measurementUnits", "placeholder": "واحد اندازه‌گیری را انتخاب کنید", "addNewText": "افزودن واحد جدید"}'>
+                                <select class="form-control" id="unit-select">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="عدد">عدد</option>
+                                    <option value="کیلوگرم">کیلوگرم</option>
+                                    <option value="متر">متر</option>
+                                    <option value="بسته">بسته</option>
+                                    <option value="کارتن">کارتن</option>
+                                </select>
+                            </div>
+                            <small class="form-text text-muted">واحدهای اندازه‌گیری مورد نیاز خود را مدیریت کنید</small>
+                        </div>
+                    </div>
+                    
+                    <!-- City Selection Demo -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-primary">انتخاب شهر:</h6>
+                        <div class="form-group">
+                            <label for="city-select">شهر</label>
+                            <div data-custom-select='{"storageKey": "cities", "placeholder": "شهر خود را انتخاب کنید", "addNewText": "افزودن شهر جدید"}'>
+                                <select class="form-control" id="city-select">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="تهران">تهران</option>
+                                    <option value="اصفهان">اصفهان</option>
+                                    <option value="شیراز">شیراز</option>
+                                    <option value="مشهد">مشهد</option>
+                                    <option value="تبریز">تبریز</option>
+                                </select>
+                            </div>
+                            <small class="form-text text-muted">لیست شهرها قابل توسعه است</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method Demo -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="text-primary">انتخاب روش پرداخت:</h6>
+                        <div class="form-group">
+                            <label for="payment-select">روش پرداخت</label>
+                            <div data-custom-select='{"storageKey": "paymentMethods", "placeholder": "روش پرداخت را انتخاب کنید", "addNewText": "افزودن روش پرداخت جدید"}'>
+                                <select class="form-control" id="payment-select">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="نقدی">نقدی</option>
+                                    <option value="چک">چک</option>
+                                    <option value="کارت به کارت">کارت به کارت</option>
+                                    <option value="حواله بانکی">حواله بانکی</option>
+                                </select>
+                            </div>
+                            <small class="form-text text-muted">روش‌های پرداخت جدید اضافه کنید</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Display -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle"></i>
+                                مقادیر انتخاب شده:
+                            </h6>
+                            <div id="selected-values">
+                                <p class="mb-0">هیچ گزینه‌ای انتخاب نشده است</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex flex-wrap gap-3">
+                            <button type="button" class="btn btn-outline-primary" onclick="showSelectedValues()">
+                                <i class="fas fa-eye"></i>
+                                نمایش مقادیر انتخابی
+                            </button>
+                            
+                            <button type="button" class="btn btn-outline-success" onclick="resetAllSelections()">
+                                <i class="fas fa-undo"></i>
+                                بازنشانی انتخاب‌ها
+                            </button>
+                            
+                            <button type="button" class="btn btn-outline-warning" onclick="clearAllData()">
+                                <i class="fas fa-trash"></i>
+                                پاک کردن تمام داده‌ها
+                            </button>
+                            
+                            <button type="button" class="btn btn-outline-info" onclick="exportData()">
+                                <i class="fas fa-download"></i>
+                                صادرات داده‌ها
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Documentation -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-code"></i>
+                    راهنمای فنی و استفاده
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">نحوه استفاده در HTML:</h6>
+                        <pre class="bg-light p-3 rounded"><code>&lt;div data-custom-select='{
+    "storageKey": "myOptions",
+    "placeholder": "انتخاب کنید",
+    "addNewText": "افزودن جدید"
+}'&gt;
+    &lt;select class="form-control"&gt;
+        &lt;option value="1"&gt;گزینه ۱&lt;/option&gt;
+        &lt;option value="2"&gt;گزینه ۲&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/div&gt;</code></pre>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-success">استفاده در JavaScript:</h6>
+                        <pre class="bg-light p-3 rounded"><code>// ایجاد کامپوننت
+const select = new CustomSelect(element, {
+    storageKey: 'myData',
+    placeholder: 'انتخاب کنید'
+});
+
+// گوش دادن به تغییرات
+element.addEventListener('customSelectChange', (e) => {
+    console.log('Selected:', e.detail);
+});</code></pre>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h6 class="text-primary">تنظیمات قابل تنظیم:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>پارامتر</th>
+                                        <th>توضیح</th>
+                                        <th>پیش‌فرض</th>
+                                        <th>نوع</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>storageKey</code></td>
+                                        <td>کلید ذخیره‌سازی در localStorage</td>
+                                        <td>customSelectOptions</td>
+                                        <td>String</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>placeholder</code></td>
+                                        <td>متن نمایشی پیش‌فرض</td>
+                                        <td>یک گزینه انتخاب کنید</td>
+                                        <td>String</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>addNewText</code></td>
+                                        <td>متن دکمه افزودن</td>
+                                        <td>افزودن جدید</td>
+                                        <td>String</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>allowAdd</code></td>
+                                        <td>اجازه افزودن گزینه جدید</td>
+                                        <td>true</td>
+                                        <td>Boolean</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>allowEdit</code></td>
+                                        <td>اجازه ویرایش گزینه‌ها</td>
+                                        <td>true</td>
+                                        <td>Boolean</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>allowDelete</code></td>
+                                        <td>اجازه حذف گزینه‌ها</td>
+                                        <td>true</td>
+                                        <td>Boolean</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Usage Examples -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb"></i>
+                    نمونه‌های کاربردی در سیستم حسابداری
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6 class="text-primary">مدیریت مشتریان</h6>
+                            <p class="small text-muted">
+                                برای انتخاب نوع مشتری، گروه‌بندی مشتریان، و سطح اعتباری
+                            </p>
+                            <span class="badge bg-primary">محبوب</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6 class="text-success">مدیریت محصولات</h6>
+                            <p class="small text-muted">
+                                برای دسته‌بندی محصولات، واحدهای اندازه‌گیری، و برندها
+                            </p>
+                            <span class="badge bg-success">ضروری</span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3 h-100">
+                            <h6 class="text-warning">گزارش‌گیری</h6>
+                            <p class="small text-muted">
+                                برای فیلتر کردن گزارش‌ها بر اساس دوره، نوع، و معیارهای مختلف
+                            </p>
+                            <span class="badge bg-warning">مفید</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-success mt-3">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-check-circle"></i>
+                        نتیجه‌گیری:
+                    </h6>
+                    <p class="mb-0">
+                        این کامپوننت به طور قابل توجهی تجربه کاربری سیستم حسابداری را بهبود می‌دهد و به کاربران اجازه می‌دهد 
+                        به راحتی داده‌های خود را مدیریت کنند بدون نیاز به رفتن به صفحات جداگانه.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Demo functions for the custom select component
+function showSelectedValues() {
+    const selects = document.querySelectorAll('[data-custom-select]');
+    const values = [];
+    
+    selects.forEach(selectWrapper => {
+        const label = selectWrapper.previousElementSibling?.textContent || 'نامشخص';
+        const customSelect = selectWrapper.querySelector('.custom-select');
+        const valueSpan = customSelect?.querySelector('.select-value');
+        const hasValue = valueSpan?.classList.contains('has-value');
+        
+        if (hasValue) {
+            values.push(`${label}: ${valueSpan.textContent}`);
+        }
+    });
+    
+    const resultDiv = document.getElementById('selected-values');
+    if (values.length > 0) {
+        resultDiv.innerHTML = values.map(v => `<p class="mb-1">• ${v}</p>`).join('');
+    } else {
+        resultDiv.innerHTML = '<p class="mb-0">هیچ گزینه‌ای انتخاب نشده است</p>';
+    }
+}
+
+function resetAllSelections() {
+    const selects = document.querySelectorAll('[data-custom-select]');
+    selects.forEach(selectWrapper => {
+        const customSelect = selectWrapper.querySelector('.custom-select');
+        const valueSpan = customSelect?.querySelector('.select-value');
+        const placeholder = customSelect?.closest('[data-custom-select]')?.getAttribute('data-custom-select');
+        
+        if (valueSpan && placeholder) {
+            const options = JSON.parse(placeholder);
+            valueSpan.textContent = options.placeholder || 'یک گزینه انتخاب کنید';
+            valueSpan.classList.remove('has-value');
+        }
+    });
+    
+    showSelectedValues();
+    showAlert('تمام انتخاب‌ها بازنشانی شد', 'success');
+}
+
+function clearAllData() {
+    if (confirm('آیا از پاک کردن تمام داده‌های ذخیره شده مطمئن هستید؟')) {
+        ['productCategories', 'measurementUnits', 'cities', 'paymentMethods'].forEach(key => {
+            localStorage.removeItem(key);
+        });
+        
+        // Reload page to reset components
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
+        
+        showAlert('تمام داده‌ها پاک شد. صفحه بازآوری می‌شود...', 'warning');
+    }
+}
+
+function exportData() {
+    const data = {};
+    ['productCategories', 'measurementUnits', 'cities', 'paymentMethods'].forEach(key => {
+        const stored = localStorage.getItem(key);
+        if (stored) {
+            data[key] = JSON.parse(stored);
+        }
+    });
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'custom-select-data.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showAlert('داده‌ها با موفقیت صادر شد', 'success');
+}
+
+// Listen for custom select changes
+document.addEventListener('customSelectChange', function(e) {
+    console.log('Custom select changed:', e.detail);
+    showSelectedValues();
+});
+
+// Initialize demo on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Show initial values after a brief delay
+    setTimeout(showSelectedValues, 500);
+});
+</script>
+{% endblock %}

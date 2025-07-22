@@ -1,0 +1,5 @@
+Username: admin
+Email: admin@example.com
+Active: True
+Password Hash: scrypt:32768:8:1$C7BVm58RdBWPCoOY$8ed26f430e6c5f7a73b5a95c847fa388211e533fc1c26f7079cd292bd8566aba26cd1cf3ed2acf1c45af4ac14492a103be67446263b248205d19dc8abbbb8e16
+Check Password: True

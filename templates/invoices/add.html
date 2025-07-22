@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block title %}فاکتور جدید - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('invoices') }}">فاکتورها</a></li>
+<li class="breadcrumb-item active">فاکتور جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-file-invoice text-primary"></i>
+                ایجاد فاکتور جدید
+            </h2>
+            <a href="{{ url_for('invoices') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به لیست
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">اطلاعات فاکتور</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_invoice') }}" id="invoiceForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_id" class="form-label">مشتری <span class="text-danger">*</span></label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                <option value="">انتخاب مشتری</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }}{% if customer.company_name %} - {{ customer.company_name }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="due_date" class="form-label">سررسید</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date" data-persian-datepicker="true" 
+                                   aria-describedby="due_date_help">
+                            <div id="due_date_help" class="form-text">
+                                تاریخ سررسید پرداخت فاکتور (اختیاری)
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="notes" class="form-label">یادداشت</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-primary">اقلام فاکتور</h6>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addInvoiceItem()">
+                                        <i class="fas fa-plus"></i>
+                                        افزودن قلم
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-sm" onclick="exportTablePDF(this)" 
+                                            title="دانلود پیش‌نمایش فاکتور">
+                                        <i class="fas fa-file-pdf"></i>
+                                        پیش‌نمایش PDF
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="invoiceItemsTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="25%">محصول</th>
+                                            <th width="15%">تعداد</th>
+                                            <th width="20%">قیمت واحد</th>
+                                            <th width="20%">تخفیف</th>
+                                            <th width="15%">جمع</th>
+                                            <th width="5%">حذف</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoiceItems">
+                                        <!-- Invoice items will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <span>جمع کل:</span>
+                                        <span id="subtotal">0 تومان</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>تخفیف کل:</span>
+                                        <span id="totalDiscount">0 تومان</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>مالیات (9%):</span>
+                                        <span id="tax">0 تومان</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>مبلغ نهایی:</span>
+                                        <span id="totalAmount">0 تومان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i>
+                            ذخیره فاکتور
+                        </button>
+                        
+                        <a href="{{ url_for('invoices') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times"></i>
+                            انصراف
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let itemCounter = 0;
+
+function addInvoiceItem() {
+    itemCounter++;
+    const tbody = document.getElementById('invoiceItems');
+    const row = document.createElement('tr');
+    row.id = `item-${itemCounter}`;
+    
+    row.innerHTML = `
+        <td>
+            <select class="form-select product-select" name="product_id[]" onchange="updatePrice(this, ${itemCounter})" required>
+                <option value="">انتخاب محصول</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="form-control quantity-input" name="quantity[]" 
+                   onchange="calculateLineTotal(${itemCounter})" min="1" required>
+        </td>
+        <td>
+            <input type="number" class="form-control price-input" name="unit_price[]" 
+                   onchange="calculateLineTotal(${itemCounter})" min="0" step="100" required>
+        </td>
+        <td>
+            <input type="number" class="form-control discount-input" name="discount[]" 
+                   onchange="calculateLineTotal(${itemCounter})" min="0" step="100" value="0">
+        </td>
+        <td>
+            <span class="line-total">0 تومان</span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeItem(${itemCounter})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+    loadProducts(row.querySelector('.product-select'));
+}
+
+function loadProducts(selectElement) {
+    fetch('/api/products/search?q=')
+    .then(response => response.json())
+    .then(products => {
+        products.forEach(product => {
+            const option = document.createElement('option');
+            option.value = product.id;
+            option.textContent = `${product.code} - ${product.name}`;
+            option.dataset.price = product.selling_price;
+            selectElement.appendChild(option);
+        });
+    })
+    .catch(error => console.error('Error loading products:', error));
+}
+
+function updatePrice(selectElement, itemId) {
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+    if (selectedOption.dataset.price) {
+        const row = document.getElementById(`item-${itemId}`);
+        const priceInput = row.querySelector('.price-input');
+        priceInput.value = selectedOption.dataset.price;
+        calculateLineTotal(itemId);
+    }
+}
+
+function calculateLineTotal(itemId) {
+    const row = document.getElementById(`item-${itemId}`);
+    const quantity = parseFloat(row.querySelector('.quantity-input').value || 0);
+    const price = parseFloat(row.querySelector('.price-input').value || 0);
+    const discount = parseFloat(row.querySelector('.discount-input').value || 0);
+    
+    const lineTotal = (quantity * price) - discount;
+    row.querySelector('.line-total').textContent = lineTotal.toLocaleString() + ' تومان';
+    
+    calculateTotals();
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    let totalDiscount = 0;
+    
+    document.querySelectorAll('#invoiceItems tr').forEach(row => {
+        const quantity = parseFloat(row.querySelector('.quantity-input').value || 0);
+        const price = parseFloat(row.querySelector('.price-input').value || 0);
+        const discount = parseFloat(row.querySelector('.discount-input').value || 0);
+        
+        subtotal += quantity * price;
+        totalDiscount += discount;
+    });
+    
+    const afterDiscount = subtotal - totalDiscount;
+    const tax = afterDiscount * 0.09; // 9% tax
+    const totalAmount = afterDiscount + tax;
+    
+    document.getElementById('subtotal').textContent = subtotal.toLocaleString() + ' تومان';
+    document.getElementById('totalDiscount').textContent = totalDiscount.toLocaleString() + ' تومان';
+    document.getElementById('tax').textContent = tax.toLocaleString() + ' تومان';
+    document.getElementById('totalAmount').textContent = totalAmount.toLocaleString() + ' تومان';
+}
+
+function removeItem(itemId) {
+    const row = document.getElementById(`item-${itemId}`);
+    row.remove();
+    calculateTotals();
+}
+
+// Add first item on page load
+document.addEventListener('DOMContentLoaded', function() {
+    addInvoiceItem();
+});
+</script>
+{% endblock %}

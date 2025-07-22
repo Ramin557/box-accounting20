@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}مشاهده مشتری - {{ customer.name }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('customers') }}">مشتریان</a></li>
+<li class="breadcrumb-item active">مشاهده مشتری</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-user text-primary"></i>
+                {{ customer.name }}
+            </h2>
+            <div>
+                <a href="{{ url_for('edit_customer', id=customer.id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> ویرایش
+                </a>
+                <a href="{{ url_for('customers') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات شخصی
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <strong>نام:</strong>
+                        <p class="mb-0">{{ customer.name or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>نام شرکت:</strong>
+                        <p class="mb-0">{{ customer.company_name or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>تلفن:</strong>
+                        <p class="mb-0">{{ customer.phone or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>موبایل:</strong>
+                        <p class="mb-0">{{ customer.mobile or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>ایمیل:</strong>
+                        <p class="mb-0">{{ customer.email or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>کد ملی:</strong>
+                        <p class="mb-0">{{ customer.national_id or '-' }}</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>آدرس:</strong>
+                        <p class="mb-0">{{ customer.address or '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line"></i>
+                    اطلاعات مالی
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <strong>حد اعتبار:</strong>
+                        <p class="mb-0 text-primary">{{ "{:,}".format(customer.credit_limit|int) }} تومان</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>موجودی:</strong>
+                        <p class="mb-0 {% if customer.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ "{:,}".format(customer.balance|int) }} تومان
+                        </p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>وضعیت:</strong>
+                        <p class="mb-0">
+                            {% if customer.is_active %}
+                                <span class="badge bg-success">فعال</span>
+                            {% else %}
+                                <span class="badge bg-danger">غیرفعال</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>تاریخ ثبت:</strong>
+                        <p class="mb-0">{{ customer.get_jalali_created_date() }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shopping-cart"></i>
+                    آخرین سفارشات
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>شماره</th>
+                                    <th>تاریخ</th>
+                                    <th>مبلغ</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.order_number }}</td>
+                                    <td>{{ order.get_jalali_order_date() }}</td>
+                                    <td>{{ "{:,}".format(order.total_amount|int) }}</td>
+                                    <td>
+                                        {% if order.status == 'pending' %}
+                                            <span class="badge bg-warning">در انتظار</span>
+                                        {% elif order.status == 'processing' %}
+                                            <span class="badge bg-info">در حال پردازش</span>
+                                        {% elif order.status == 'completed' %}
+                                            <span class="badge bg-success">تکمیل شده</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ order.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">هیچ سفارشی یافت نشد.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-invoice"></i>
+                    آخرین فاکتورها
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if invoices %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>شماره</th>
+                                    <th>تاریخ</th>
+                                    <th>مبلغ</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices %}
+                                <tr>
+                                    <td>{{ invoice.invoice_number }}</td>
+                                    <td>{{ invoice.get_jalali_invoice_date() }}</td>
+                                    <td>{{ "{:,}".format(invoice.total_amount|int) }}</td>
+                                    <td>
+                                        {% if invoice.status == 'draft' %}
+                                            <span class="badge bg-secondary">پیش‌نویس</span>
+                                        {% elif invoice.status == 'sent' %}
+                                            <span class="badge bg-warning">ارسال شده</span>
+                                        {% elif invoice.status == 'paid' %}
+                                            <span class="badge bg-success">پرداخت شده</span>
+                                        {% elif invoice.status == 'overdue' %}
+                                            <span class="badge bg-danger">عقب افتاده</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ invoice.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">هیچ فاکتوری یافت نشد.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,280 @@
+عالی! متوجه منظورت شدم. شما می‌خواهید به جای منوی کشویی پیش‌فرض مرورگر (تگ `<select>`)، یک کامپوننت انتخابی سفارشی و مدرن داشته باشید که به کاربر اجازه دهد گزینه‌ها را مدیریت کند (اضافه، ویرایش، حذف کند).
+
+این یک ویژگی بسیار حرفه‌ای و جذاب برای هر اپلیکیشنی است. به این کامپوننت معمولاً **"Custom Select"** یا **"Select with Search and Management"** می‌گویند.
+
+در تصویر، شما از **Radio Button** برای انتخاب استفاده کرده‌اید که خوب است، اما برای مدیریت گزینه‌ها باید یک راه حل ترکیبی بسازیم. بیایید یک طرح کامل و مدرن برای این کار پیاده‌سازی کنیم.
+
+---
+
+### طرح کلی برای کامپوننت انتخابی سفارشی (Custom Editable Select)
+
+این کامپوننت از چند بخش تشکیل می‌شود:
+
+1.  **ورودی اصلی (Trigger):** یک فیلد شبیه به `input` که وقتی کاربر روی آن کلیک می‌کند، لیست گزینه‌ها باز می‌شود. این فیلد می‌تواند مقدار انتخاب شده فعلی را نمایش دهد.
+2.  **پنل گزینه‌ها (Dropdown Panel):** یک پنل که با کلیک باز می‌شود و شامل موارد زیر است:
+    *   **فیلد جستجو (اختیاری ولی بسیار مفید):** برای پیدا کردن سریع گزینه‌ها.
+    *   **لیست گزینه‌ها:** هر گزینه دارای یک دکمه ویرایش و یک دکمه حذف است.
+    *   **دکمه "افزودن جدید":** برای اضافه کردن یک گزینه جدید به لیست.
+3.  **مدال (Modal) یا فرم ویرایش/افزودن:** یک پنجره پاپ‌آپ برای وارد کردن نام گزینه جدید یا ویرایش نام گزینه موجود.
+
+---
+
+### مراحل پیاده‌سازی (HTML, CSS, JavaScript)
+
+#### مرحله ۱: ساختار HTML
+
+ما ساختار را طوری می‌چینیم که با جاوااسکریپت آن را پویا کنیم.
+
+```html
+<!-- در بخش دسته‌بندی یا واحد اندازه‌گیری -->
+<div class="custom-select-wrapper">
+    <label for="category-input">دسته‌بندی</label>
+    <div class="custom-select">
+        <div class="select-trigger">
+            <span>یک گزینه انتخاب کنید</span>
+            <div class="arrow"></div>
+        </div>
+        <div class="options-panel">
+            <div class="search-box">
+                <input type="text" placeholder="جستجو..." />
+            </div>
+            <ul class="options-list">
+                <!-- گزینه‌ها با جاوااسکریپت اینجا اضافه می‌شوند -->
+            </ul>
+            <div class="options-footer">
+                <button class="add-new-btn">+ افزودن دسته‌بندی جدید</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مدال برای افزودن/ویرایش گزینه (ابتدا مخفی است) -->
+<div id="option-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3 id="modal-title">افزودن دسته‌بندی جدید</h3>
+        <input type="text" id="modal-input" placeholder="نام دسته‌بندی...">
+        <div class="modal-actions">
+            <button id="modal-cancel-btn">انصراف</button>
+            <button id="modal-save-btn">ذخیره</button>
+        </div>
+    </div>
+</div>
+```
+
+#### مرحله ۲: استایل‌دهی مدرن با CSS
+
+این بخش برای رسیدن به ظاهر شیک و مدرن حیاتی است. ما از متغیرهای CSS برای تم دارک و انیمیشن‌های نرم استفاده می‌کنیم.
+
+```css
+/* --- متغیرهای تم دارک --- */
+:root {
+    --bg-color: #1a1a2e;
+    --primary-color: #e94560;
+    --font-color: #e6e6e6;
+    --field-bg: #2c2c54;
+    --border-color: #4a4a7f;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select {
+    position: relative;
+}
+
+.select-trigger {
+    background-color: var(--field-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.select-trigger:hover {
+    border-color: var(--primary-color);
+}
+
+.arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--font-color);
+    transition: transform 0.3s ease;
+}
+
+/* --- پنل گزینه‌ها --- */
+.options-panel {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    right: 0;
+    background-color: var(--field-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.custom-select.open .options-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.custom-select.open .arrow {
+    transform: rotate(180deg);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--font-color);
+}
+
+.options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.options-list li {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.options-list li:hover {
+    background-color: rgba(233, 69, 96, 0.2);
+}
+
+.option-actions button {
+    background: none;
+    border: none;
+    color: var(--font-color);
+    cursor: pointer;
+    margin-left: 8px;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.options-list li:hover .option-actions button {
+    opacity: 1;
+}
+
+.add-new-btn {
+    width: 100%;
+    padding: 12px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--border-color);
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+/* استایل مدال (Modal) را هم به همین صورت اضافه کنید */
+```
+
+#### مرحله ۳: منطق با JavaScript
+
+این قلب تپنده کامپوننت شماست.
+
+1.  **داده‌ها را مدیریت کنید:** گزینه‌ها را در یک آرایه در `localStorage` ذخیره کنید تا کاربر با رفرش صفحه آنها را از دست ندهد.
+    ```javascript
+    let categories = JSON.parse(localStorage.getItem('categories')) || ['جعبه‌ها', 'کیلوگرم', 'متر', 'بسته', 'کارتن'];
+    let selectedCategory = null;
+
+    function saveCategories() {
+        localStorage.setItem('categories', JSON.stringify(categories));
+    }
+    ```
+
+2.  **توابع رندر و رویدادها:**
+    *   **`renderOptions()`:** تابعی که لیست `ul` را بر اساس آرایه `categories` می‌سازد.
+    *   **رویداد کلیک روی `select-trigger`:** پنل گزینه‌ها را باز و بسته می‌کند.
+    *   **رویداد کلیک روی گزینه‌ها:** گزینه را انتخاب، پنل را می‌بندد و مقدار `select-trigger` را آپدیت می‌کند.
+    *   **رویداد کلیک روی دکمه‌های حذف و ویرایش:** مدال را برای ویرایش یا یک `confirm` برای حذف نمایش می‌دهد.
+    *   **رویداد کلیک روی "افزودن جدید":** مدال را برای افزودن باز می‌کند.
+    *   **منطق مدال:** گرفتن ورودی کاربر و ذخیره یا ویرایش آن در آرایه `categories` و سپس فراخوانی `renderOptions()` و `saveCategories()`.
+
+**مثال کوچکی از کد جاوااسکریپت:**
+```javascript
+const customSelect = document.querySelector('.custom-select');
+const trigger = document.querySelector('.select-trigger');
+const optionsList = document.querySelector('.options-list');
+
+// باز و بسته کردن پنل
+trigger.addEventListener('click', () => {
+    customSelect.classList.toggle('open');
+});
+
+function renderOptions() {
+    optionsList.innerHTML = '';
+    categories.forEach((category, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${category}</span>
+            <div class="option-actions">
+                <button onclick="editOption(${index})">✏️</button>
+                <button onclick="deleteOption(${index})">🗑️</button>
+            </div>
+        `;
+        li.addEventListener('click', (e) => {
+            // جلوگیری از اجرای رویداد دکمه‌های داخل li
+            if (e.target.tagName !== 'BUTTON') {
+                selectOption(category);
+            }
+        });
+        optionsList.appendChild(li);
+    });
+}
+
+function selectOption(category) {
+    selectedCategory = category;
+    trigger.querySelector('span').textContent = category;
+    customSelect.classList.remove('open');
+    console.log('Selected:', selectedCategory);
+}
+
+function deleteOption(index) {
+    if (confirm(`آیا از حذف "${categories[index]}" مطمئن هستید؟`)) {
+        categories.splice(index, 1);
+        saveCategories();
+        renderOptions();
+    }
+}
+
+// توابع editOption, و منطق مدال را هم به همین صورت پیاده‌سازی کنید...
+
+// اولین رندر
+renderOptions();
+```
+
+### نتیجه نهایی چه خواهد بود؟
+
+با این پیاده‌سازی، شما یک کامپوننت کاملاً سفارشی، زیبا و بسیار قدرتمند خواهید داشت که:
+-   ظاهری مدرن و یکپارچه با تم سایت شما دارد.
+-   به کاربر اجازه می‌دهد گزینه‌ها را جستجو، اضافه، ویرایش و حذف کند.
+-   تغییرات را در `localStorage` ذخیره می‌کند.
+-   تجربه کاربری بسیار بهتری نسبت به منوی کشویی پیش‌فرض ارائه می‌دهد.
+
+این یک چالش برنامه‌نویسی جذاب است و پیاده‌سازی آن مهارت شما در فرانت‌اند را به سطح بالاتری می‌برد. موفق باشید

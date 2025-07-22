@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}نمایش ویژگی‌های جدید - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">نمایش ویژگی‌های جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-star text-warning"></i>
+                ویژگی‌های جدید سیستم حسابداری
+            </h2>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به داشبورد
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Date Picker Demo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-alt"></i>
+                    انتخابگر تاریخ پیشرفته با تقویم فارسی
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    انتخابگر تاریخ جدید با قابلیت‌های پیشرفته شامل نمایش تاریخ شمسی، تعیین خودکار تاریخ امروز، و اعتبارسنجی ورودی
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="demo_date1" class="form-label">تاریخ فاکتور (خودکار امروز)</label>
+                        <input type="date" class="form-control" id="demo_date1" name="demo_date1" data-persian-datepicker="true">
+                        <div class="form-text">تاریخ به صورت خودکار روی امروز تنظیم می‌شود</div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="demo_date2" class="form-label">تاریخ سررسید (اختیاری)</label>
+                        <input type="date" class="form-control" id="demo_date2" name="demo_date2" data-persian-datepicker="true">
+                        <div class="form-text">این فیلد اختیاری است و تاریخ خودکار ندارد</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>ویژگی‌های جدید:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>نمایش خودکار تاریخ شمسی در کنار تاریخ میلادی</li>
+                        <li>تنظیم خودکار تاریخ امروز برای فیلدهای مناسب</li>
+                        <li>اعتبارسنجی تاریخ‌ها (جلوگیری از ورود تاریخ آینده)</li>
+                        <li>پشتیبانی کامل از تقویم فارسی</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PDF Export Demo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" id="pdf-demo-container">
+            <div class="card-header bg-success text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-pdf"></i>
+                        صادرات PDF پیشرفته
+                    </h5>
+                    <button type="button" class="btn btn-light btn-sm" onclick="exportReportPDF(this)" title="دانلود این بخش به عنوان PDF">
+                        <i class="fas fa-download text-success"></i>
+                        تست صادرات PDF
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    سیستم صادرات PDF جدید با کیفیت بالا و فرمت‌دهی حرفه‌ای برای فاکتورها، گزارش‌ها و جداول
+                </p>
+                
+                <!-- Sample Data Table for PDF Export -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>شماره فاکتور</th>
+                                <th>مشتری</th>
+                                <th>تاریخ</th>
+                                <th>مبلغ (تومان)</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>INV-000001</td>
+                                <td>شرکت نمونه</td>
+                                <td>۱۴۰۳/۰۷/۲۰</td>
+                                <td>۲,۵۰۰,۰۰۰</td>
+                                <td><span class="badge bg-success">پرداخت شده</span></td>
+                            </tr>
+                            <tr>
+                                <td>INV-000002</td>
+                                <td>مشتری آزمایشی</td>
+                                <td>۱۴۰۳/۰۷/۱۹</td>
+                                <td>۱,۸۰۰,۰۰۰</td>
+                                <td><span class="badge bg-warning">در انتظار</span></td>
+                            </tr>
+                            <tr>
+                                <td>INV-000003</td>
+                                <td>کارخانه تولیدی</td>
+                                <td>۱۴۰۳/۰۷/۱۸</td>
+                                <td>۳,۲۰۰,۰۰۰</td>
+                                <td><span class="badge bg-danger">سررسید گذشته</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>ویژگی‌های صادرات PDF:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>کیفیت بالا با پشتیبانی از فونت‌های فارسی</li>
+                        <li>حفظ ساختار و فرمت‌دهی اصلی</li>
+                        <li>هدر خودکار با اطلاعات شرکت و تاریخ</li>
+                        <li>بهینه‌سازی برای چاپ A4</li>
+                        <li>پشتیبانی از جداول پیچیده و گزارش‌های مالی</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Form Features Demo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-edit"></i>
+                    فرم‌های پیشرفته با محاسبات خودکار
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    فرم‌های جدید با قابلیت محاسبه خودکار، اعتبارسنجی پیشرفته، و حالت‌های بارگذاری
+                </p>
+                
+                <form id="demoInvoiceForm">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="demo_quantity" class="form-label">تعداد</label>
+                            <input type="number" class="form-control" id="demo_quantity" name="quantity[]" value="2" min="1">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="demo_price" class="form-label">قیمت واحد (تومان)</label>
+                            <input type="number" class="form-control number-format" id="demo_price" name="unit_price[]" value="150000">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="demo_total" class="form-label">مجموع (خودکار)</label>
+                            <input type="text" class="form-control line-total" id="demo_total" readonly value="300000">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">خلاصه فاکتور</h6>
+                                    <div class="d-flex justify-content-between">
+                                        <span>جمع کل:</span>
+                                        <span class="subtotal">۳۰۰,۰۰۰ تومان</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span>مالیات (۹٪):</span>
+                                        <span class="tax-amount">۲۷,۰۰۰ تومان</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>مبلغ نهایی:</span>
+                                        <span class="total-amount">۳۲۷,۰۰۰ تومان</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="alert alert-primary">
+                                <i class="fas fa-calculator"></i>
+                                <strong>محاسبات خودکار:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>تغییر مقادیر به صورت زنده محاسبه می‌شود</li>
+                                    <li>فرمت‌دهی خودکار اعداد فارسی</li>
+                                    <li>اعتبارسنجی ورودی‌ها</li>
+                                    <li>حالت بارگذاری هنگام ارسال فرم</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Accessibility Features Demo -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-universal-access"></i>
+                    ویژگی‌های دسترسی و تجربه کاربری
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">
+                    بهبودهای گسترده در دسترسی، ناوبری با کیبورد، و انیمیشن‌های نرم
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">میانبرهای کیبورد:</h6>
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>ایجاد آیتم جدید:</span>
+                                <kbd>Ctrl + N</kbd>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>بستن مودال:</span>
+                                <kbd>Esc</kbd>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>ذخیره فرم:</span>
+                                <kbd>Ctrl + S</kbd>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-success">ویژگی‌های تجربه کاربری:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                انیمیشن‌های نرم و حرفه‌ای
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                حالت‌های بارگذاری برای عملیات‌ها
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                نمایش مناسب حالت خالی
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                پشتیبانی کامل از screen reader
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                فوکوس مدیریت شده و accessible
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Demo Buttons -->
+                <div class="mt-4">
+                    <h6 class="text-info">تست دکمه‌های پیشرفته:</h6>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-primary" onclick="this.classList.add('loading'); setTimeout(() => this.classList.remove('loading'), 2000)">
+                            <span class="btn-text">دکمه با Loading</span>
+                            <span class="loading-spinner"></span>
+                        </button>
+                        <button type="button" class="btn btn-success smooth-transition" onclick="showAlert('عملیات با موفقیت انجام شد!', 'success')">
+                            <i class="fas fa-check"></i>
+                            دکمه با انیمیشن
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="exportTablePDF(this)" title="صادرات نمونه PDF">
+                            <i class="fas fa-file-pdf"></i>
+                            صادرات PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Implementation Summary -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-clipboard-check"></i>
+                    خلاصه پیاده‌سازی ویژگی‌های جدید
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">✅ ویژگی‌های پیاده‌سازی شده:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">انتخابگر تاریخ پیشرفته با تقویم فارسی</li>
+                            <li class="list-group-item">صادرات PDF با کیفیت بالا</li>
+                            <li class="list-group-item">محاسبات خودکار در فرم‌ها</li>
+                            <li class="list-group-item">اعتبارسنجی پیشرفته ورودی‌ها</li>
+                            <li class="list-group-item">حالت‌های بارگذاری و انیمیشن‌ها</li>
+                            <li class="list-group-item">ویژگی‌های دسترسی (Accessibility)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="text-info">🔧 بهبودهای فنی:</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">رفع باگ محاسبات اعشاری</li>
+                            <li class="list-group-item">بهینه‌سازی عملکرد JavaScript</li>
+                            <li class="list-group-item">پشتیبانی بهتر از فونت‌های فارسی</li>
+                            <li class="list-group-item">مدیریت خطاها و حالت‌های خالی</li>
+                            <li class="list-group-item">سازگاری با مرورگرهای مختلف</li>
+                            <li class="list-group-item">کدنویسی تمیز و قابل نگهداری</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6 class="text-primary mb-3">📋 نحوه استفاده:</h6>
+                    <p class="mb-2">
+                        <strong>انتخابگر تاریخ:</strong> 
+                        فیلدهای تاریخ به صورت خودکار امروز را انتخاب می‌کنند و نمایش فارسی دارند.
+                    </p>
+                    <p class="mb-2">
+                        <strong>صادرات PDF:</strong> 
+                        دکمه‌های PDF در صفحات مختلف اضافه شده و با کلیک روی آن‌ها فایل PDF دانلود می‌شود.
+                    </p>
+                    <p class="mb-0">
+                        <strong>محاسبات خودکار:</strong> 
+                        در فرم‌های فاکتور، تغییر هر فیلد به صورت زنده محاسبات را بروزرسانی می‌کند.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for demo animations -->
+<style>
+.removing-item {
+    opacity: 0.5;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+}
+
+.loading-spinner {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.btn.loading .loading-spinner {
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.btn.loading .btn-text {
+    opacity: 0.7;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.smooth-transition {
+    transition: all 0.3s ease;
+}
+
+.smooth-transition:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+
+<script>
+// Demo specific JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-calculation demo
+    const quantityInput = document.getElementById('demo_quantity');
+    const priceInput = document.getElementById('demo_price');
+    const totalInput = document.getElementById('demo_total');
+    
+    function updateDemoCalculation() {
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const price = parseFloat(priceInput.value) || 0;
+        const total = quantity * price;
+        
+        totalInput.value = total.toLocaleString('fa-IR');
+        
+        // Update summary
+        document.querySelector('.subtotal').textContent = total.toLocaleString('fa-IR') + ' تومان';
+        const tax = Math.round(total * 0.09);
+        document.querySelector('.tax-amount').textContent = tax.toLocaleString('fa-IR') + ' تومان';
+        document.querySelector('.total-amount').textContent = (total + tax).toLocaleString('fa-IR') + ' تومان';
+    }
+    
+    quantityInput.addEventListener('input', updateDemoCalculation);
+    priceInput.addEventListener('input', updateDemoCalculation);
+    
+    // Initialize calculation
+    updateDemoCalculation();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش پرداخت{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">ویرایش پرداخت</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">اطلاعات پرداخت</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_id" class="form-label">مشتری</label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                <option value="">انتخاب مشتری</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}" {% if payment.customer_id == customer.id %}selected{% endif %}>{{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="invoice_id" class="form-label">فاکتور</label>
+                            <select class="form-select" id="invoice_id" name="invoice_id">
+                                <option value="">انتخاب فاکتور</option>
+                                {% for invoice in invoices %}
+                                <option value="{{ invoice.id }}" {% if payment.invoice_id == invoice.id %}selected{% endif %}>{{ invoice.invoice_number }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">مبلغ</label>
+                            <input type="number" class="form-control" id="amount" name="amount" value="{{ payment.amount }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="payment_date" class="form-label">تاریخ پرداخت</label>
+                            <input type="text" class="form-control" id="payment_date" name="payment_date" value="{{ payment.get_jalali_payment_date() }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">روش پرداخت</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="cash" {% if payment.payment_method == 'cash' %}selected{% endif %}>نقدی</option>
+                            <option value="check" {% if payment.payment_method == 'check' %}selected{% endif %}>چک</option>
+                            <option value="transfer" {% if payment.payment_method == 'transfer' %}selected{% endif %}>انتقال بانکی</option>
+                            <option value="card" {% if payment.payment_method == 'card' %}selected{% endif %}>کارت</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">یادداشت</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ payment.notes }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

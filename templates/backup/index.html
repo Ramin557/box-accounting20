@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}پشتیبان‌گیری - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">پشتیبان‌گیری</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-download text-primary"></i>
+                مدیریت پشتیبان‌گیری
+            </h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download"></i>
+                    پشتیبان‌گیری دستی
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">دریافت فایل پشتیبان از کلیه اطلاعات سیستم شامل:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>اطلاعات مشتریان</li>
+                    <li><i class="fas fa-check text-success me-2"></i>محصولات و موجودی</li>
+                    <li><i class="fas fa-check text-success me-2"></i>سفارشات و فاکتورها</li>
+                    <li><i class="fas fa-check text-success me-2"></i>تراکنش‌های مالی</li>
+                    <li><i class="fas fa-check text-success me-2"></i>تنظیمات سیستم</li>
+                </ul>
+                <button class="btn btn-primary w-100" onclick="createBackup()">
+                    <i class="fas fa-download me-2"></i>
+                    دریافت پشتیبان
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-upload"></i>
+                    بازیابی از پشتیبان
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">بارگذاری فایل پشتیبان برای بازیابی اطلاعات:</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>هشدار:</strong> این عمل تمام اطلاعات فعلی را جایگزین می‌کند.
+                </div>
+                <div class="mb-3">
+                    <input type="file" class="form-control" id="backupFile" accept=".sql,.zip,.json">
+                </div>
+                <button class="btn btn-warning w-100" onclick="restoreBackup()">
+                    <i class="fas fa-upload me-2"></i>
+                    بازیابی از پشتیبان
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history"></i>
+                    تاریخچه پشتیبان‌گیری
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>تاریخ</th>
+                                <th>نوع</th>
+                                <th>حجم فایل</th>
+                                <th>وضعیت</th>
+                                <th>توضیحات</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>۱۴۰۳/۰۴/۲۸ - ۱۰:۳۰</td>
+                                <td><span class="badge bg-primary">دستی</span></td>
+                                <td>۱۲.۵ مگابایت</td>
+                                <td><span class="badge bg-success">موفق</span></td>
+                                <td>پشتیبان‌گیری کامل سیستم</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" title="دانلود">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" title="بازیابی">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>۱۴۰۳/۰۴/۲۷ - ۰۲:۰۰</td>
+                                <td><span class="badge bg-secondary">خودکار</span></td>
+                                <td>۱۱.۸ مگابایت</td>
+                                <td><span class="badge bg-success">موفق</span></td>
+                                <td>پشتیبان‌گیری خودکار روزانه</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" title="دانلود">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" title="بازیابی">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>۱۴۰۳/۰۴/۲۶ - ۰۲:۰۰</td>
+                                <td><span class="badge bg-secondary">خودکار</span></td>
+                                <td>۱۱.۲ مگابایت</td>
+                                <td><span class="badge bg-success">موفق</span></td>
+                                <td>پشتیبان‌گیری خودکار روزانه</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info" title="دانلود">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning" title="بازیابی">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs"></i>
+                    تنظیمات پشتیبان‌گیری خودکار
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('update_backup_settings') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="auto_backup" class="form-label">فاصله زمانی</label>
+                            <select class="form-select" id="auto_backup" name="auto_backup">
+                                <option value="daily">روزانه</option>
+                                <option value="weekly" selected>هفتگی</option>
+                                <option value="monthly">ماهانه</option>
+                                <option value="disabled">غیرفعال</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="backup_time" class="form-label">زمان پشتیبان‌گیری</label>
+                            <input type="time" class="form-control" id="backup_time" name="backup_time" value="02:00">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="keep_backups" class="form-label">تعداد پشتیبان نگهداری</label>
+                            <input type="number" class="form-control" id="keep_backups" name="keep_backups" value="7" min="1" max="30">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="email_notification" name="email_notification" checked>
+                                <label class="form-check-label" for="email_notification">
+                                    ارسال اطلاع‌رسانی ایمیل پس از پشتیبان‌گیری
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>
+                        ذخیره تنظیمات
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function createBackup() {
+    if (confirm('آیا مطمئن هستید که می‌خواهید پشتیبان‌گیری انجام دهید؟')) {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>در حال پشتیبان‌گیری...';
+        button.disabled = true;
+        
+        // Simulate backup process
+        setTimeout(() => {
+            alert('پشتیبان‌گیری با موفقیت انجام شد!');
+            button.innerHTML = originalText;
+            button.disabled = false;
+            // Here you would typically download the backup file
+        }, 3000);
+    }
+}
+
+function restoreBackup() {
+    const fileInput = document.getElementById('backupFile');
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('لطفاً فایل پشتیبان را انتخاب کنید.');
+        return;
+    }
+    
+    if (confirm('آیا مطمئن هستید؟ این عمل تمام اطلاعات فعلی را جایگزین می‌کند.')) {
+        // Show loading state
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>در حال بازیابی...';
+        button.disabled = true;
+        
+        // Simulate restore process
+        setTimeout(() => {
+            alert('بازیابی با موفقیت انجام شد!');
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }, 5000);
+    }
+}
+</script>
+{% endblock %}

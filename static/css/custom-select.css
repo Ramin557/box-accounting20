@@ -1,0 +1,654 @@
+/* =============================================================================
+   CUSTOM EDITABLE SELECT COMPONENT
+   Persian Accounting System - Advanced UI Component
+   Features: Add, Edit, Delete options with search and animations
+   ============================================================================= */
+
+/* Custom Select Variables */
+:root {
+    --select-bg: #ffffff;
+    --select-border: #ced4da;
+    --select-text: #212529;
+    --select-placeholder: #6c757d;
+    --select-hover-bg: #f8f9fa;
+    --select-focus-border: #007bff;
+    --select-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --select-panel-bg: #ffffff;
+    --select-panel-border: #dee2e6;
+    --select-option-hover: #e3f2fd;
+    --select-selected-bg: #007bff;
+    --select-selected-text: #ffffff;
+    --select-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode variables */
+.dark-mode {
+    --select-bg: #2a2a2a;
+    --select-border: #444444;
+    --select-text: #ffffff;
+    --select-placeholder: #b0b0b0;
+    --select-hover-bg: #333333;
+    --select-focus-border: #007bff;
+    --select-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --select-panel-bg: #1e1e1e;
+    --select-panel-border: #333333;
+    --select-option-hover: #2d3748;
+    --select-selected-bg: #007bff;
+    --select-selected-text: #ffffff;
+}
+
+/* =============================================================================
+   MAIN CUSTOM SELECT COMPONENT
+   ============================================================================= */
+
+.custom-select-wrapper {
+    position: relative;
+    width: 100%;
+    direction: rtl;
+    font-family: 'Tahoma', sans-serif;
+}
+
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+/* Select Trigger (Main Button) */
+.select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--select-bg);
+    border: 1px solid var(--select-border);
+    border-radius: 0.5rem;
+    color: var(--select-text);
+    cursor: pointer;
+    transition: var(--select-transition);
+    outline: none;
+    user-select: none;
+}
+
+.select-trigger:hover {
+    border-color: var(--select-focus-border);
+    background-color: var(--select-hover-bg);
+}
+
+.select-trigger:focus {
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.select-value {
+    flex: 1;
+    text-align: right;
+    color: var(--select-placeholder);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.select-value.has-value {
+    color: var(--select-text);
+    font-weight: 500;
+}
+
+.select-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 0.5rem;
+    transition: var(--select-transition);
+}
+
+.select-arrow i {
+    color: var(--select-placeholder);
+    font-size: 0.875rem;
+    transition: var(--select-transition);
+}
+
+/* Open State */
+.custom-select.open .select-trigger {
+    border-color: var(--select-focus-border);
+    box-shadow: var(--select-shadow);
+}
+
+.custom-select.open .select-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-select.open .select-arrow i {
+    color: var(--select-focus-border);
+}
+
+/* =============================================================================
+   OPTIONS PANEL
+   ============================================================================= */
+
+.options-panel {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    right: 0;
+    background-color: var(--select-panel-bg);
+    border: 1px solid var(--select-panel-border);
+    border-radius: 0.5rem;
+    box-shadow: var(--select-shadow);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: var(--select-transition);
+    max-height: 20rem;
+    overflow: hidden;
+    direction: rtl;
+}
+
+.custom-select.open .options-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Search Section */
+.search-section {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--select-panel-border);
+    background-color: var(--select-panel-bg);
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    right: 0.75rem;
+    color: var(--select-placeholder);
+    font-size: 0.875rem;
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;
+    border: 1px solid var(--select-border);
+    border-radius: 0.375rem;
+    background-color: var(--select-bg);
+    color: var(--select-text);
+    font-size: 0.875rem;
+    outline: none;
+    transition: var(--select-transition);
+    direction: rtl;
+}
+
+.search-input:focus {
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.15);
+}
+
+.search-input::placeholder {
+    color: var(--select-placeholder);
+}
+
+/* Options List */
+.options-list {
+    max-height: 12rem;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: var(--select-transition);
+    border-bottom: 1px solid transparent;
+    position: relative;
+}
+
+.option-item:hover {
+    background-color: var(--select-option-hover);
+}
+
+.option-item.selected {
+    background-color: var(--select-selected-bg);
+    color: var(--select-selected-text);
+}
+
+.option-item.selected .option-text {
+    font-weight: 600;
+}
+
+.option-item.empty-state {
+    color: var(--select-placeholder);
+    cursor: default;
+    font-style: italic;
+    justify-content: center;
+}
+
+.option-item.empty-state:hover {
+    background-color: transparent;
+}
+
+.option-text {
+    flex: 1;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Option Actions */
+.option-actions {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: var(--select-transition);
+}
+
+.option-item:hover .option-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: none;
+    border-radius: 0.25rem;
+    background-color: transparent;
+    color: var(--select-placeholder);
+    cursor: pointer;
+    transition: var(--select-transition);
+    font-size: 0.75rem;
+}
+
+.action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: var(--select-text);
+}
+
+.dark-mode .action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-btn:hover {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.delete-btn:hover {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* Options Footer */
+.options-footer {
+    padding: 0.75rem;
+    border-top: 1px solid var(--select-panel-border);
+    background-color: var(--select-panel-bg);
+}
+
+.add-new-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px dashed var(--select-border);
+    border-radius: 0.375rem;
+    background-color: transparent;
+    color: var(--select-focus-border);
+    cursor: pointer;
+    transition: var(--select-transition);
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 0.5rem;
+}
+
+.add-new-btn:hover {
+    border-color: var(--select-focus-border);
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.add-new-btn i {
+    font-size: 0.75rem;
+}
+
+/* =============================================================================
+   MODAL STYLES
+   ============================================================================= */
+
+.custom-select-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+    direction: rtl;
+}
+
+.custom-select-modal-overlay.show {
+    opacity: 1;
+}
+
+.custom-select-modal {
+    background-color: var(--select-panel-bg);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 28rem;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.custom-select-modal-overlay.show .custom-select-modal {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--select-panel-border);
+    background-color: var(--select-bg);
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--select-text);
+}
+
+.modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: transparent;
+    color: var(--select-placeholder);
+    cursor: pointer;
+    transition: var(--select-transition);
+}
+
+.modal-close-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body .form-group {
+    margin-bottom: 0;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--select-text);
+}
+
+.modal-body .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--select-border);
+    border-radius: 0.375rem;
+    background-color: var(--select-bg);
+    color: var(--select-text);
+    font-size: 1rem;
+    transition: var(--select-transition);
+    direction: rtl;
+}
+
+.modal-body .form-control:focus {
+    outline: none;
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--select-panel-border);
+    background-color: var(--select-bg);
+    justify-content: flex-start;
+}
+
+.modal-footer .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--select-transition);
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+}
+
+.modal-footer .btn-primary {
+    background-color: var(--select-focus-border);
+    color: white;
+    border-color: var(--select-focus-border);
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.modal-footer .btn-secondary {
+    background-color: var(--select-border);
+    color: var(--select-text);
+    border-color: var(--select-border);
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: var(--select-placeholder);
+    border-color: var(--select-placeholder);
+}
+
+/* =============================================================================
+   NOTIFICATION STYLES
+   ============================================================================= */
+
+.custom-select-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--select-panel-bg);
+    border: 1px solid var(--select-panel-border);
+    border-radius: 0.5rem;
+    color: var(--select-text);
+    box-shadow: var(--select-shadow);
+    z-index: 10000;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: var(--select-transition);
+    font-size: 0.875rem;
+    font-weight: 500;
+    direction: rtl;
+    min-width: 12rem;
+}
+
+.custom-select-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.custom-select-notification.success {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.custom-select-notification.warning {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.custom-select-notification.error {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+/* =============================================================================
+   SCROLLBAR STYLING
+   ============================================================================= */
+
+.options-list::-webkit-scrollbar {
+    width: 0.375rem;
+}
+
+.options-list::-webkit-scrollbar-track {
+    background: var(--select-hover-bg);
+    border-radius: 0.375rem;
+}
+
+.options-list::-webkit-scrollbar-thumb {
+    background: var(--select-border);
+    border-radius: 0.375rem;
+}
+
+.options-list::-webkit-scrollbar-thumb:hover {
+    background: var(--select-placeholder);
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+    .custom-select-modal {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+    
+    .options-panel {
+        max-height: 15rem;
+    }
+    
+    .options-list {
+        max-height: 10rem;
+    }
+    
+    .custom-select-notification {
+        right: 1rem;
+        top: 1rem;
+        min-width: auto;
+        max-width: calc(100vw - 2rem);
+    }
+}
+
+/* =============================================================================
+   ANIMATION ENHANCEMENTS
+   ============================================================================= */
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.custom-select-notification {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.options-panel {
+    animation: fadeInScale 0.2s ease-out;
+}
+
+/* =============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================================================= */
+
+.custom-select:focus-within .select-trigger {
+    border-color: var(--select-focus-border);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.option-item:focus {
+    outline: 2px solid var(--select-focus-border);
+    outline-offset: -2px;
+}
+
+.action-btn:focus {
+    outline: 2px solid var(--select-focus-border);
+    outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .custom-select {
+        --select-border: #000000;
+        --select-focus-border: #0000ff;
+    }
+    
+    .select-trigger,
+    .options-panel,
+    .search-input {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .custom-select *,
+    .custom-select-modal *,
+    .custom-select-notification {
+        transition: none !important;
+        animation: none !important;
+    }
+}

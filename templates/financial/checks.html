@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت چک‌ها - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">مدیریت چک‌ها</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-money-check text-primary"></i>
+                مدیریت چک‌ها
+            </h2>
+            <div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCheckModal">
+                    <i class="fas fa-plus"></i> چک جدید
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">چک‌های دریافتی</h5>
+                        <h4 class="mb-0">۱۵</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-arrow-down fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">چک‌های پرداختی</h5>
+                        <h4 class="mb-0">۸</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-arrow-up fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">وصول شده</h5>
+                        <h4 class="mb-0">۱۲</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">برگشتی</h5>
+                        <h4 class="mb-0">۱</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-times fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i>
+                    لیست چک‌ها
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>شماره چک</th>
+                                <th>نوع</th>
+                                <th>مبلغ</th>
+                                <th>تاریخ صدور</th>
+                                <th>تاریخ سررسید</th>
+                                <th>وضعیت</th>
+                                <th>بانک</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>۱۲۳۴۵۶۷۸۹</td>
+                                <td><span class="badge bg-primary">دریافتی</span></td>
+                                <td>۵,۰۰۰,۰۰۰ تومان</td>
+                                <td>۱۴۰۳/۰۴/۲۵</td>
+                                <td>۱۴۰۳/۰۵/۲۵</td>
+                                <td><span class="badge bg-warning">در انتظار</span></td>
+                                <td>ملت</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>۹۸۷۶۵۴۳۲۱</td>
+                                <td><span class="badge bg-warning">پرداختی</span></td>
+                                <td>۳,۰۰۰,۰۰۰ تومان</td>
+                                <td>۱۴۰۳/۰۴/۲۰</td>
+                                <td>۱۴۰۳/۰۵/۲۰</td>
+                                <td><span class="badge bg-success">وصول شده</span></td>
+                                <td>پارسیان</td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Check Modal -->
+<div class="modal fade" id="addCheckModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">چک جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="check_type" class="form-label">نوع چک</label>
+                            <select class="form-select" id="check_type" name="check_type" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="received">دریافتی</option>
+                                <option value="issued">پرداختی</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="check_number" class="form-label">شماره چک</label>
+                            <input type="text" class="form-control" id="check_number" name="check_number" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">مبلغ (تومان)</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="bank_name" class="form-label">نام بانک</label>
+                            <input type="text" class="form-control" id="bank_name" name="bank_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="issue_date" class="form-label">تاریخ صدور</label>
+                            <input type="date" class="form-control" id="issue_date" name="issue_date" 
+                                   data-persian-datepicker="true" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="due_date" class="form-label">تاریخ سررسید</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date" 
+                                   data-persian-datepicker="true" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="description" class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ثبت چک</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

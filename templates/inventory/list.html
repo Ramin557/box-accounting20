@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت موجودی{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">مدیریت موجودی</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">لیست موجودی</h5>
+                <a href="{{ url_for('add_raw_material') }}" class="btn btn-primary float-end">افزودن ماده اولیه</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>کد محصول</th>
+                            <th>موجودی</th>
+                            <th>قیمت خرید</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.code }}</td>
+                            <td>{{ product.current_stock }}</td>
+                            <td>{{ "{:,.0f}".format(product.cost_price) }}</td>
+                            <td>
+                                {% if product.current_stock == 0 %}
+                                <span class="badge bg-danger">ناموجود</span>
+                                {% elif product.current_stock < product.min_stock_level %}
+                                <span class="badge bg-warning">کمبود موجودی</span>
+                                {% else %}
+                                <span class="badge bg-success">موجود</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

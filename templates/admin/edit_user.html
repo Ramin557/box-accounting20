@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش کاربر - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin_panel') }}">پنل مدیریت</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('admin_users') }}">مدیریت کاربران</a></li>
+<li class="breadcrumb-item active">ویرایش کاربر</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-edit"></i>
+                    ویرایش کاربر: {{ user.username }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ csrf_token() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">نام کاربری *</label>
+                            <input type="text" class="form-control" id="username" name="username" 
+                                   value="{{ user.username }}" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="full_name" class="form-label">نام کامل *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" 
+                                   value="{{ user.full_name }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ user.email or '' }}">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">تلفن</label>
+                            <input type="text" class="form-control" id="phone" name="phone" 
+                                   value="{{ user.phone or '' }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="role" class="form-label">نقش کاربری *</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>مدیر سیستم</option>
+                                <option value="accountant" {% if user.role == 'accountant' %}selected{% endif %}>حسابدار</option>
+                                <option value="operator" {% if user.role == 'operator' %}selected{% endif %}>اپراتور</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">وضعیت</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="active" {% if user.is_active %}selected{% endif %}>فعال</option>
+                                <option value="inactive" {% if not user.is_active %}selected{% endif %}>غیرفعال</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">رمز عبور جدید</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password">
+                        <div class="form-text">اگر نمی‌خواهید رمز عبور را تغییر دهید، این فیلد را خالی بگذارید.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">تأیید رمز عبور جدید</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            ذخیره تغییرات
+                        </button>
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            بازگشت
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات کاربر
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>تاریخ ایجاد:</strong><br>
+                    <small class="text-muted">{{ user.created_at.strftime('%Y/%m/%d %H:%M') if user.created_at else 'نامشخص' }}</small>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>آخرین ورود:</strong><br>
+                    <small class="text-muted">{{ user.last_login.strftime('%Y/%m/%d %H:%M') if user.last_login else 'هرگز' }}</small>
+                </div>
+                
+                <div class="mb-2">
+                    <strong>وضعیت فعلی:</strong><br>
+                    {% if user.is_active %}
+                        <span class="badge bg-success">فعال</span>
+                    {% else %}
+                        <span class="badge bg-danger">غیرفعال</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-3">
+                    <strong>سطح دسترسی:</strong><br>
+                    {% if user.role == 'admin' %}
+                        <span class="badge bg-primary">مدیر سیستم</span>
+                        <small class="d-block text-muted mt-1">دسترسی کامل به همه بخش‌ها</small>
+                    {% elif user.role == 'accountant' %}
+                        <span class="badge bg-info">حسابدار</span>
+                        <small class="d-block text-muted mt-1">دسترسی به بخش‌های حسابداری</small>
+                    {% else %}
+                        <span class="badge bg-secondary">اپراتور</span>
+                        <small class="d-block text-muted mt-1">دسترسی محدود</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if user.role == 'admin' and user.id != current_user.id %}
+        <div class="card mt-3">
+            <div class="card-header bg-warning">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    عملیات خطرناک
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">حذف این کاربر مدیر ممکن است دسترسی‌های سیستم را محدود کند.</p>
+                <button class="btn btn-outline-danger btn-sm w-100" onclick="deleteUser({{ user.id }}, '{{ user.username }}')">
+                    <i class="fas fa-trash"></i>
+                    حذف کاربر
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteUser(userId, username) {
+    if (confirm(`آیا از حذف کاربر "${username}" اطمینان دارید؟\nاین عمل قابل برگشت نیست.`)) {
+        fetch(`/admin/users/${userId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = "{{ url_for('admin_users') }}";
+            } else {
+                alert(data.message || 'خطا در حذف کاربر');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در حذف کاربر');
+        });
+    }
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    form.addEventListener('submit', function(e) {
+        if (newPassword.value && newPassword.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert('رمز عبور و تأیید رمز عبور مطابقت ندارند.');
+            confirmPassword.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

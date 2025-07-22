@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}نمونه بهبودهای دسترسی‌پذیری - سیستم حسابداری{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>نمونه بهبودهای دسترسی‌پذیری و تجربه کاربری</h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Section 1: Accessible Forms -->
+                    <section class="mb-4">
+                        <h5>۱. فرم‌های بهبودیافته با برچسب‌های مناسب</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <form id="demo-form" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    
+                                    <!-- Proper input with label -->
+                                    <div class="mb-3">
+                                        <label for="customer-name" class="form-label">نام مشتری</label>
+                                        <input type="text" id="customer-name" name="customer_name" 
+                                               class="form-control" placeholder="نام کامل مشتری را وارد کنید"
+                                               aria-describedby="customer-name-help" required>
+                                        <div id="customer-name-help" class="form-text">
+                                            این فیلد اجباری است و برای شناسایی مشتری استفاده می‌شود.
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Accessible amount input -->
+                                    <div class="mb-3">
+                                        <label for="amount" class="form-label">مبلغ (ریال)</label>
+                                        <input type="number" id="amount" name="amount" 
+                                               class="form-control number-format" 
+                                               placeholder="مبلغ را به ریال وارد کنید"
+                                               min="0" step="1000" required>
+                                    </div>
+                                    
+                                    <!-- Accessible date picker -->
+                                    <div class="mb-3">
+                                        <label for="transaction-date" class="form-label">تاریخ تراکنش</label>
+                                        <input type="date" id="transaction-date" name="transaction_date" 
+                                               class="form-control" 
+                                               data-persian-datepicker="true" required>
+                                    </div>
+                                    
+                                    <!-- Enhanced submit button -->
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save" aria-hidden="true"></i>
+                                        ذخیره اطلاعات
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Section 2: Accessible Table with Enhanced Delete Buttons -->
+                    <section class="mb-4">
+                        <h5>۲. جدول با دکمه‌های حذف بهبودیافته</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">نام مشتری</th>
+                                        <th scope="col">مبلغ</th>
+                                        <th scope="col">تاریخ</th>
+                                        <th scope="col">عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sample data rows -->
+                                    <tr class="new-item">
+                                        <td>احمد محمدی</td>
+                                        <td class="number-format">1500000</td>
+                                        <td>۱۴۰۳/۰۴/۳۰</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="عملیات">
+                                                <a href="#" class="btn btn-sm btn-outline-primary" 
+                                                   aria-label="ویرایش احمد محمدی" title="ویرایش">
+                                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
+                                                        aria-label="حذف احمد محمدی" title="حذف احمد محمدی"
+                                                        onclick="handleDelete('احمد محمدی')">
+                                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>فاطمه کریمی</td>
+                                        <td class="number-format">2300000</td>
+                                        <td>۱۴۰۳/۰۴/۲۹</td>
+                                        <td>
+                                            <div class="btn-group" role="group" aria-label="عملیات">
+                                                <a href="#" class="btn btn-sm btn-outline-primary" 
+                                                   aria-label="ویرایش فاطمه کریمی" title="ویرایش">
+                                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
+                                                        aria-label="حذف فاطمه کریمی" title="حذف فاطمه کریمی"
+                                                        onclick="handleDelete('فاطمه کریمی')">
+                                                    <i class="fas fa-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    
+                    <!-- Section 3: Empty State Demo -->
+                    <section class="mb-4">
+                        <h5>۳. نمایش حالت خالی</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">محصول</th>
+                                        <th scope="col">موجودی</th>
+                                        <th scope="col">قیمت</th>
+                                        <th scope="col">عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="empty-table">
+                                    <!-- Empty state will be added here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    
+                    <!-- Section 4: Loading States -->
+                    <section class="mb-4">
+                        <h5>۴. حالت‌های بارگذاری</h5>
+                        <button type="button" class="btn btn-success" onclick="simulateLoading(this)">
+                            <i class="fas fa-download" aria-hidden="true"></i>
+                            دانلود گزارش
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="simulateLoading(this)">
+                            <i class="fas fa-sync" aria-hidden="true"></i>
+                            به‌روزرسانی داده‌ها
+                        </button>
+                    </section>
+                    
+                    <!-- Section 5: Keyboard Navigation -->
+                    <section class="mb-4">
+                        <h5>۵. راهنمای میانبرهای صفحه‌کلید</h5>
+                        <div class="alert alert-info">
+                            <h6>میانبرهای کیبورد:</h6>
+                            <ul class="mb-0">
+                                <li><kbd>Ctrl + N</kbd>: افزودن مورد جدید</li>
+                                <li><kbd>Esc</kbd>: بستن پنجره‌های باز</li>
+                                <li><kbd>Tab</kbd>: حرکت بین عناصر</li>
+                                <li><kbd>Enter</kbd>: فعال‌سازی دکمه یا لینک فعال</li>
+                            </ul>
+                        </div>
+                    </section>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo JavaScript -->
+<script>
+// Simulate loading states
+function simulateLoading(button) {
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="loading-spinner"></span> در حال پردازش...';
+    
+    setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalText;
+        showAlert('عملیات با موفقیت انجام شد!', 'success');
+    }, 2000);
+}
+
+// Enhanced delete handler
+async function handleDelete(itemName) {
+    const confirmed = await confirmDelete('آیا از حذف این مورد مطمئن هستید؟', itemName);
+    if (confirmed) {
+        // Add removing animation
+        const row = event.target.closest('tr');
+        row.classList.add('removing-item');
+        
+        setTimeout(() => {
+            row.remove();
+            showAlert(`"${itemName}" با موفقیت حذف شد.`, 'success');
+        }, 300);
+    }
+}
+
+// Initialize empty state for demo
+document.addEventListener('DOMContentLoaded', function() {
+    // This will be handled by the setupEmptyStates function
+    setupEmptyStates();
+});
+</script>
+{% endblock %}

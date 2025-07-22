@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}مشتری جدید - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('customers') }}">مشتریان</a></li>
+<li class="breadcrumb-item active">مشتری جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-user-plus text-primary"></i>
+                افزودن مشتری جدید
+            </h2>
+            <a href="{{ url_for('customers') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به لیست
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Form -->
+<div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات مشتری
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">نام و نام خانوادگی <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="company_name" class="form-label">نام شرکت</label>
+                            <input type="text" class="form-control" id="company_name" name="company_name">
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">تلفن ثابت</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="021-12345678">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="mobile" class="form-label">تلفن همراه</label>
+                            <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="09123456789">
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="email" class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="customer@example.com">
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="address" class="form-label">آدرس</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" placeholder="آدرس کامل مشتری..."></textarea>
+                        </div>
+                        
+                        <!-- Legal Information -->
+                        <div class="col-md-6 mb-3">
+                            <label for="national_id" class="form-label">کد ملی</label>
+                            <input type="text" class="form-control" id="national_id" name="national_id" placeholder="0123456789">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="tax_id" class="form-label">شناسه مالیاتی</label>
+                            <input type="text" class="form-control" id="tax_id" name="tax_id">
+                        </div>
+                        
+                        <!-- Financial Information -->
+                        <div class="col-md-6 mb-3">
+                            <label for="credit_limit" class="form-label">حد اعتبار (تومان)</label>
+                            <input type="number" class="form-control" id="credit_limit" name="credit_limit" value="0" min="0" max="999999999999" step="1000">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i>
+                            ذخیره مشتری
+                        </button>
+                        
+                        <a href="{{ url_for('customers') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times"></i>
+                            انصراف
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Format phone numbers
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 3) {
+        if (value.startsWith('021') || value.startsWith('0')) {
+            e.target.value = value.replace(/(\d{3})(\d{8})/, '$1-$2');
+        }
+    }
+});
+
+document.getElementById('mobile').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length === 11 && value.startsWith('09')) {
+        e.target.value = value.replace(/(\d{4})(\d{3})(\d{4})/, '$1-$2-$3');
+    }
+});
+
+// Format credit limit with thousands separator
+document.getElementById('credit_limit').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/,/g, '');
+    e.target.value = parseInt(value).toLocaleString();
+});
+</script>
+{% endblock %}

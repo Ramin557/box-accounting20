@@ -1,0 +1,331 @@
+/**
+ * UI Enhancements CSS
+ * Back Button, Persian Calendar, Currency Formatting
+ * Persian Accounting System
+ */
+
+/* ===== Back Button Styles ===== */
+.back-button {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.back-button:hover {
+    transform: translateX(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.back-button i {
+    font-size: 0.9rem;
+}
+
+/* Breadcrumbs Enhancement */
+.breadcrumb {
+    background: transparent;
+    padding: 0.75rem 0;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "‹";
+    color: #6c757d;
+    font-weight: bold;
+}
+
+.breadcrumb-item.active {
+    color: #495057;
+    font-weight: 500;
+}
+
+.breadcrumb-item a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* ===== Persian Calendar Styles ===== */
+.persian-datepicker-wrapper {
+    position: relative;
+}
+
+.persian-date-input {
+    padding-left: 2.5rem !important;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.persian-date-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
+}
+
+.persian-calendar-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left: none;
+    z-index: 3;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.persian-calendar-btn:hover {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.persian-calendar-btn:focus {
+    box-shadow: none;
+    background-color: #007bff;
+    color: white;
+}
+
+/* Persian Date Display */
+.persian-date-display {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #e9ecef;
+    direction: rtl;
+    text-align: right;
+}
+
+/* Persian Calendar Modal */
+.persian-year,
+.persian-month,
+.persian-day {
+    text-align: center;
+    font-family: 'Vazir', 'IRANSans', sans-serif;
+}
+
+.persian-year option,
+.persian-month option,
+.persian-day option {
+    text-align: center;
+}
+
+/* ===== Currency Formatting Styles ===== */
+.currency-formatted {
+    font-family: 'Vazir', 'IRANSans', monospace;
+    font-weight: 500;
+    color: #28a745;
+    direction: ltr;
+    text-align: right;
+}
+
+.currency-input-wrapper {
+    position: relative;
+}
+
+.currency-suffix {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.currency-input {
+    padding-left: 4rem !important;
+    text-align: left;
+    direction: ltr;
+    font-family: 'Vazir', 'IRANSans', monospace;
+}
+
+/* Currency Display in Tables */
+table .currency-formatted {
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+/* Large Currency Display */
+.currency-large {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 2px solid rgba(40, 167, 69, 0.2);
+    text-align: center;
+    direction: ltr;
+}
+
+/* Currency Icons */
+.currency-icon {
+    color: #28a745;
+    margin-left: 0.5rem;
+}
+
+/* ===== Dark Mode Support ===== */
+[data-bs-theme="dark"] .back-button {
+    background-color: #495057;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .back-button:hover {
+    background-color: #6c757d;
+    border-color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item.active {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item a {
+    color: #66b3ff;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item a:hover {
+    color: #99ccff;
+}
+
+[data-bs-theme="dark"] .persian-date-input {
+    background-color: #343a40;
+    border-color: #495057;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .persian-calendar-btn {
+    background-color: #495057;
+    border-color: #6c757d;
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .persian-calendar-btn:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .persian-date-display {
+    background-color: #495057;
+    border-color: #6c757d;
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .currency-formatted {
+    color: #20c997;
+    background-color: rgba(32, 201, 151, 0.1);
+    border-color: rgba(32, 201, 151, 0.2);
+}
+
+[data-bs-theme="dark"] .currency-large {
+    color: #20c997;
+    background-color: rgba(32, 201, 151, 0.1);
+    border-color: rgba(32, 201, 151, 0.2);
+}
+
+[data-bs-theme="dark"] table .currency-formatted {
+    background-color: rgba(32, 201, 151, 0.1);
+    border-color: rgba(32, 201, 151, 0.2);
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    .back-button {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .breadcrumb {
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+    }
+    
+    .persian-datepicker-wrapper {
+        margin-bottom: 1rem;
+    }
+    
+    .currency-large {
+        font-size: 1rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+/* ===== Animation Enhancements ===== */
+.back-button,
+.persian-calendar-btn,
+.currency-formatted {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.breadcrumb-item a {
+    transition: all 0.2s ease;
+}
+
+.persian-date-input:focus {
+    transform: scale(1.02);
+}
+
+.currency-input:focus {
+    transform: scale(1.01);
+}
+
+/* ===== Accessibility Enhancements ===== */
+.back-button:focus,
+.persian-calendar-btn:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.persian-date-input:focus,
+.currency-input:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .currency-formatted {
+        border-width: 2px;
+        font-weight: 600;
+    }
+    
+    .back-button {
+        border-width: 2px;
+        font-weight: 600;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .back-button,
+    .persian-calendar-btn,
+    .currency-formatted,
+    .breadcrumb-item a,
+    .persian-date-input,
+    .currency-input {
+        transition: none;
+    }
+    
+    .back-button:hover {
+        transform: none;
+    }
+    
+    .persian-date-input:focus,
+    .currency-input:focus {
+        transform: none;
+    }
+}

@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}بودجه‌بندی - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">بودجه‌بندی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-chart-pie text-primary"></i>
+                مدیریت بودجه‌بندی
+            </h2>
+            <div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBudgetModal">
+                    <i class="fas fa-plus"></i> بودجه جدید
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">کل بودجه</h5>
+                        <h4 class="mb-0">۱,۲۰۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-pie fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">مصرف شده</h5>
+                        <h4 class="mb-0">۸۰۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">باقی‌مانده</h5>
+                        <h4 class="mb-0">۴۰۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-coins fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="card-title">درصد مصرف</h5>
+                        <h4 class="mb-0">۶۶٪</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-percentage fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list"></i>
+                    لیست بودجه‌ها
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>نام بودجه</th>
+                                <th>سال مالی</th>
+                                <th>مبلغ کل</th>
+                                <th>مصرف شده</th>
+                                <th>باقی‌مانده</th>
+                                <th>درصد</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>بودجه تولید</td>
+                                <td>۱۴۰۳</td>
+                                <td>۵۰۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۳۰۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۲۰۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 60%">۶۰٪</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>بودجه فروش</td>
+                                <td>۱۴۰۳</td>
+                                <td>۳۰۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۲۵۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۵۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" style="width: 83%">۸۳٪</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>بودجه اداری</td>
+                                <td>۱۴۰۳</td>
+                                <td>۴۰۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۲۵۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>۱۵۰,۰۰۰,۰۰۰ تومان</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 62%">۶۲٪</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-doughnut"></i>
+                    توزیع بودجه
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="budgetChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Budget Modal -->
+<div class="modal fade" id="addBudgetModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">بودجه جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="budget_name" class="form-label">نام بودجه</label>
+                            <input type="text" class="form-control" id="budget_name" name="budget_name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fiscal_year" class="form-label">سال مالی</label>
+                            <input type="text" class="form-control" id="fiscal_year" name="fiscal_year" 
+                                   value="۱۴۰۳" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="total_amount" class="form-label">مبلغ کل (تومان)</label>
+                            <input type="number" class="form-control" id="total_amount" name="total_amount" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="budget_category" class="form-label">دسته‌بندی</label>
+                            <select class="form-select" id="budget_category" name="budget_category" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="production">تولید</option>
+                                <option value="sales">فروش</option>
+                                <option value="administrative">اداری</option>
+                                <option value="marketing">بازاریابی</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">تاریخ شروع</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   data-persian-datepicker="true" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">تاریخ پایان</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   data-persian-datepicker="true" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="description" class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ثبت بودجه</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Budget Chart
+const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+const budgetChart = new Chart(budgetCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['تولید', 'فروش', 'اداری'],
+        datasets: [{
+            data: [500, 300, 400],
+            backgroundColor: [
+                '#007bff',
+                '#28a745',
+                '#ffc107'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

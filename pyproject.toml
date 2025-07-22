@@ -1,0 +1,19 @@
+[project]
+name = "persian-accounting-system"
+version = "0.1.0"
+description = "Advanced Persian-language accounting and inventory management system for box manufacturing businesses"
+requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "flask-sqlalchemy",
+    "flask-login",
+    "werkzeug",
+    "wtforms",
+    "flask-wtf",
+    "python-dateutil",
+    "jdatetime",
+    "psycopg2-binary",
+    "sqlalchemy>=2.0.41",
+    "python-dotenv>=1.1.1",
+    "flask-migrate>=4.1.0",
+]

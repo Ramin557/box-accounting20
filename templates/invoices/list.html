@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}فاکتورها - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">فاکتورها</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-file-invoice text-primary"></i>
+                مدیریت فاکتورها
+            </h2>
+            <div class="btn-group">
+                <a href="{{ url_for('add_invoice') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    فاکتور جدید
+                </a>
+                <a href="{{ url_for('add_invoice') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-shopping-cart"></i>
+                    از سفارش
+                </a>
+                <button type="button" class="btn btn-outline-danger" onclick="exportReportPDF(this)" title="دانلود گزارش فاکتورها">
+                    <i class="fas fa-file-pdf"></i>
+                    صادرات PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="شماره فاکتور یا نام مشتری...">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="status">
+                            <option value="">همه وضعیت‌ها</option>
+                            <option value="draft" {% if status == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+                            <option value="sent" {% if status == 'sent' %}selected{% endif %}>ارسال شده</option>
+                            <option value="paid" {% if status == 'paid' %}selected{% endif %}>پرداخت شده</option>
+                            <option value="overdue" {% if status == 'overdue' %}selected{% endif %}>سررسید گذشته</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" name="from_date" value="{{ from_date }}" 
+                               data-persian-datepicker="true" placeholder="از تاریخ..." 
+                               aria-label="تاریخ شروع جستجو">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" name="to_date" value="{{ to_date }}" 
+                               data-persian-datepicker="true" placeholder="تا تاریخ..." 
+                               aria-label="تاریخ پایان جستجو">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                جستجو
+                            </button>
+                            <a href="{{ url_for('invoices') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                                پاک کردن
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invoices Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if invoices.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>شماره فاکتور</th>
+                                <th>مشتری</th>
+                                <th>تاریخ صدور</th>
+                                <th>مبلغ کل</th>
+                                <th>پرداخت شده</th>
+                                <th>باقیمانده</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices.items %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">{{ invoice.invoice_number }}</strong>
+                                    {% if invoice.order %}
+                                    <br><small class="text-muted">سفارش: {{ invoice.order.order_number }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ invoice.customer.name }}</strong>
+                                    {% if invoice.customer.company_name %}
+                                    <br><small class="text-muted">{{ invoice.customer.company_name }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ invoice.get_jalali_invoice_date() }}</td>
+                                <td><strong>{{ "{:,.0f}".format(invoice.total_amount) }} تومان</strong></td>
+                                <td>{{ "{:,.0f}".format(invoice.paid_amount) }} تومان</td>
+                                <td>
+                                    {% set remaining = invoice.total_amount - invoice.paid_amount %}
+                                    <span class="badge bg-{% if remaining <= 0 %}success{% else %}warning{% endif %}">
+                                        {{ "{:,.0f}".format(remaining) }} تومان
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if invoice.status == 'draft' %}
+                                    <span class="badge bg-secondary">پیش‌نویس</span>
+                                    {% elif invoice.status == 'sent' %}
+                                    <span class="badge bg-primary">ارسال شده</span>
+                                    {% elif invoice.status == 'paid' %}
+                                    <span class="badge bg-success">پرداخت شده</span>
+                                    {% elif invoice.status == 'overdue' %}
+                                    <span class="badge bg-danger">سررسید گذشته</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" onclick="viewInvoice({{ invoice.id }})" title="مشاهده">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <a href="{{ url_for('edit_invoice', id=invoice.id) }}" class="btn btn-outline-primary" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-success" onclick="printInvoice({{ invoice.id }})" title="چاپ">
+                                            <i class="fas fa-print"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteInvoice({{ invoice.id }}, '{{ invoice.invoice_number }}')" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if invoices.pages > 1 %}
+                <nav aria-label="صفحه‌بندی فاکتورها" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if invoices.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('invoices', page=invoices.prev_num, search=search, status=status, from_date=from_date, to_date=to_date) }}">قبلی</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in invoices.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != invoices.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('invoices', page=page_num, search=search, status=status, from_date=from_date, to_date=to_date) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if invoices.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('invoices', page=invoices.next_num, search=search, status=status, from_date=from_date, to_date=to_date) }}">بعدی</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-file-invoice fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">هیچ فاکتوری یافت نشد</h5>
+                    <p class="text-muted">برای شروع، فاکتور جدید ایجاد کنید.</p>
+                    <a href="{{ url_for('add_invoice') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        فاکتور جدید
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewInvoice(invoiceId) {
+    window.open(`/invoices/${invoiceId}/view`, '_blank');
+}
+
+function printInvoice(invoiceId) {
+    window.open(`/invoices/${invoiceId}/print`, '_blank');
+}
+
+function deleteInvoice(invoiceId, invoiceNumber) {
+    if (confirm(`آیا از حذف فاکتور "${invoiceNumber}" اطمینان دارید؟\nاین عمل قابل بازگشت نیست.`)) {
+        fetch(`/invoices/${invoiceId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'خطا در حذف فاکتور');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در حذف فاکتور');
+        });
+    }
+}
+</script>
+{% endblock %}
