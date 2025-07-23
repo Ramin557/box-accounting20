@@ -385,7 +385,7 @@ if (document.readyState === 'loading') {
 window.DarkModeManager = DarkModeManager;
 
 // Global function for template compatibility
-window.toggleDarkMode = function() {
+function toggleDarkMode() {
     if (window.darkModeManager) {
         window.darkModeManager.toggle();
     } else {
@@ -397,4 +397,7 @@ window.toggleDarkMode = function() {
             }
         }, 100);
     }
-};
+}
+
+// Export for onclick handlers
+window.toggleDarkMode = toggleDarkMode;

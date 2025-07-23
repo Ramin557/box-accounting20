@@ -1,611 +1,475 @@
 /**
- * UI Enhancements for Persian Accounting System
- * Back Button, Persian Calendar, Currency Formatting
+ * UI/UX Enhancement JavaScript for Persian Accounting System
+ * Addresses layout, responsiveness, visual states, and accessibility issues
  */
 
-// ===== 1. Back Button Functionality =====
-class AccountingBackButtonManager {
+class UIEnhancements {
     constructor() {
         this.init();
     }
 
     init() {
-        this.setupBackButtons();
-        this.setupBreadcrumbs();
+        this.setupResponsiveGrid();
+        this.setupButtonStates();
+        this.setupFormValidation();
+        this.setupAccessibility();
+        this.setupChartFixes();
+        this.setupLoadingStates();
+        this.setupPersianNumbers();
     }
 
-    setupBackButtons() {
-        // Add back button to pages that need it
-        const backButtonSelectors = [
-            '.card-header:has(h3, h4, h5)',
-            '.page-header',
-            '.content-header'
-        ];
+    // 1. RESPONSIVE GRID FIXES
+    setupResponsiveGrid() {
+        // Fix Bootstrap grid overlapping issues
+        const gridItems = document.querySelectorAll('.col-md-6.col-lg-4');
+        
+        const handleResize = () => {
+            const width = window.innerWidth;
+            
+            // Clear any existing clear styles
+            gridItems.forEach(item => {
+                item.style.clear = '';
+            });
+            
+            // Apply appropriate clearing based on viewport
+            if (width >= 992) {
+                // Large screens: clear every 3rd item
+                gridItems.forEach((item, index) => {
+                    if ((index + 1) % 3 === 1) {
+                        item.style.clear = 'left';
+                    }
+                });
+            } else if (width >= 768) {
+                // Medium screens: clear every 2nd item
+                gridItems.forEach((item, index) => {
+                    if ((index + 1) % 2 === 1) {
+                        item.style.clear = 'left';
+                    }
+                });
+            }
+        };
 
-        backButtonSelectors.forEach(selector => {
-            const headers = document.querySelectorAll(selector);
-            headers.forEach(header => {
-                if (!header.querySelector('.back-button') && this.shouldAddBackButton()) {
-                    this.addBackButton(header);
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial call
+    }
+
+    // 2. BUTTON VISUAL STATES
+    setupButtonStates() {
+        const buttons = document.querySelectorAll('.btn');
+        
+        buttons.forEach(btn => {
+            // Add loading state capability
+            if (!btn.querySelector('.spinner')) {
+                const spinner = document.createElement('span');
+                spinner.className = 'spinner';
+                spinner.setAttribute('aria-hidden', 'true');
+                btn.insertBefore(spinner, btn.firstChild);
+            }
+
+            // Wrap text content
+            if (!btn.querySelector('.btn-text')) {
+                const textNodes = Array.from(btn.childNodes).filter(node => 
+                    node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+                );
+                
+                if (textNodes.length > 0) {
+                    const wrapper = document.createElement('span');
+                    wrapper.className = 'btn-text';
+                    wrapper.textContent = textNodes.map(node => node.textContent).join('');
+                    textNodes.forEach(node => node.remove());
+                    btn.appendChild(wrapper);
+                }
+            }
+
+            // Enhanced hover effects
+            btn.addEventListener('mouseenter', () => {
+                if (!btn.disabled && !btn.classList.contains('loading')) {
+                    btn.style.transform = 'translateY(-1px)';
+                }
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                if (!btn.disabled && !btn.classList.contains('loading')) {
+                    btn.style.transform = 'translateY(0)';
+                }
+            });
+
+            // Click effect
+            btn.addEventListener('mousedown', () => {
+                if (!btn.disabled && !btn.classList.contains('loading')) {
+                    btn.style.transform = 'translateY(0)';
+                }
+            });
+
+            btn.addEventListener('mouseup', () => {
+                if (!btn.disabled && !btn.classList.contains('loading')) {
+                    btn.style.transform = 'translateY(-1px)';
                 }
             });
         });
     }
 
-    shouldAddBackButton() {
-        // Don't add back button on main pages
-        const currentPath = window.location.pathname;
-        const mainPages = ['/', '/dashboard', '/login', '/logout'];
-        return !mainPages.includes(currentPath) && !currentPath.endsWith('/list') && !currentPath.endsWith('/');
-    }
-
-    addBackButton(container) {
-        const backButton = document.createElement('button');
-        backButton.className = 'btn btn-outline-secondary btn-sm back-button me-2';
-        backButton.innerHTML = '<i class="fas fa-arrow-right"></i> بازگشت';
-        backButton.setAttribute('title', 'بازگشت به صفحه قبل');
+    // 3. FORM VALIDATION ENHANCEMENTS
+    setupFormValidation() {
+        const forms = document.querySelectorAll('form');
         
-        backButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.goBack();
-        });
-
-        // Insert at the beginning of the container
-        container.insertBefore(backButton, container.firstChild);
-    }
-
-    goBack() {
-        // Try to go back in history, with fallback
-        if (window.history.length > 1) {
-            window.history.back();
-        } else {
-            // Fallback to dashboard
-            window.location.href = '/dashboard';
-        }
-    }
-
-    setupBreadcrumbs() {
-        // Auto-generate breadcrumbs if they don't exist
-        const existingBreadcrumbs = document.querySelector('.breadcrumb');
-        if (!existingBreadcrumbs) {
-            this.generateBreadcrumbs();
-        }
-    }
-
-    generateBreadcrumbs() {
-        const path = window.location.pathname;
-        const pathParts = path.split('/').filter(part => part !== '');
-        
-        if (pathParts.length === 0) return;
-
-        const breadcrumbsContainer = document.createElement('nav');
-        breadcrumbsContainer.setAttribute('aria-label', 'breadcrumb');
-        breadcrumbsContainer.className = 'mb-3';
-
-        const breadcrumbsList = document.createElement('ol');
-        breadcrumbsList.className = 'breadcrumb';
-
-        // Add home
-        const homeItem = document.createElement('li');
-        homeItem.className = 'breadcrumb-item';
-        homeItem.innerHTML = '<a href="/dashboard"><i class="fas fa-home"></i> داشبورد</a>';
-        breadcrumbsList.appendChild(homeItem);
-
-        // Add path parts
-        const pathNames = {
-            'customers': 'مشتریان',
-            'products': 'محصولات',
-            'orders': 'سفارشات',
-            'invoices': 'فاکتورها',
-            'reports': 'گزارشات',
-            'settings': 'تنظیمات',
-            'add': 'اضافه کردن',
-            'edit': 'ویرایش',
-            'view': 'مشاهده'
-        };
-
-        let currentPath = '';
-        pathParts.forEach((part, index) => {
-            currentPath += '/' + part;
-            const isLast = index === pathParts.length - 1;
+        forms.forEach(form => {
+            const inputs = form.querySelectorAll('input, select, textarea');
             
-            const item = document.createElement('li');
-            item.className = `breadcrumb-item ${isLast ? 'active' : ''}`;
-            
-            const displayName = pathNames[part] || part;
-            
-            if (isLast) {
-                item.textContent = displayName;
-                item.setAttribute('aria-current', 'page');
-            } else {
-                item.innerHTML = `<a href="${currentPath}">${displayName}</a>`;
-            }
-            
-            breadcrumbsList.appendChild(item);
-        });
+            inputs.forEach(input => {
+                // Clear validation states on input
+                input.addEventListener('input', () => {
+                    this.clearValidationState(input);
+                });
 
-        breadcrumbsContainer.appendChild(breadcrumbsList);
+                input.addEventListener('change', () => {
+                    this.clearValidationState(input);
+                });
 
-        // Insert breadcrumbs after navbar or at the beginning of main content
-        const mainContent = document.querySelector('main, .container-fluid, .container');
-        if (mainContent && mainContent.children.length > 0) {
-            mainContent.insertBefore(breadcrumbsContainer, mainContent.firstChild);
-        }
-    }
-}
-
-// ===== 2. Persian Calendar Integration =====
-class AccountingPersianCalendarManager {
-    constructor() {
-        this.init();
-    }
-
-    init() {
-        this.setupPersianDatePickers();
-        this.setupDateConversions();
-    }
-
-    setupPersianDatePickers() {
-        // Find all date inputs that should have Persian calendar
-        const dateInputs = document.querySelectorAll('input[type="date"], input[data-persian="true"]');
-        
-        dateInputs.forEach(input => {
-            this.convertToPersianDatePicker(input);
-        });
-    }
-
-    convertToPersianDatePicker(input) {
-        // Create a wrapper for the Persian date picker
-        const wrapper = document.createElement('div');
-        wrapper.className = 'persian-datepicker-wrapper position-relative';
-        
-        // Create Persian input
-        const persianInput = document.createElement('input');
-        persianInput.type = 'text';
-        persianInput.className = input.className + ' persian-date-input';
-        persianInput.placeholder = 'انتخاب تاریخ شمسی...';
-        persianInput.setAttribute('readonly', 'true');
-        
-        // Hide original input but keep it for form submission
-        input.style.display = 'none';
-        
-        // Insert wrapper and Persian input
-        input.parentNode.insertBefore(wrapper, input);
-        wrapper.appendChild(persianInput);
-        wrapper.appendChild(input);
-        
-        // Add calendar icon
-        const calendarIcon = document.createElement('button');
-        calendarIcon.type = 'button';
-        calendarIcon.className = 'btn btn-outline-secondary persian-calendar-btn';
-        calendarIcon.innerHTML = '<i class="fas fa-calendar-alt"></i>';
-        calendarIcon.setAttribute('title', 'انتخاب تاریخ شمسی');
-        
-        wrapper.appendChild(calendarIcon);
-        
-        // Setup click handlers
-        [persianInput, calendarIcon].forEach(element => {
-            element.addEventListener('click', () => {
-                this.showPersianCalendar(input, persianInput);
-            });
-        });
-        
-        // Initialize with current value if exists
-        if (input.value) {
-            this.updatePersianDisplay(input, persianInput);
-        } else {
-            // Set to today's date
-            const today = new Date();
-            const persianToday = this.convertToPersian(today);
-            persianInput.value = persianToday;
-            input.value = today.toISOString().split('T')[0];
-        }
-    }
-
-    showPersianCalendar(hiddenInput, displayInput) {
-        // Simple Persian calendar implementation
-        // For a full implementation, you would use a library like persian-datepicker
-        const modal = this.createCalendarModal(hiddenInput, displayInput);
-        document.body.appendChild(modal);
-        
-        // Show modal
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
-        
-        // Remove modal when hidden
-        modal.addEventListener('hidden.bs.modal', () => {
-            modal.remove();
-        });
-    }
-
-    createCalendarModal(hiddenInput, displayInput) {
-        const modal = document.createElement('div');
-        modal.className = 'modal fade';
-        modal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">انتخاب تاریخ شمسی</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label class="form-label">سال</label>
-                                <select class="form-control persian-year" id="persianYear">
-                                    ${this.generateYearOptions()}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">ماه</label>
-                                <select class="form-control persian-month" id="persianMonth">
-                                    ${this.generateMonthOptions()}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">روز</label>
-                                <select class="form-control persian-day" id="persianDay">
-                                    ${this.generateDayOptions()}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mt-3 text-center">
-                            <button type="button" class="btn btn-secondary" id="todayBtn">امروز</button>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
-                        <button type="button" class="btn btn-primary" id="selectDateBtn">انتخاب</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Setup event handlers
-        modal.addEventListener('shown.bs.modal', () => {
-            this.setupCalendarEvents(modal, hiddenInput, displayInput);
-        });
-
-        return modal;
-    }
-
-    setupCalendarEvents(modal, hiddenInput, displayInput) {
-        const yearSelect = modal.querySelector('#persianYear');
-        const monthSelect = modal.querySelector('#persianMonth');
-        const daySelect = modal.querySelector('#persianDay');
-        const todayBtn = modal.querySelector('#todayBtn');
-        const selectBtn = modal.querySelector('#selectDateBtn');
-
-        // Set current values
-        const currentDate = hiddenInput.value ? new Date(hiddenInput.value) : new Date();
-        const persianDate = this.convertToPersianObject(currentDate);
-        
-        yearSelect.value = persianDate.year;
-        monthSelect.value = persianDate.month;
-        daySelect.value = persianDate.day;
-
-        // Today button
-        todayBtn.addEventListener('click', () => {
-            const today = new Date();
-            const todayPersian = this.convertToPersianObject(today);
-            yearSelect.value = todayPersian.year;
-            monthSelect.value = todayPersian.month;
-            daySelect.value = todayPersian.day;
-        });
-
-        // Select button
-        selectBtn.addEventListener('click', () => {
-            const selectedPersian = {
-                year: parseInt(yearSelect.value),
-                month: parseInt(monthSelect.value),
-                day: parseInt(daySelect.value)
-            };
-            
-            const gregorianDate = this.convertToGregorian(selectedPersian);
-            const persianString = this.formatPersianDate(selectedPersian);
-            
-            hiddenInput.value = gregorianDate.toISOString().split('T')[0];
-            displayInput.value = persianString;
-            
-            bootstrap.Modal.getInstance(modal).hide();
-        });
-    }
-
-    generateYearOptions() {
-        const currentYear = new Date().getFullYear();
-        const currentPersianYear = currentYear - 621; // Approximate conversion
-        let options = '';
-        
-        for (let i = currentPersianYear - 10; i <= currentPersianYear + 5; i++) {
-            options += `<option value="${i}">${this.convertToPersianNumbers(i)}</option>`;
-        }
-        
-        return options;
-    }
-
-    generateMonthOptions() {
-        const months = [
-            'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-            'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-        ];
-        
-        return months.map((month, index) => 
-            `<option value="${index + 1}">${month}</option>`
-        ).join('');
-    }
-
-    generateDayOptions() {
-        let options = '';
-        for (let i = 1; i <= 31; i++) {
-            options += `<option value="${i}">${this.convertToPersianNumbers(i)}</option>`;
-        }
-        return options;
-    }
-
-    convertToPersian(date) {
-        // Simplified conversion - in production use a proper library
-        const options = { 
-            year: 'numeric', 
-            month: '2-digit', 
-            day: '2-digit',
-            calendar: 'persian',
-            locale: 'fa-IR'
-        };
-        
-        try {
-            return new Intl.DateTimeFormat('fa-IR-u-ca-persian', options).format(date);
-        } catch (e) {
-            // Fallback
-            return date.toLocaleDateString('fa-IR');
-        }
-    }
-
-    convertToPersianObject(date) {
-        // Simplified conversion
-        const persianString = this.convertToPersian(date);
-        const parts = persianString.split('/');
-        return {
-            year: parseInt(parts[0]),
-            month: parseInt(parts[1]),
-            day: parseInt(parts[2])
-        };
-    }
-
-    convertToGregorian(persianDate) {
-        // Simplified conversion - in production use a proper library
-        // This is approximate and should be replaced with a proper conversion
-        const gregorianYear = persianDate.year + 621;
-        return new Date(gregorianYear, persianDate.month - 1, persianDate.day);
-    }
-
-    formatPersianDate(persianDate) {
-        const months = [
-            'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-            'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-        ];
-        
-        return `${this.convertToPersianNumbers(persianDate.day)} ${months[persianDate.month - 1]} ${this.convertToPersianNumbers(persianDate.year)}`;
-    }
-
-    convertToPersianNumbers(num) {
-        const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
-        return num.toString().replace(/\d/g, digit => persianDigits[digit]);
-    }
-
-    updatePersianDisplay(hiddenInput, displayInput) {
-        if (hiddenInput.value) {
-            const date = new Date(hiddenInput.value);
-            displayInput.value = this.convertToPersian(date);
-        }
-    }
-
-    setupDateConversions() {
-        // Add Persian date display to existing date inputs
-        const existingDateInputs = document.querySelectorAll('input[type="date"]:not(.persian-date-input)');
-        existingDateInputs.forEach(input => {
-            if (!input.nextElementSibling?.classList.contains('persian-date-display')) {
-                this.addPersianDateDisplay(input);
-            }
-        });
-    }
-
-    addPersianDateDisplay(input) {
-        const display = document.createElement('div');
-        display.className = 'persian-date-display text-muted small mt-1';
-        display.style.fontSize = '0.8rem';
-        
-        const updateDisplay = () => {
-            if (input.value) {
-                const date = new Date(input.value);
-                display.textContent = `تاریخ شمسی: ${this.convertToPersian(date)}`;
-            } else {
-                display.textContent = '';
-            }
-        };
-        
-        input.addEventListener('change', updateDisplay);
-        input.parentNode.insertBefore(display, input.nextSibling);
-        
-        // Initial update
-        updateDisplay();
-    }
-}
-
-// ===== 3. Currency Formatting Manager =====
-class AccountingCurrencyFormatter {
-    constructor() {
-        this.defaultCurrency = 'ریال';
-        this.init();
-    }
-
-    init() {
-        this.setupCurrencyFormatting();
-        this.setupRealTimeFormatting();
-    }
-
-    setupCurrencyFormatting() {
-        // Format existing currency displays
-        const currencySelectors = [
-            '.currency',
-            '.price',
-            '.amount',
-            '[data-currency]',
-            'td:contains("ریال")',
-            'td:contains("تومان")'
-        ];
-
-        currencySelectors.forEach(selector => {
-            try {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(el => this.formatElement(el));
-            } catch (e) {
-                // Skip invalid selectors
-            }
-        });
-
-        // Format table cells that look like currency
-        this.formatTableCurrencies();
-    }
-
-    formatTableCurrencies() {
-        const tables = document.querySelectorAll('table');
-        tables.forEach(table => {
-            const rows = table.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                cells.forEach(cell => {
-                    if (this.looksLikeCurrency(cell.textContent)) {
-                        this.formatCurrencyCell(cell);
-                    }
+                // Add blur validation
+                input.addEventListener('blur', () => {
+                    this.validateInput(input);
                 });
             });
+
+            // Form submission with loading state
+            form.addEventListener('submit', (e) => {
+                if (!this.validateForm(form)) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Add loading state to submit button
+                const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                if (submitBtn) {
+                    this.setButtonLoading(submitBtn, true);
+                }
+            });
         });
     }
 
-    looksLikeCurrency(text) {
-        // Check if text looks like a currency value
-        const cleanText = text.trim();
-        return /^\d{1,3}(,\d{3})*$/.test(cleanText) || // Formatted numbers
-               /^\d+$/.test(cleanText) ||                // Plain numbers
-               cleanText.includes('ریال') ||
-               cleanText.includes('تومان');
+    clearValidationState(input) {
+        input.classList.remove('is-valid', 'is-invalid');
+        const feedback = input.parentNode.querySelector('.invalid-feedback, .valid-feedback');
+        if (feedback) {
+            feedback.style.opacity = '0';
+        }
     }
 
-    formatCurrencyCell(cell) {
-        const text = cell.textContent.trim();
-        const numbers = text.match(/\d+/g);
+    validateInput(input) {
+        const isValid = input.checkValidity();
         
-        if (numbers && numbers.length > 0) {
-            const amount = parseInt(numbers.join(''));
-            if (!isNaN(amount)) {
-                const currency = text.includes('تومان') ? 'تومان' : 'ریال';
-                cell.textContent = this.formatCurrency(amount, currency);
-                cell.classList.add('currency-formatted');
+        if (isValid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+        }
+
+        // Show appropriate feedback
+        const invalidFeedback = input.parentNode.querySelector('.invalid-feedback');
+        const validFeedback = input.parentNode.querySelector('.valid-feedback');
+        
+        if (invalidFeedback) {
+            invalidFeedback.style.opacity = isValid ? '0' : '1';
+        }
+        if (validFeedback) {
+            validFeedback.style.opacity = isValid ? '1' : '0';
+        }
+
+        return isValid;
+    }
+
+    validateForm(form) {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        let isFormValid = true;
+
+        inputs.forEach(input => {
+            if (!this.validateInput(input)) {
+                isFormValid = false;
+            }
+        });
+
+        return isFormValid;
+    }
+
+    // 4. ACCESSIBILITY ENHANCEMENTS
+    setupAccessibility() {
+        // Add proper labels to form controls
+        const inputs = document.querySelectorAll('input, select, textarea');
+        
+        inputs.forEach(input => {
+            if (!input.getAttribute('aria-label') && !input.getAttribute('aria-labelledby')) {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                if (label) {
+                    input.setAttribute('aria-labelledby', label.id || `label-${input.id}`);
+                    if (!label.id) {
+                        label.id = `label-${input.id}`;
+                    }
+                }
+            }
+
+            // Add required indicator
+            if (input.hasAttribute('required')) {
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                if (label && !label.classList.contains('required')) {
+                    label.classList.add('required');
+                }
+            }
+        });
+
+        // Enhanced delete button accessibility
+        const deleteButtons = document.querySelectorAll('.delete-btn, .btn-delete, [onclick*="delete"]');
+        
+        deleteButtons.forEach(btn => {
+            if (!btn.getAttribute('aria-label')) {
+                const text = btn.textContent.trim() || 'حذف';
+                btn.setAttribute('aria-label', `${text} - این عملیات قابل بازگشت نیست`);
+            }
+            
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
+
+        // Skip link for keyboard navigation
+        if (!document.querySelector('.skip-link')) {
+            const skipLink = document.createElement('a');
+            skipLink.href = '#main-content';
+            skipLink.className = 'skip-link';
+            skipLink.textContent = 'پرش به محتوای اصلی';
+            document.body.insertBefore(skipLink, document.body.firstChild);
+        }
+
+        // Add main content landmark
+        const mainContent = document.querySelector('.container-fluid, .container');
+        if (mainContent && !mainContent.getAttribute('role')) {
+            mainContent.setAttribute('role', 'main');
+            mainContent.id = 'main-content';
+        }
+    }
+
+    // 5. CHART.JS FIXES
+    setupChartFixes() {
+        // Wait for Chart.js to load
+        if (typeof Chart !== 'undefined') {
+            this.initializeCharts();
+        } else {
+            // Retry after a delay if Chart.js not loaded yet
+            setTimeout(() => {
+                if (typeof Chart !== 'undefined') {
+                    this.initializeCharts();
+                }
+            }, 1000);
+        }
+    }
+
+    initializeCharts() {
+        const chartContainers = document.querySelectorAll('.chart-container');
+        
+        chartContainers.forEach(container => {
+            const canvas = container.querySelector('canvas');
+            if (!canvas) return;
+
+            // Fix data structure issues
+            const ctx = canvas.getContext('2d');
+            
+            // Default chart configuration with proper data structure
+            const defaultConfig = {
+                type: 'line',
+                data: {
+                    labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+                    datasets: [{
+                        label: 'فروش',
+                        data: [12, 19, 3, 5, 2, 3],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                font: {
+                                    family: 'Vazirmatn'
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Initialize chart if not already done
+            if (!canvas.chart) {
+                try {
+                    canvas.chart = new Chart(ctx, defaultConfig);
+                } catch (error) {
+                    console.error('Chart initialization error:', error);
+                }
+            }
+        });
+    }
+
+    // 6. LOADING STATES
+    setupLoadingStates() {
+        // Global AJAX loading indicator
+        if (typeof $ !== 'undefined') {
+            $(document).ajaxStart(() => {
+                this.showGlobalLoading();
+            });
+
+            $(document).ajaxStop(() => {
+                this.hideGlobalLoading();
+            });
+        }
+    }
+
+    setButtonLoading(button, loading) {
+        if (loading) {
+            button.classList.add('loading');
+            button.disabled = true;
+            const spinner = button.querySelector('.spinner');
+            if (spinner) {
+                spinner.style.display = 'inline-block';
+            }
+        } else {
+            button.classList.remove('loading');
+            button.disabled = false;
+            const spinner = button.querySelector('.spinner');
+            if (spinner) {
+                spinner.style.display = 'none';
             }
         }
     }
 
-    formatElement(element) {
-        const text = element.textContent.trim();
-        const amount = this.extractAmount(text);
-        
-        if (amount !== null) {
-            const currency = this.extractCurrency(text) || this.defaultCurrency;
-            element.textContent = this.formatCurrency(amount, currency);
-            element.classList.add('currency-formatted');
+    showGlobalLoading() {
+        if (!document.querySelector('.global-loading')) {
+            const loading = document.createElement('div');
+            loading.className = 'global-loading';
+            loading.innerHTML = `
+                <div class="loading-backdrop">
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">در حال بارگذاری...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loading);
         }
     }
 
-    extractAmount(text) {
-        const match = text.match(/(\d{1,3}(?:,\d{3})*|\d+)/);
-        if (match) {
-            return parseInt(match[1].replace(/,/g, ''));
+    hideGlobalLoading() {
+        const loading = document.querySelector('.global-loading');
+        if (loading) {
+            loading.remove();
         }
-        return null;
     }
 
-    extractCurrency(text) {
-        if (text.includes('تومان')) return 'تومان';
-        if (text.includes('ریال')) return 'ریال';
-        return null;
-    }
-
-    formatCurrency(amount, currency = 'ریال') {
-        if (typeof amount !== 'number' || isNaN(amount)) return '0 ریال';
+    // 7. PERSIAN NUMBER FORMATTING
+    setupPersianNumbers() {
+        const numberElements = document.querySelectorAll('.persian-numbers, [data-persian-numbers]');
         
-        const formattedAmount = amount.toLocaleString('fa-IR');
-        return `${formattedAmount} ${currency}`;
-    }
+        numberElements.forEach(element => {
+            const text = element.textContent;
+            const persianNumbers = this.toPersianNumbers(text);
+            element.textContent = persianNumbers;
+        });
 
-    setupRealTimeFormatting() {
-        // Setup real-time formatting for input fields
-        const currencyInputs = document.querySelectorAll('input[data-currency="true"], input[name*="price"], input[name*="amount"]');
+        // Auto-format currency inputs
+        const currencyInputs = document.querySelectorAll('input[data-currency]');
         
         currencyInputs.forEach(input => {
-            this.setupCurrencyInput(input);
+            input.addEventListener('input', (e) => {
+                const value = e.target.value.replace(/[^\d]/g, '');
+                const formatted = this.formatCurrency(value);
+                e.target.value = formatted;
+            });
         });
     }
 
-    setupCurrencyInput(input) {
-        // Add currency suffix
-        const wrapper = document.createElement('div');
-        wrapper.className = 'input-group';
+    toPersianNumbers(str) {
+        const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+        const englishDigits = '0123456789';
         
-        input.parentNode.insertBefore(wrapper, input);
-        wrapper.appendChild(input);
-        
-        const suffix = document.createElement('span');
-        suffix.className = 'input-group-text';
-        suffix.textContent = input.dataset.currency || this.defaultCurrency;
-        wrapper.appendChild(suffix);
-        
-        // Format on input
-        input.addEventListener('input', (e) => {
-            this.formatInputValue(e.target);
-        });
-        
-        // Initial format
-        this.formatInputValue(input);
-    }
-
-    formatInputValue(input) {
-        let value = input.value.replace(/[^\d]/g, '');
-        if (value) {
-            const number = parseInt(value);
-            input.value = number.toLocaleString('fa-IR');
+        let result = str;
+        for (let i = 0; i < englishDigits.length; i++) {
+            result = result.replace(new RegExp(englishDigits[i], 'g'), persianDigits[i]);
         }
+        return result;
     }
 
-    // Static helper method for global use
-    static format(amount, currency = 'ریال') {
-        if (typeof amount !== 'number' || isNaN(amount)) return '0 ریال';
-        return `${amount.toLocaleString('fa-IR')} ${currency}`;
+    formatCurrency(value) {
+        if (!value) return '';
+        return parseInt(value).toLocaleString('fa-IR');
+    }
+
+    // 8. TABLE ENHANCEMENTS  
+    setupTableEnhancements() {
+        const tables = document.querySelectorAll('.table');
+        
+        tables.forEach(table => {
+            // Add hover effects
+            const rows = table.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+                    row.style.transform = 'translateX(-2px)';
+                });
+
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                    row.style.transform = '';
+                });
+            });
+
+            // Empty state handling
+            if (rows.length === 0) {
+                const tbody = table.querySelector('tbody');
+                const thead = table.querySelector('thead');
+                const colCount = thead ? thead.querySelectorAll('th').length : 1;
+                
+                const emptyRow = document.createElement('tr');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = colCount;
+                emptyCell.className = 'text-center py-5 text-muted';
+                emptyCell.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h5>هیچ داده‌ای یافت نشد</h5>
+                        <p>اطلاعاتی برای نمایش وجود ندارد</p>
+                    </div>
+                `;
+                emptyRow.appendChild(emptyCell);
+                tbody.appendChild(emptyRow);
+            }
+        });
     }
 }
 
-// ===== Auto-initialization =====
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        // Initialize all managers
-        window.backButtonManager = new AccountingBackButtonManager();
-        window.persianCalendarManager = new AccountingPersianCalendarManager();
-        window.currencyFormatter = new AccountingCurrencyFormatter();
-        
-        console.log('UI Enhancements initialized successfully');
-    } catch (error) {
-        console.error('Error initializing UI enhancements:', error);
-    }
+// Initialize UI enhancements when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    new UIEnhancements();
 });
 
-// Global helper functions
-window.formatCurrency = (amount, currency = 'ریال') => {
-    return AccountingCurrencyFormatter.format(amount, currency);
-};
+// Additional global functions for backward compatibility
+window.UIEnhancements = UIEnhancements;
 
-window.goBack = () => {
-    if (window.backButtonManager) {
-        window.backButtonManager.goBack();
-    } else {
-        window.history.back();
-    }
-};
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = UIEnhancements;
+}

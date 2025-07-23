@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#667eea"/>
+  <rect x="64" y="112" width="384" height="288" rx="16" fill="white" stroke="#764ba2" stroke-width="4"/>
+  <rect x="112" y="160" width="288" height="24" rx="12" fill="#667eea"/>
+  <rect x="112" y="200" width="192" height="24" rx="12" fill="#764ba2"/>
+  <rect x="112" y="240" width="240" height="24" rx="12" fill="#667eea"/>
+  <rect x="112" y="280" width="168" height="24" rx="12" fill="#764ba2"/>
+  <rect x="112" y="320" width="216" height="24" rx="12" fill="#667eea"/>
+  <text x="256" y="460" font-family="Vazirmatn, sans-serif" font-size="36" font-weight="bold" fill="white" text-anchor="middle">سیستم حسابداری باکس</text>
+</svg>
