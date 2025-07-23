@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% set page_title = "مدیریت دسترسی‌ها" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="fas fa-key me-2"></i>
+                    مدیریت دسترسی‌ها
+                </h2>
+                <a href="{{ url_for('rbac_roles') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    بازگشت به نقش‌ها
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-gradient-info">
+                    <h5 class="card-title text-white mb-0">
+                        <i class="fas fa-list-ul me-2"></i>
+                        لیست کامل دسترسی‌های سیستم
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if permissions_by_category %}
+                    {% for category, permissions in permissions_by_category.items() %}
+                    <div class="permission-category mb-4">
+                        <h5 class="text-primary border-bottom pb-2 mb-3">
+                            <i class="fas fa-folder me-2"></i>
+                            {% if category == 'customers' %}مشتریان
+                            {% elif category == 'products' %}محصولات
+                            {% elif category == 'orders' %}سفارشات
+                            {% elif category == 'invoices' %}فاکتورها
+                            {% elif category == 'financial' %}مالی
+                            {% elif category == 'reports' %}گزارش‌ها
+                            {% elif category == 'admin' %}مدیریت سیستم
+                            {% else %}{{ category }}
+                            {% endif %}
+                            <span class="badge bg-primary">{{ permissions|length }}</span>
+                        </h5>
+                        
+                        <div class="row">
+                            {% for permission in permissions %}
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-left-primary h-100">
+                                    <div class="card-body py-2">
+                                        <h6 class="text-primary mb-1">{{ permission.description }}</h6>
+                                        <small class="text-muted">
+                                            <code>{{ permission.name }}</code>
+                                        </small>
+                                        <br>
+                                        <small class="text-info">
+                                            <i class="fas fa-users"></i>
+                                            {{ permission.roles|length }} نقش
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>راهنما:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>دسترسی‌ها بر اساس دسته‌بندی عملیات تنظیم شده‌اند</li>
+                                    <li>هر دسترسی به نقش‌های مختلف قابل اختصاص است</li>
+                                    <li>برای تغییر دسترسی‌ها، از بخش مدیریت نقش‌ها استفاده کنید</li>
+                                    <li>دسترسی‌های سیستمی قابل حذف نیستند</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-key fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">هیچ دسترسی‌ای تعریف نشده است.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 4px solid #4e73df !important;
+}
+</style>
+{% endblock %}

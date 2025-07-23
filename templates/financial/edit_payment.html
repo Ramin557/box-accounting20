@@ -2,68 +2,101 @@
 
 {% block title %}ویرایش پرداخت{% endblock %}
 
-{% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="h3 mb-3">ویرایش پرداخت</h1>
-    </div>
-</div>
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('financial_payments') }}">دریافت و پرداخت</a></li>
+<li class="breadcrumb-item active">ویرایش پرداخت</li>
+{% endblock %}
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">اطلاعات پرداخت</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="customer_id" class="form-label">مشتری</label>
-                            <select class="form-select" id="customer_id" name="customer_id" required>
-                                <option value="">انتخاب مشتری</option>
-                                {% for customer in customers %}
-                                <option value="{{ customer.id }}" {% if payment.customer_id == customer.id %}selected{% endif %}>{{ customer.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="invoice_id" class="form-label">فاکتور</label>
-                            <select class="form-select" id="invoice_id" name="invoice_id">
-                                <option value="">انتخاب فاکتور</option>
-                                {% for invoice in invoices %}
-                                <option value="{{ invoice.id }}" {% if payment.invoice_id == invoice.id %}selected{% endif %}>{{ invoice.invoice_number }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="amount" class="form-label">مبلغ</label>
-                            <input type="number" class="form-control" id="amount" name="amount" value="{{ payment.amount }}" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="payment_date" class="form-label">تاریخ پرداخت</label>
-                            <input type="text" class="form-control" id="payment_date" name="payment_date" value="{{ payment.get_jalali_payment_date() }}" required>
-                        </div>
-                    </div>
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">ویرایش پرداخت شماره {{ payment.id }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="payment_method" class="form-label">روش پرداخت</label>
+                        <label for="customer_id" class="form-label">مشتری</label>
+                        <select class="form-select" id="customer_id" name="customer_id">
+                            <option value="">انتخاب مشتری</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}" {% if customer.id == payment.customer_id %}selected{% endif %}>
+                                {{ customer.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="invoice_id" class="form-label">فاکتور مرتبط</label>
+                        <select class="form-select" id="invoice_id" name="invoice_id">
+                            <option value="">انتخاب فاکتور</option>
+                            {% for invoice in invoices %}
+                            <option value="{{ invoice.id }}" {% if invoice.id == payment.invoice_id %}selected{% endif %}>
+                                فاکتور شماره {{ invoice.invoice_number }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_type" class="form-label">نوع تراکنش *</label>
+                        <select class="form-select" id="payment_type" name="payment_type" required>
+                            <option value="received" {% if payment.payment_type == 'received' %}selected{% endif %}>دریافت</option>
+                            <option value="paid" {% if payment.payment_type == 'paid' %}selected{% endif %}>پرداخت</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="amount" name="amount" value="{{ payment.amount }}" step="1000" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_date" class="form-label">تاریخ پرداخت *</label>
+                        <input type="date" class="form-control" id="payment_date" name="payment_date" 
+                               value="{{ payment.payment_date.strftime('%Y-%m-%d') if payment.payment_date else '' }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">روش پرداخت *</label>
                         <select class="form-select" id="payment_method" name="payment_method" required>
                             <option value="cash" {% if payment.payment_method == 'cash' %}selected{% endif %}>نقدی</option>
                             <option value="check" {% if payment.payment_method == 'check' %}selected{% endif %}>چک</option>
-                            <option value="transfer" {% if payment.payment_method == 'transfer' %}selected{% endif %}>انتقال بانکی</option>
+                            <option value="bank_transfer" {% if payment.payment_method == 'bank_transfer' %}selected{% endif %}>حواله بانکی</option>
                             <option value="card" {% if payment.payment_method == 'card' %}selected{% endif %}>کارت</option>
+                            <option value="promissory_note" {% if payment.payment_method == 'promissory_note' %}selected{% endif %}>سفته</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">یادداشت</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ payment.notes }}</textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">ذخیره</button>
-                </form>
+                </div>
             </div>
-        </div>
+            
+            <div class="mb-3">
+                <label for="notes" class="form-label">توضیحات</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3">{{ payment.notes or payment.description or '' }}</textarea>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('financial_payments') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> ذخیره تغییرات
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

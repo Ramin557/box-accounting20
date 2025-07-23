@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}بودجه جدید{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('budgeting') }}">بودجه‌بندی</a></li>
+<li class="breadcrumb-item active">بودجه جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">ایجاد بودجه جدید</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="budget_name" class="form-label">نام بودجه <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="budget_name" name="budget_name" required>
+                                <div class="form-text">مثال: بودجه سالانه ۱۴۰۳</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="budget_year" class="form-label">سال مالی <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="budget_year" name="budget_year" 
+                                       value="{{ current_persian_year }}" min="1400" max="1410" required>
+                                <div class="form-text">سال هجری شمسی</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="budget_period" class="form-label">دوره بودجه</label>
+                                <select class="form-select" id="budget_period" name="budget_period">
+                                    <option value="annual">سالانه</option>
+                                    <option value="quarterly">فصلی</option>
+                                    <option value="monthly">ماهانه</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">تاریخ شروع <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control persian-date" id="start_date" name="start_date" 
+                                       placeholder="۱۴۰۳/۰۱/۰۱" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">تاریخ پایان <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control persian-date" id="end_date" name="end_date" 
+                                       placeholder="۱۴۰۳/۱۲/۲۹" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="status" class="form-label">وضعیت</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="draft">پیش‌نویس</option>
+                            <option value="approved">تصویب شده</option>
+                            <option value="active">فعال</option>
+                        </select>
+                        <div class="form-text">فقط بودجه‌های فعال در محاسبات لحاظ می‌شوند</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">توضیحات</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                  placeholder="توضیحات اضافی در مورد این بودجه..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('budgeting') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> بازگشت
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> ذخیره بودجه
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Help -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">راهنمای سریع</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>انواع دوره بودجه:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-calendar-alt text-primary"></i> <strong>سالانه:</strong> برای کل سال مالی</li>
+                            <li><i class="fas fa-calendar text-info"></i> <strong>فصلی:</strong> هر سه ماه</li>
+                            <li><i class="fas fa-calendar-week text-warning"></i> <strong>ماهانه:</strong> هر ماه</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>وضعیت بودجه:</h6>
+                        <ul class="list-unstyled">
+                            <li><span class="badge bg-warning">پیش‌نویس</span> در حال تنظیم</li>
+                            <li><span class="badge bg-info">تصویب شده</span> تأیید شده اما غیرفعال</li>
+                            <li><span class="badge bg-success">فعال</span> در حال استفاده</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-fill end date based on start date and period
+document.getElementById('budget_period').addEventListener('change', function() {
+    const startDate = document.getElementById('start_date').value;
+    if (startDate && startDate.match(/^\d{4}\/\d{2}\/\d{2}$/)) {
+        const [year, month, day] = startDate.split('/').map(Number);
+        let endDate;
+        
+        switch (this.value) {
+            case 'annual':
+                endDate = `${year}/12/29`;
+                break;
+            case 'quarterly':
+                const endMonth = month + 2;
+                if (endMonth <= 12) {
+                    endDate = `${year}/${endMonth.toString().padStart(2, '0')}/30`;
+                } else {
+                    endDate = `${year + 1}/${(endMonth - 12).toString().padStart(2, '0')}/30`;
+                }
+                break;
+            case 'monthly':
+                if (month < 12) {
+                    endDate = `${year}/${(month + 1).toString().padStart(2, '0')}/30`;
+                } else {
+                    endDate = `${year + 1}/01/30`;
+                }
+                break;
+        }
+        
+        if (endDate) {
+            document.getElementById('end_date').value = endDate;
+        }
+    }
+});
+
+// Validate dates
+document.querySelector('form').addEventListener('submit', function(e) {
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    
+    if (startDate >= endDate) {
+        e.preventDefault();
+        alert('تاریخ پایان باید بعد از تاریخ شروع باشد.');
+    }
+});
+</script>
+{% endblock %}

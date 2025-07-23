@@ -1,0 +1,184 @@
+{% macro box_calculator() %}
+<!-- Box Manufacturing Calculator Component -->
+<div class="card box-calculator">
+    <div class="card-header">
+        <h5 class="card-title text-white mb-0">
+            <i class="fas fa-calculator me-2"></i>
+            محاسبه‌گر جعبه‌سازی
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="box-dimensions">
+                    <div>
+                        <label class="form-label text-white">طول (سانتی‌متر)</label>
+                        <input type="number" class="dimension-input calculator-input" data-dimension="length" 
+                               placeholder="طول" min="1" max="200">
+                    </div>
+                    <div>
+                        <label class="form-label text-white">عرض (سانتی‌متر)</label>
+                        <input type="number" class="dimension-input calculator-input" data-dimension="width" 
+                               placeholder="عرض" min="1" max="200">
+                    </div>
+                    <div>
+                        <label class="form-label text-white">ارتفاع (سانتی‌متر)</label>
+                        <input type="number" class="dimension-input calculator-input" data-dimension="height" 
+                               placeholder="ارتفاع" min="1" max="200">
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-white">تعداد</label>
+                        <input type="number" class="calculator-input form-control" data-field="quantity" 
+                               placeholder="تعداد" value="1" min="1" max="10000">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-white">نوع مواد</label>
+                        <select class="calculator-input form-control" data-field="material">
+                            <option value="corrugated">مقوای موج‌دار</option>
+                            <option value="cardboard">مقوای ساده</option>
+                            <option value="kraft">کرافت</option>
+                            <option value="microflute">میکرو فلوت</option>
+                            <option value="doublewall">دو جداره</option>
+                            <option value="triplewall">سه جداره</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="calculator-result">
+                    <div class="text-center">
+                        <i class="fas fa-calculator fa-3x mb-3" style="opacity: 0.7;"></i>
+                        <p>ابعاد جعبه را وارد کنید تا محاسبات نمایش داده شود</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro size_selector() %}
+<!-- Standard Size Selector Component -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="fas fa-ruler me-2"></i>
+            اندازه‌های استاندارد
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="size-selector">
+            <div class="size-option" data-size="small">
+                <div class="size-label">کوچک</div>
+                <div class="size-dimensions">20×15×10 سانتی‌متر</div>
+            </div>
+            <div class="size-option" data-size="medium">
+                <div class="size-label">متوسط</div>
+                <div class="size-dimensions">30×25×20 سانتی‌متر</div>
+            </div>
+            <div class="size-option" data-size="large">
+                <div class="size-label">بزرگ</div>
+                <div class="size-dimensions">40×35×30 سانتی‌متر</div>
+            </div>
+            <div class="size-option" data-size="xl">
+                <div class="size-label">خیلی بزرگ</div>
+                <div class="size-dimensions">50×45×40 سانتی‌متر</div>
+            </div>
+            <div class="size-option" data-size="custom">
+                <div class="size-label">سفارشی</div>
+                <div class="size-dimensions">ابعاد دلخواه</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro material_selector() %}
+<!-- Material Type Selector Component -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="card-title mb-0">
+            <i class="fas fa-layer-group me-2"></i>
+            نوع مواد
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="material-selector">
+            <div class="material-option" data-material="corrugated">
+                📦 مقوای موج‌دار
+            </div>
+            <div class="material-option" data-material="cardboard">
+                📄 مقوای ساده
+            </div>
+            <div class="material-option" data-material="kraft">
+                📋 کرافت
+            </div>
+            <div class="material-option" data-material="microflute">
+                📑 میکرو فلوت
+            </div>
+            <div class="material-option" data-material="doublewall">
+                📊 دو جداره
+            </div>
+            <div class="material-option" data-material="triplewall">
+                📚 سه جداره
+            </div>
+        </div>
+        <input type="hidden" name="material_type" id="material_type">
+    </div>
+</div>
+{% endmacro %}
+
+{% macro box_types_grid() %}
+<!-- Box Types Grid Component -->
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="box-type-card" data-box-type="shipping">
+            <div class="box-icon">📦</div>
+            <h6>جعبه حمل و نقل</h6>
+            <p class="text-muted">برای ارسال محصولات</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="box-type-card" data-box-type="storage">
+            <div class="box-icon">📋</div>
+            <h6>جعبه انبارداری</h6>
+            <p class="text-muted">برای نگهداری طولانی مدت</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="box-type-card" data-box-type="display">
+            <div class="box-icon">🎁</div>
+            <h6>جعبه نمایش</h6>
+            <p class="text-muted">برای عرضه محصولات</p>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="box-type-card" data-box-type="custom">
+            <div class="box-icon">⚙️</div>
+            <h6>جعبه سفارشی</h6>
+            <p class="text-muted">طراحی اختصاصی</p>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro production_status_badge(status) %}
+<!-- Production Status Badge Component -->
+<span class="production-status 
+    {% if status == 'pending' %}status-pending
+    {% elif status == 'in_production' %}status-in-production  
+    {% elif status == 'completed' %}status-completed
+    {% elif status == 'shipped' %}status-shipped
+    {% endif %}">
+    {% if status == 'pending' %}⏳ در انتظار
+    {% elif status == 'in_production' %}🏭 در حال تولید
+    {% elif status == 'completed' %}✅ تکمیل شده  
+    {% elif status == 'shipped' %}🚚 ارسال شده
+    {% else %}{{ status }}
+    {% endif %}
+</span>
+{% endmacro %}

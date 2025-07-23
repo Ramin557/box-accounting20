@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}دریافت و پرداخت - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">دریافت و پرداخت</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-exchange-alt me-2"></i>مدیریت دریافت و پرداخت</h2>
+                <div>
+                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addReceiptModal">
+                        <i class="fas fa-arrow-down me-2"></i>دریافت جدید
+                    </button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
+                        <i class="fas fa-arrow-up me-2"></i>پرداخت جدید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Overview -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>کل دریافت‌ها</h5>
+                            <h2>۲۵,۰۰۰,۰۰۰</h2>
+                            <small>ریال</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-down fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>کل پرداخت‌ها</h5>
+                            <h2>۱۸,۵۰۰,۰۰۰</h2>
+                            <small>ریال</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-up fa-3x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Net Balance -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h4>موجودی خالص</h4>
+                    <h1>۶,۵۰۰,۰۰۰ ریال</h1>
+                    <p class="mb-0">سود خالص در دوره جاری</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>لیست تراکنش‌ها
+                </h5>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="transactionFilter" id="all" checked>
+                    <label class="btn btn-outline-primary" for="all">همه</label>
+                    
+                    <input type="radio" class="btn-check" name="transactionFilter" id="receipts">
+                    <label class="btn btn-outline-success" for="receipts">دریافت‌ها</label>
+                    
+                    <input type="radio" class="btn-check" name="transactionFilter" id="payments">
+                    <label class="btn btn-outline-danger" for="payments">پرداخت‌ها</label>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>تاریخ</th>
+                            <th>نوع</th>
+                            <th>شرح</th>
+                            <th>طرف حساب</th>
+                            <th>مبلغ</th>
+                            <th>روش پرداخت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>۱۴۰۳/۰۵/۱۲</td>
+                            <td><span class="badge bg-success">دریافت</span></td>
+                            <td>پرداخت فاکتور شماره ۱۰۰۱</td>
+                            <td>شرکت پارس کالا</td>
+                            <td class="text-success">+۵,۰۰۰,۰۰۰ ریال</td>
+                            <td>نقدی</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editTransaction(1)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTransaction(1)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۱۴۰۳/۰۵/۱۰</td>
+                            <td><span class="badge bg-danger">پرداخت</span></td>
+                            <td>خرید مواد اولیه</td>
+                            <td>تأمین کنندگان رضوی</td>
+                            <td class="text-danger">-۳,۲۰۰,۰۰۰ ریال</td>
+                            <td>چک</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editTransaction(2)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTransaction(2)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Receipt Modal -->
+<div class="modal fade" id="addReceiptModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">ثبت دریافت جدید</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="receiptForm">
+                    <div class="mb-3">
+                        <label for="receiptAmount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="receiptAmount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiptFrom" class="form-label">دریافت از *</label>
+                        <input type="text" class="form-control" id="receiptFrom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiptDescription" class="form-label">شرح *</label>
+                        <textarea class="form-control" id="receiptDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiptMethod" class="form-label">روش دریافت *</label>
+                        <select class="form-select" id="receiptMethod" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="cash">نقدی</option>
+                            <option value="check">چک</option>
+                            <option value="transfer">انتقال بانکی</option>
+                            <option value="card">کارت به کارت</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="receiptDate" class="form-label">تاریخ *</label>
+                        <input type="date" class="form-control" id="receiptDate" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-success" onclick="saveReceipt()">ثبت دریافت</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Payment Modal -->
+<div class="modal fade" id="addPaymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">ثبت پرداخت جدید</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="paymentForm">
+                    <div class="mb-3">
+                        <label for="paymentAmount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="paymentAmount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentTo" class="form-label">پرداخت به *</label>
+                        <input type="text" class="form-control" id="paymentTo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentDescription" class="form-label">شرح *</label>
+                        <textarea class="form-control" id="paymentDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">روش پرداخت *</label>
+                        <select class="form-select" id="paymentMethod" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="cash">نقدی</option>
+                            <option value="check">چک</option>
+                            <option value="transfer">انتقال بانکی</option>
+                            <option value="card">کارت به کارت</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="paymentDate" class="form-label">تاریخ *</label>
+                        <input type="date" class="form-control" id="paymentDate" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-danger" onclick="savePayment()">ثبت پرداخت</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editTransaction(id) {
+    alert('ویرایش تراکنش با شناسه: ' + id);
+}
+
+function deleteTransaction(id) {
+    if(confirm('آیا از حذف این تراکنش اطمینان دارید؟')) {
+        alert('تراکنش با شناسه ' + id + ' حذف شد');
+    }
+}
+
+function saveReceipt() {
+    const form = document.getElementById('receiptForm');
+    if(form.checkValidity()) {
+        alert('دریافت با موفقیت ثبت شد');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addReceiptModal'));
+        modal.hide();
+        form.reset();
+    } else {
+        form.reportValidity();
+    }
+}
+
+function savePayment() {
+    const form = document.getElementById('paymentForm');
+    if(form.checkValidity()) {
+        alert('پرداخت با موفقیت ثبت شد');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addPaymentModal'));
+        modal.hide();
+        form.reset();
+    } else {
+        form.reportValidity();
+    }
+}
+</script>
+{% endblock %}

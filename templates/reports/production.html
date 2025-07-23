@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش تولید{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-industry me-2 text-primary"></i>
+            گزارش تولید و سفارشات
+        </h1>
+        <div>
+            <button class="btn btn-manufacturing" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                چاپ گزارش
+            </button>
+            <button class="btn btn-outline-primary" onclick="exportToExcel('production')">
+                <i class="fas fa-file-excel"></i>
+                اکسل
+            </button>
+        </div>
+    </div>
+
+    <!-- Production Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل سفارشات</h6>
+                            <h3>{{ total_orders }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">تکمیل شده</h6>
+                            <h3>{{ completed_orders }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">در حال تولید</h6>
+                            <h3>{{ in_production }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-cogs fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">در انتظار</h6>
+                            <h3>{{ pending_orders }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-hourglass-half fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Production Timeline -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">تایم‌لاین تولید</h5>
+        </div>
+        <div class="card-body">
+            <div class="manufacturing-timeline">
+                {% for order in orders[:10] %}
+                <div class="timeline-item">
+                    <div class="timeline-marker 
+                        {% if order.status == 'completed' %}bg-success
+                        {% elif order.status == 'in_production' %}bg-warning
+                        {% else %}bg-secondary{% endif %}">
+                        <i class="fas 
+                            {% if order.status == 'completed' %}fa-check
+                            {% elif order.status == 'in_production' %}fa-cogs
+                            {% else %}fa-clock{% endif %}"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h6 class="mb-1">سفارش #{{ order.id }}</h6>
+                        <p class="mb-1"><strong>مشتری:</strong> {{ order.customer.name if order.customer else 'نامشخص' }}</p>
+                        <p class="mb-0"><small class="text-muted">{{ order.created_at.strftime('%Y/%m/%d') if order.created_at else '-' }}</small></p>
+                        <span class="badge 
+                            {% if order.status == 'completed' %}bg-success
+                            {% elif order.status == 'in_production' %}bg-warning
+                            {% else %}bg-secondary{% endif %}">
+                            {% if order.status == 'completed' %}تکمیل شده
+                            {% elif order.status == 'in_production' %}در حال تولید
+                            {% elif order.status == 'pending' %}در انتظار
+                            {% else %}{{ order.status }}{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Production Details Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">جزئیات سفارشات</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table manufacturing-table" id="productionTable">
+                    <thead>
+                        <tr>
+                            <th>شماره سفارش</th>
+                            <th>مشتری</th>
+                            <th>تاریخ سفارش</th>
+                            <th>تعداد آیتم</th>
+                            <th>مبلغ کل</th>
+                            <th>وضعیت</th>
+                            <th>پیشرفت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><strong>#{{ order.id }}</strong></td>
+                            <td>{{ order.customer.name if order.customer else 'نامشخص' }}</td>
+                            <td>{{ order.created_at.strftime('%Y/%m/%d') if order.created_at else '-' }}</td>
+                            <td>{{ order.order_items|length if order.order_items else 0 }}</td>
+                            <td>{{ "{:,}".format(order.total_amount or 0) }} ریال</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'completed' %}bg-success
+                                    {% elif order.status == 'in_production' %}bg-warning
+                                    {% else %}bg-secondary{% endif %}">
+                                    {% if order.status == 'completed' %}تکمیل شده
+                                    {% elif order.status == 'in_production' %}در حال تولید
+                                    {% elif order.status == 'pending' %}در انتظار
+                                    {% else %}{{ order.status }}{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar 
+                                        {% if order.status == 'completed' %}bg-success
+                                        {% elif order.status == 'in_production' %}bg-warning
+                                        {% else %}bg-secondary{% endif %}" 
+                                        style="width: 
+                                            {% if order.status == 'completed' %}100
+                                            {% elif order.status == 'in_production' %}60
+                                            {% elif order.status == 'pending' %}20
+                                            {% else %}0{% endif %}%">
+                                        {% if order.status == 'completed' %}100%
+                                        {% elif order.status == 'in_production' %}60%
+                                        {% elif order.status == 'pending' %}20%
+                                        {% else %}0%{% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Box Manufacturing Analytics -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        تولید بر اساس نوع جعبه
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="manufacturing-category">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>جعبه‌های کوچک</span>
+                            <span class="badge bg-primary">45%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-primary" style="width: 45%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>جعبه‌های متوسط</span>
+                            <span class="badge bg-success">35%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-success" style="width: 35%"></div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>جعبه‌های بزرگ</span>
+                            <span class="badge bg-warning">20%</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 10px;">
+                            <div class="progress-bar bg-warning" style="width: 20%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        زمان‌بندی تولید
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="production-schedule">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>فردا</strong><br>
+                                <small class="text-muted">5 سفارش در انتظار</small>
+                            </div>
+                            <span class="badge bg-warning">فوری</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>این هفته</strong><br>
+                                <small class="text-muted">12 سفارش برنامه‌ریزی شده</small>
+                            </div>
+                            <span class="badge bg-info">عادی</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <strong>هفته آینده</strong><br>
+                                <small class="text-muted">8 سفارش جدید</small>
+                            </div>
+                            <span class="badge bg-success">برنامه‌ریزی شده</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.manufacturing-timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.timeline-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-left: 20px;
+    flex-shrink: 0;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-right: 10px;
+    flex-grow: 1;
+    border-right: 3px solid #007bff;
+}
+
+.timeline-item:not(:last-child) .timeline-marker::after {
+    content: '';
+    position: absolute;
+    top: 50px;
+    right: 19px;
+    width: 2px;
+    height: 30px;
+    background: #dee2e6;
+}
+</style>
+
+<script>
+function exportToExcel(type) {
+    const table = document.getElementById('productionTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "گزارش تولید"});
+    XLSX.writeFile(wb, `production_report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+</script>
+{% endblock %}

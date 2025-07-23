@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}افزودن ماده اولیه جدید{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">افزودن ماده اولیه جدید</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">اطلاعات ماده اولیه</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">نام</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">توضیحات</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="unit" class="form-label">واحد</label>
+                        <input type="text" class="form-control" id="unit" name="unit" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="current_stock" class="form-label">موجودی فعلی</label>
+                        <input type="number" class="form-control" id="current_stock" name="current_stock" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="min_stock_level" class="form-label">حداقل موجودی</label>
+                        <input type="number" class="form-control" id="min_stock_level" name="min_stock_level" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="max_stock_level" class="form-label">حداکثر موجودی</label>
+                        <input type="number" class="form-control" id="max_stock_level" name="max_stock_level" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

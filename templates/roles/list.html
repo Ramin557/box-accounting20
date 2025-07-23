@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت نقش‌ها{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">مدیریت نقش‌ها</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">لیست نقش‌ها</h5>
+                <a href="{{ url_for('add_role') }}" class="btn btn-primary float-end">افزودن نقش</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>توضیحات</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for role in roles %}
+                        <tr>
+                            <td>{{ role.name }}</td>
+                            <td>{{ role.description }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_role', id=role.id) }}" class="btn btn-sm btn-primary">ویرایش</a>
+                                <a href="{{ url_for('delete_role', id=role.id) }}" class="btn btn-sm btn-danger">حذف</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

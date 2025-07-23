@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت مواد اولیه{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">مدیریت مواد اولیه</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">لیست مواد اولیه</h5>
+                <a href="{{ url_for('add_raw_material') }}" class="btn btn-primary float-end">افزودن ماده اولیه</a>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام</th>
+                            <th>واحد</th>
+                            <th>موجودی فعلی</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for raw_material in raw_materials %}
+                        <tr>
+                            <td>{{ raw_material.name }}</td>
+                            <td>{{ raw_material.unit }}</td>
+                            <td>{{ raw_material.current_stock }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_raw_material', id=raw_material.id) }}" class="btn btn-sm btn-primary">ویرایش</a>
+                                <a href="{{ url_for('delete_raw_material', id=raw_material.id) }}" class="btn btn-sm btn-danger">حذف</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

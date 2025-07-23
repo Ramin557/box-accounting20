@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش موجودی{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-warehouse me-2 text-primary"></i>
+            گزارش موجودی
+        </h1>
+        <div>
+            <button class="btn btn-manufacturing" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                چاپ گزارش
+            </button>
+            <button class="btn btn-outline-primary" onclick="exportToExcel('inventory')">
+                <i class="fas fa-file-excel"></i>
+                اکسل
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل محصولات</h6>
+                            <h3>{{ total_products }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-boxes fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">ارزش کل موجودی</h6>
+                            <h3>{{ "{:,}".format(total_value) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-money-bill-wave fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کمبود موجودی</h6>
+                            <h3>{{ low_stock_count }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">دسته‌بندی‌ها</h6>
+                            <h3>{{ products|map(attribute='category')|unique|list|length }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-layer-group fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">جزئیات موجودی</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table manufacturing-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>کد محصول</th>
+                            <th>نام محصول</th>
+                            <th>دسته‌بندی</th>
+                            <th>موجودی فعلی</th>
+                            <th>حداقل موجودی</th>
+                            <th>قیمت تمام شده</th>
+                            <th>ارزش موجودی</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td><strong>{{ product.code }}</strong></td>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                <span class="badge bg-secondary">{{ product.category }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {% if product.current_stock <= product.min_stock_level %}bg-danger{% else %}bg-success{% endif %}">
+                                    {{ product.current_stock }}
+                                </span>
+                            </td>
+                            <td>{{ product.min_stock_level }}</td>
+                            <td>{{ "{:,}".format(product.cost_price) }} ریال</td>
+                            <td>{{ "{:,}".format(product.current_stock * product.cost_price) }} ریال</td>
+                            <td>
+                                {% if product.current_stock <= product.min_stock_level %}
+                                    <span class="badge bg-danger">کمبود موجودی</span>
+                                {% elif product.current_stock <= (product.min_stock_level * 2) %}
+                                    <span class="badge bg-warning">نیاز به سفارش</span>
+                                {% else %}
+                                    <span class="badge bg-success">موجودی کافی</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    {% if low_stock_products %}
+    <div class="card mt-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                هشدار کمبود موجودی
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for product in low_stock_products %}
+                <div class="col-md-4 mb-3">
+                    <div class="alert alert-warning">
+                        <strong>{{ product.name }}</strong><br>
+                        <small>موجودی: {{ product.current_stock }} | حداقل: {{ product.min_stock_level }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function exportToExcel(type) {
+    const table = document.getElementById('inventoryTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "گزارش موجودی"});
+    XLSX.writeFile(wb, `inventory_report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+</script>
+{% endblock %}

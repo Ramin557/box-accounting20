@@ -1,221 +1,345 @@
 {% extends "base.html" %}
 
-{% block title %}مدیریت چک‌ها - سیستم حسابداری{% endblock %}
+{% block title %}مدیریت چک‌ها{% endblock %}
 
 {% block breadcrumb_items %}
 <li class="breadcrumb-item active">مدیریت چک‌ها</li>
 {% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row mb-4">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="fas fa-money-check text-primary"></i>
-                مدیریت چک‌ها
-            </h2>
-            <div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCheckModal">
-                    <i class="fas fa-plus"></i> چک جدید
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>مدیریت چک‌ها</h2>
+            <a href="{{ url_for('add_check') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> چک جدید
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Check Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ issued_checks|length }}</h3>
+                <p class="stat-label mb-0">چک‌های صادره</p>
+                <small class="text-light">ثبت شده</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ received_checks|length }}</h3>
+                <p class="stat-label mb-0">چک‌های دریافتی</p>
+                <small class="text-light">دریافت شده</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-warning text-white">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ pending_checks|length }}</h3>
+                <p class="stat-label mb-0">در انتظار تسویه</p>
+                <small class="text-light">نیاز به پیگیری</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ "{:,.0f}".format(total_issued + total_received) }}</h3>
+                <p class="stat-label mb-0">مجموع مبلغ</p>
+                <small class="text-light">ریال</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check Status Tabs -->
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="checkTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" 
+                        type="button" role="tab" aria-controls="all" aria-selected="true">
+                    <i class="fas fa-list"></i> همه چک‌ها <span class="badge bg-secondary ms-1">{{ checks|length }}</span>
                 </button>
-            </div>
-        </div>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="issued-tab" data-bs-toggle="tab" data-bs-target="#issued" 
+                        type="button" role="tab" aria-controls="issued" aria-selected="false">
+                    <i class="fas fa-arrow-up"></i> صادره <span class="badge bg-primary ms-1">{{ issued_checks|length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" 
+                        type="button" role="tab" aria-controls="received" aria-selected="false">
+                    <i class="fas fa-arrow-down"></i> دریافتی <span class="badge bg-success ms-1">{{ received_checks|length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" 
+                        type="button" role="tab" aria-controls="pending" aria-selected="false">
+                    <i class="fas fa-clock"></i> در انتظار <span class="badge bg-warning ms-1">{{ pending_checks|length }}</span>
+                </button>
+            </li>
+        </ul>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">چک‌های دریافتی</h5>
-                        <h4 class="mb-0">۱۵</h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-arrow-down fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">چک‌های پرداختی</h5>
-                        <h4 class="mb-0">۸</h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-arrow-up fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">وصول شده</h5>
-                        <h4 class="mb-0">۱۲</h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-check fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">برگشتی</h5>
-                        <h4 class="mb-0">۱</h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-times fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-list"></i>
-                    لیست چک‌ها
-                </h5>
-            </div>
-            <div class="card-body">
+    <div class="card-body">
+        <div class="tab-content" id="checkTabContent">
+            <!-- All Checks Tab -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                {% if checks %}
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>شماره چک</th>
                                 <th>نوع</th>
+                                <th>پرداخت‌کننده/گیرنده</th>
                                 <th>مبلغ</th>
                                 <th>تاریخ صدور</th>
                                 <th>تاریخ سررسید</th>
                                 <th>وضعیت</th>
-                                <th>بانک</th>
                                 <th>عملیات</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for check in checks %}
                             <tr>
-                                <td>۱۲۳۴۵۶۷۸۹</td>
-                                <td><span class="badge bg-primary">دریافتی</span></td>
-                                <td>۵,۰۰۰,۰۰۰ تومان</td>
-                                <td>۱۴۰۳/۰۴/۲۵</td>
-                                <td>۱۴۰۳/۰۵/۲۵</td>
-                                <td><span class="badge bg-warning">در انتظار</span></td>
-                                <td>ملت</td>
                                 <td>
-                                    <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <strong>{{ check.check_number }}</strong>
+                                    <br><small class="text-muted">{{ check.bank_account.bank_name }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge {% if check.check_type == 'issued' %}bg-primary{% else %}bg-success{% endif %}">
+                                        {% if check.check_type == 'issued' %}صادره{% else %}دریافتی{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ check.payee_payor }}</td>
+                                <td class="fw-bold">{{ "{:,.0f}".format(check.amount) }} ریال</td>
+                                <td>{{ check.get_jalali_issue_date() }}</td>
+                                <td class="{% if check.due_date < now() and check.status not in ['cleared', 'cancelled'] %}text-danger{% endif %}">
+                                    {{ check.get_jalali_due_date() }}
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        {% if check.status == 'issued' %}bg-info
+                                        {% elif check.status == 'deposited' %}bg-warning
+                                        {% elif check.status == 'cleared' %}bg-success
+                                        {% elif check.status == 'bounced' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {% if check.status == 'issued' %}صادر شده
+                                        {% elif check.status == 'deposited' %}واریز شده
+                                        {% elif check.status == 'cleared' %}تسویه شده
+                                        {% elif check.status == 'bounced' %}برگشتی
+                                        {% else %}لغو شده{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewCheckDetails({{ check.id }})" title="جزئیات">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-warning dropdown-toggle" 
+                                                    type="button" data-bs-toggle="dropdown" title="تغییر وضعیت">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><button class="dropdown-item" onclick="updateCheckStatus({{ check.id }}, 'issued')">صادر شده</button></li>
+                                                <li><button class="dropdown-item" onclick="updateCheckStatus({{ check.id }}, 'deposited')">واریز شده</button></li>
+                                                <li><button class="dropdown-item" onclick="updateCheckStatus({{ check.id }}, 'cleared')">تسویه شده</button></li>
+                                                <li><button class="dropdown-item" onclick="updateCheckStatus({{ check.id }}, 'bounced')">برگشتی</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><button class="dropdown-item text-danger" onclick="updateCheckStatus({{ check.id }}, 'cancelled')">لغو شده</button></li>
+                                            </ul>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteCheck({{ check.id }})" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>۹۸۷۶۵۴۳۲۱</td>
-                                <td><span class="badge bg-warning">پرداختی</span></td>
-                                <td>۳,۰۰۰,۰۰۰ تومان</td>
-                                <td>۱۴۰۳/۰۴/۲۰</td>
-                                <td>۱۴۰۳/۰۵/۲۰</td>
-                                <td><span class="badge bg-success">وصول شده</span></td>
-                                <td>پارسیان</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-money-check fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">هیچ چکی ثبت نشده است</h5>
+                    <p class="text-muted">برای شروع، چک جدید اضافه کنید.</p>
+                    <a href="{{ url_for('add_check') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> ثبت چک اول
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Issued Checks Tab -->
+            <div class="tab-pane fade" id="issued" role="tabpanel" aria-labelledby="issued-tab">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    مجموع چک‌های صادره: <strong>{{ "{:,.0f}".format(total_issued) }} ریال</strong>
+                </div>
+                <!-- Similar table structure for issued checks -->
+                {% include 'financial/check_table.html' with checks = issued_checks %}
+            </div>
+
+            <!-- Received Checks Tab -->
+            <div class="tab-pane fade" id="received" role="tabpanel" aria-labelledby="received-tab">
+                <div class="alert alert-success">
+                    <i class="fas fa-info-circle me-2"></i>
+                    مجموع چک‌های دریافتی: <strong>{{ "{:,.0f}".format(total_received) }} ریال</strong>
+                </div>
+                {% include 'financial/check_table.html' with checks = received_checks %}
+            </div>
+
+            <!-- Pending Checks Tab -->
+            <div class="tab-pane fade" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    این چک‌ها نیاز به پیگیری دارند
+                </div>
+                {% include 'financial/check_table.html' with checks = pending_checks %}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add Check Modal -->
-<div class="modal fade" id="addCheckModal" tabindex="-1">
+<!-- Check Details Modal -->
+<div class="modal fade" id="checkDetailsModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">چک جدید</h5>
+                <h5 class="modal-title">جزئیات چک</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="check_type" class="form-label">نوع چک</label>
-                            <select class="form-select" id="check_type" name="check_type" required>
-                                <option value="">انتخاب کنید</option>
-                                <option value="received">دریافتی</option>
-                                <option value="issued">پرداختی</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="check_number" class="form-label">شماره چک</label>
-                            <input type="text" class="form-control" id="check_number" name="check_number" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="amount" class="form-label">مبلغ (تومان)</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="bank_name" class="form-label">نام بانک</label>
-                            <input type="text" class="form-control" id="bank_name" name="bank_name" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="issue_date" class="form-label">تاریخ صدور</label>
-                            <input type="date" class="form-control" id="issue_date" name="issue_date" 
-                                   data-persian-datepicker="true" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="due_date" class="form-label">تاریخ سررسید</label>
-                            <input type="date" class="form-control" id="due_date" name="due_date" 
-                                   data-persian-datepicker="true" required>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="description" class="form-label">توضیحات</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
-                    <button type="submit" class="btn btn-primary">ثبت چک</button>
-                </div>
-            </form>
+            <div class="modal-body" id="checkDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteCheck(checkId) {
+    if (confirm('آیا مطمئن هستید که می‌خواهید این چک را حذف کنید؟')) {
+        fetch(`/checks/${checkId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('خطا در حذف چک: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('خطا در حذف چک');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function updateCheckStatus(checkId, newStatus) {
+    const statusText = {
+        'issued': 'صادر شده',
+        'deposited': 'واریز شده',
+        'cleared': 'تسویه شده',
+        'bounced': 'برگشتی',
+        'cancelled': 'لغو شده'
+    };
+    
+    if (confirm(`آیا مطمئن هستید که می‌خواهید وضعیت چک را به "${statusText[newStatus]}" تغییر دهید؟`)) {
+        fetch(`/checks/${checkId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: `status=${newStatus}`
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('خطا در تغییر وضعیت چک');
+            }
+        })
+        .catch(error => {
+            alert('خطا در تغییر وضعیت چک');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function viewCheckDetails(checkId) {
+    fetch(`/checks/${checkId}/details`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('checkDetailsContent').innerHTML = data.html;
+                new bootstrap.Modal(document.getElementById('checkDetailsModal')).show();
+            } else {
+                alert('خطا در بارگیری جزئیات چک');
+            }
+        })
+        .catch(error => {
+            alert('خطا در بارگیری جزئیات چک');
+            console.error('Error:', error);
+        });
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]').getAttribute('content');
+}
+
+// Auto-refresh for overdue checks
+setInterval(function() {
+    const overdueElements = document.querySelectorAll('.text-danger');
+    overdueElements.forEach(element => {
+        if (element.textContent.includes('/')) {
+            element.classList.add('animate__animated', 'animate__pulse');
+        }
+    });
+}, 30000);
+
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Add search functionality
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'جستجوی شماره چک یا پرداخت‌کننده...';
+    searchInput.className = 'form-control mb-3';
+    
+    const cardBody = document.querySelector('.card-body');
+    cardBody.insertBefore(searchInput, cardBody.firstChild);
+    
+    searchInput.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+});
+</script>
 {% endblock %}

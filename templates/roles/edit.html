@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش نقش{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">ویرایش نقش</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">اطلاعات نقش</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">نام</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ role.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">توضیحات</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ role.description }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">دسترسی‌ها</label>
+                        {% for permission in permissions %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="permissions" value="{{ permission.id }}" id="permission-{{ permission.id }}" {% if permission in role.permissions %}checked{% endif %}>
+                            <label class="form-check-label" for="permission-{{ permission.id }}">
+                                {{ permission.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,436 @@
+/* Persian Language and Box Manufacturing Business Improvements */
+
+/* Enhanced Persian Typography */
+@import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Variable.css');
+
+:root {
+    /* Persian-optimized spacing */
+    --persian-line-height: 1.75;
+    --persian-letter-spacing: 0.02em;
+    --persian-word-spacing: 0.1em;
+    
+    /* Box manufacturing color scheme */
+    --box-primary: #2E4057;
+    --box-secondary: #048A81;
+    --box-accent: #F49900;
+    --box-success: #54C6EB;
+    --box-warning: #FFB30F;
+    --box-danger: #EF6461;
+    
+    /* Business card colors */
+    --cardboard-light: #D4C4A8;
+    --cardboard-medium: #B8A082;
+    --cardboard-dark: #8B7355;
+}
+
+/* Enhanced Persian font family with better fallbacks */
+body, 
+.persian-text,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select,
+.form-control,
+.btn,
+.navbar,
+.sidebar {
+    font-family: 'Vazirmatn', 'Tahoma', 'Arial Unicode MS', sans-serif !important;
+    line-height: var(--persian-line-height);
+    letter-spacing: var(--persian-letter-spacing);
+    word-spacing: var(--persian-word-spacing);
+}
+
+/* Fix Persian numerals and improve readability */
+.persian-numbers {
+    font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+/* Enhanced RTL support for forms */
+.form-label,
+.form-check-label {
+    text-align: right;
+    direction: rtl;
+    font-weight: 500;
+}
+
+/* Box Manufacturing Specific Components */
+.box-dimensions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background: linear-gradient(135deg, var(--cardboard-light), var(--cardboard-medium));
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid var(--cardboard-dark);
+}
+
+.dimension-input {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--cardboard-dark);
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.dimension-input:focus {
+    outline: none;
+    border-color: var(--box-primary);
+    box-shadow: 0 0 0 0.2rem rgba(46, 64, 87, 0.25);
+}
+
+/* Material Type Selector */
+.material-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.material-option {
+    background: var(--cardboard-light);
+    border: 2px solid var(--cardboard-medium);
+    border-radius: 25px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.material-option:hover {
+    background: var(--cardboard-medium);
+    transform: translateY(-2px);
+}
+
+.material-option.selected {
+    background: var(--box-primary);
+    color: white;
+    border-color: var(--box-primary);
+}
+
+/* Box Type Cards */
+.box-type-card {
+    background: linear-gradient(145deg, #ffffff, var(--cardboard-light));
+    border: 1px solid var(--cardboard-medium);
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.box-type-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--box-primary), var(--box-secondary));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.box-type-card:hover::before {
+    transform: scaleX(1);
+}
+
+.box-type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.box-icon {
+    font-size: 3rem;
+    color: var(--box-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Production Status Indicators */
+.production-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    position: relative;
+}
+
+.status-pending {
+    background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
+    color: #E65100;
+    border: 1px solid #FFB74D;
+}
+
+.status-in-production {
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    color: #0D47A1;
+    border: 1px solid #42A5F5;
+}
+
+.status-completed {
+    background: linear-gradient(135deg, #E8F5E8, #C8E6C9);
+    color: #1B5E20;
+    border: 1px solid #66BB6A;
+}
+
+.status-shipped {
+    background: linear-gradient(135deg, #F3E5F5, #E1BEE7);
+    color: #4A148C;
+    border: 1px solid #AB47BC;
+}
+
+/* Enhanced Tables for Box Manufacturing */
+.manufacturing-table {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.manufacturing-table th {
+    background: linear-gradient(135deg, var(--box-primary), var(--box-secondary));
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+    border: none;
+}
+
+.manufacturing-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.manufacturing-table tbody tr:hover {
+    background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+}
+
+/* Box Calculation Tools */
+.box-calculator {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 2rem;
+    border-radius: 20px;
+    margin: 2rem 0;
+}
+
+.calculator-input {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 10px;
+}
+
+.calculator-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.calculator-result {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Persian Date Display Improvements */
+.persian-date {
+    font-family: 'Vazirmatn', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+.date-input-wrapper {
+    position: relative;
+}
+
+.date-input-wrapper::after {
+    content: "📅";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Improved Navigation for Box Manufacturing */
+.manufacturing-nav {
+    background: linear-gradient(135deg, var(--box-primary), var(--box-secondary));
+    border-radius: 15px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.manufacturing-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    margin: 0 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.manufacturing-nav .nav-link:hover,
+.manufacturing-nav .nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Enhanced Buttons for Manufacturing Operations */
+.btn-manufacturing {
+    background: linear-gradient(135deg, var(--box-secondary), var(--box-primary));
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-manufacturing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-manufacturing:hover::before {
+    left: 100%;
+}
+
+.btn-manufacturing:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Box Size Quick Selector */
+.size-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.size-option {
+    background: var(--cardboard-light);
+    border: 2px solid var(--cardboard-medium);
+    border-radius: 15px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.size-option:hover {
+    background: var(--cardboard-medium);
+    transform: scale(1.05);
+}
+
+.size-option.selected {
+    background: var(--box-primary);
+    color: white;
+    border-color: var(--box-primary);
+}
+
+.size-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.size-dimensions {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+/* Responsive improvements for Persian text */
+@media (max-width: 768px) {
+    body {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .box-dimensions {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .size-selector {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .manufacturing-nav .nav-link {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Dark mode adjustments for box manufacturing theme */
+.dark-mode .box-type-card {
+    background: linear-gradient(145deg, #2d3748, #4a5568);
+    border-color: #555;
+}
+
+.dark-mode .manufacturing-table {
+    background: #2d3748;
+}
+
+.dark-mode .manufacturing-table td {
+    border-bottom-color: #4a5568;
+}
+
+.dark-mode .dimension-input {
+    background: rgba(74, 85, 104, 0.9);
+    color: white;
+    border-color: #555;
+}
+
+.dark-mode .material-option {
+    background: #4a5568;
+    border-color: #555;
+    color: white;
+}
+
+.dark-mode .size-option {
+    background: #4a5568;
+    border-color: #555;
+    color: white;
+}
+
+/* Accessibility improvements */
+.box-type-card:focus,
+.material-option:focus,
+.size-option:focus {
+    outline: 2px solid var(--box-secondary);
+    outline-offset: 2px;
+}
+
+/* Print styles for invoices and reports */
+@media print {
+    .manufacturing-table {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+    
+    .btn-manufacturing,
+    .navbar,
+    .sidebar {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+}

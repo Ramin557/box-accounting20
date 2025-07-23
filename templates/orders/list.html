@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}سفارشات - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">سفارشات</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-shopping-cart text-primary"></i>
+                مدیریت سفارشات
+            </h2>
+            <a href="{{ url_for('add_order') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                سفارش جدید
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <select class="form-select" name="status">
+                            <option value="">همه وضعیت‌ها</option>
+                            <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
+                            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تایید شده</option>
+                            <option value="producing" {% if status == 'producing' %}selected{% endif %}>در حال تولید</option>
+                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده</option>
+                            <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="customer_id">
+                            <option value="">همه مشتریان</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}" {% if customer.id == customer_id %}selected{% endif %}>{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter"></i>
+                                فیلتر
+                            </button>
+                            <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                                پاک کردن
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if orders.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>شماره سفارش</th>
+                                <th>مشتری</th>
+                                <th>تاریخ سفارش</th>
+                                <th>تاریخ تحویل</th>
+                                <th>مبلغ کل</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders.items %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">{{ order.order_number }}</strong>
+                                </td>
+                                <td>
+                                    <strong>{{ order.customer.name }}</strong>
+                                    {% if order.customer.company_name %}
+                                    <br><small class="text-muted">{{ order.customer.company_name }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ order.get_jalali_order_date() }}</td>
+                                <td>
+                                    {% if order.delivery_date %}
+                                    {{ order.get_jalali_delivery_date() }}
+                                    {% else %}
+                                    <span class="text-muted">تعیین نشده</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ "{:,.0f}".format(order.total_amount) }} تومان</strong>
+                                    <br><small class="text-muted">جمع: {{ "{:,.0f}".format(order.subtotal) }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if order.status == 'pending' %}warning{% elif order.status == 'confirmed' %}info{% elif order.status == 'producing' %}primary{% elif order.status == 'completed' %}success{% else %}danger{% endif %}">
+                                        {% if order.status == 'pending' %}در انتظار{% elif order.status == 'confirmed' %}تایید شده{% elif order.status == 'producing' %}در حال تولید{% elif order.status == 'completed' %}تکمیل شده{% else %}لغو شده{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="#" class="btn btn-outline-primary" title="مشاهده">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-outline-success" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if order.status == 'pending' %}
+                                        <a href="#" class="btn btn-outline-info" title="تایید سفارش">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if orders.pages > 1 %}
+                <nav aria-label="صفحه‌بندی سفارشات" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if orders.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('orders', page=orders.prev_num, status=status, customer_id=customer_id) }}">قبلی</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in orders.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != orders.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('orders', page=page_num, status=status, customer_id=customer_id) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if orders.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('orders', page=orders.next_num, status=status, customer_id=customer_id) }}">بعدی</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">هیچ سفارشی یافت نشد</h5>
+                    <p class="text-muted">برای شروع، سفارش جدید ثبت کنید.</p>
+                    <a href="{{ url_for('add_order') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        سفارش جدید
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

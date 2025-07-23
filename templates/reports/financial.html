@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش مالی{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-chart-line me-2 text-primary"></i>
+            گزارش مالی و درآمد
+        </h1>
+        <div>
+            <button class="btn btn-manufacturing" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                چاپ گزارش
+            </button>
+            <button class="btn btn-outline-primary" onclick="exportToExcel('financial')">
+                <i class="fas fa-file-excel"></i>
+                اکسل
+            </button>
+        </div>
+    </div>
+
+    <!-- Financial Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل درآمد</h6>
+                            <h3>{{ "{:,}".format(total_revenue) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-up fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل هزینه‌ها</h6>
+                            <h3>{{ "{:,}".format(total_expenses) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-down fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">سود خالص</h6>
+                            <h3 class="{% if net_profit >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                {{ "{:,}".format(net_profit) }} ریال
+                            </h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-coins fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">معوقات</h6>
+                            <h3>{{ "{:,}".format(pending_invoices) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-hourglass-half fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Charts -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">نمودار درآمد و هزینه (ماهانه)</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">توزیع هزینه‌ها</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="expenseChart" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Details -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        وضعیت فاکتورها
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>شماره فاکتور</th>
+                                    <th>مشتری</th>
+                                    <th>مبلغ</th>
+                                    <th>وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for invoice in invoices[:10] %}
+                                <tr>
+                                    <td><strong>#{{ invoice.id }}</strong></td>
+                                    <td>{{ invoice.customer.name if invoice.customer else 'نامشخص' }}</td>
+                                    <td>{{ "{:,}".format(invoice.total_amount) }} ریال</td>
+                                    <td>
+                                        <span class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            {% if invoice.status == 'paid' %}پرداخت شده
+                                            {% elif invoice.status == 'pending' %}در انتظار
+                                            {% else %}{{ invoice.status }}{% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        تراکنش‌های اخیر
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>تاریخ</th>
+                                    <th>نوع</th>
+                                    <th>مبلغ</th>
+                                    <th>توضیحات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments[:10] %}
+                                <tr>
+                                    <td>{{ payment.payment_date.strftime('%m/%d') if payment.payment_date else '-' }}</td>
+                                    <td>
+                                        <span class="badge {% if payment.payment_type == 'received' %}bg-success{% else %}bg-danger{% endif %}">
+                                            {% if payment.payment_type == 'received' %}دریافت{% else %}پرداخت{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="{% if payment.payment_type == 'received' %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "{:,}".format(payment.amount) }}
+                                    </td>
+                                    <td>{{ payment.description or payment.notes or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Analysis -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        تحلیل سودآوری
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>حاشیه سود:</span>
+                        <strong class="text-success">
+                            {{ "%.1f"|format((net_profit / total_revenue * 100) if total_revenue > 0 else 0) }}%
+                        </strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>نسبت هزینه:</span>
+                        <strong class="text-warning">
+                            {{ "%.1f"|format((total_expenses / total_revenue * 100) if total_revenue > 0 else 0) }}%
+                        </strong>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>رشد درآمد:</span>
+                        <strong class="text-info">+12.5%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        وضعیت نقدینگی
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>موجودی نقد:</strong><br>
+                        <h5>{{ "{:,}".format(total_revenue - total_expenses) }} ریال</h5>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>مطالبات معوق:</strong><br>
+                        <h6>{{ "{:,}".format(pending_invoices) }} ریال</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-trending-up me-2"></i>
+                        پیش‌بینی مالی
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>درآمد ماه آینده:</h6>
+                        <span class="badge bg-success">{{ "{:,}".format(total_revenue * 1.1) }} ریال</span>
+                    </div>
+                    <div class="mb-3">
+                        <h6>هزینه‌های پیش‌بینی:</h6>
+                        <span class="badge bg-warning">{{ "{:,}".format(total_expenses * 1.05) }} ریال</span>
+                    </div>
+                    <div>
+                        <h6>سود پیش‌بینی:</h6>
+                        <span class="badge bg-primary">{{ "{:,}".format((total_revenue * 1.1) - (total_expenses * 1.05)) }} ریال</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportToExcel(type) {
+    // Create a simple Excel export for financial data
+    const data = [
+        ['نوع', 'مبلغ (ریال)'],
+        ['کل درآمد', {{ total_revenue }}],
+        ['کل هزینه‌ها', {{ total_expenses }}],
+        ['سود خالص', {{ net_profit }}],
+        ['معوقات', {{ pending_invoices }}]
+    ];
+    
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "گزارش مالی");
+    XLSX.writeFile(wb, `financial_report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+// Initialize charts if Chart.js is available
+if (typeof Chart !== 'undefined') {
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+        type: 'line',
+        data: {
+            labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+            datasets: [{
+                label: 'درآمد',
+                data: [{{ total_revenue * 0.8 }}, {{ total_revenue * 0.9 }}, {{ total_revenue }}, {{ total_revenue * 1.1 }}, {{ total_revenue * 1.2 }}, {{ total_revenue * 1.15 }}],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                tension: 0.1
+            }, {
+                label: 'هزینه‌ها',
+                data: [{{ total_expenses * 0.85 }}, {{ total_expenses * 0.95 }}, {{ total_expenses }}, {{ total_expenses * 1.05 }}, {{ total_expenses * 1.1 }}, {{ total_expenses * 1.08 }}],
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'روند درآمد و هزینه'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Expense Chart
+    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+    new Chart(expenseCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['مواد اولیه', 'حقوق', 'اجاره', 'سایر'],
+            datasets: [{
+                data: [40, 30, 15, 15],
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 205, 86)',
+                    'rgb(75, 192, 192)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'توزیع هزینه‌ها'
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

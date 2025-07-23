@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}بودجه‌بندی{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">بودجه‌بندی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>مدیریت بودجه‌بندی</h2>
+            <a href="{{ url_for('add_budget') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> بودجه جدید
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Budget Overview Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ "{:,.0f}".format(total_budgeted) }}</h3>
+                <p class="stat-label mb-0">کل بودجه تصویب شده</p>
+                <small class="text-muted">ریال</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ "{:,.0f}".format(total_actual) }}</h3>
+                <p class="stat-label mb-0">مجموع واقعی</p>
+                <small class="text-muted">ریال</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card {% if variance >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ "{:,.0f}".format(variance) }}</h3>
+                <p class="stat-label mb-0">انحراف از بودجه</p>
+                <small class="text-muted">ریال</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ current_persian_year }}</h3>
+                <p class="stat-label mb-0">سال جاری</p>
+                <small class="text-muted">هجری شمسی</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Budget List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">فهرست بودجه‌ها</h5>
+    </div>
+    <div class="card-body">
+        {% if budgets %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>نام بودجه</th>
+                        <th>سال مالی</th>
+                        <th>دوره</th>
+                        <th>تاریخ شروع</th>
+                        <th>تاریخ پایان</th>
+                        <th>بودجه تصویب شده</th>
+                        <th>مقدار واقعی</th>
+                        <th>انحراف</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for budget in budgets %}
+                    <tr>
+                        <td>
+                            <strong>{{ budget.budget_name }}</strong>
+                            {% if budget.notes %}
+                            <br><small class="text-muted">{{ budget.notes[:50] }}...</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ budget.budget_year }}</td>
+                        <td>
+                            {% if budget.budget_period == 'annual' %}سالانه
+                            {% elif budget.budget_period == 'quarterly' %}فصلی
+                            {% else %}ماهانه{% endif %}
+                        </td>
+                        <td>{{ budget.get_jalali_start_date() }}</td>
+                        <td>{{ budget.get_jalali_end_date() }}</td>
+                        <td>{{ "{:,.0f}".format(budget.total_budgeted or 0) }} ریال</td>
+                        <td>{{ "{:,.0f}".format(budget.total_actual or 0) }} ریال</td>
+                        <td class="{% if budget.get_variance() >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            {{ "{:,.0f}".format(budget.get_variance()) }} ریال
+                            <br><small>({{ "{:.1f}".format(budget.get_variance_percentage()) }}%)</small>
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if budget.status == 'active' %}bg-success
+                                {% elif budget.status == 'draft' %}bg-warning
+                                {% elif budget.status == 'approved' %}bg-info
+                                {% else %}bg-secondary{% endif %}">
+                                {% if budget.status == 'active' %}فعال
+                                {% elif budget.status == 'draft' %}پیش‌نویس
+                                {% elif budget.status == 'approved' %}تصویب شده
+                                {% else %}بسته شده{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('budget_items', id=budget.id) }}" 
+                                   class="btn btn-sm btn-outline-primary" title="آیتم‌های بودجه">
+                                    <i class="fas fa-list"></i>
+                                </a>
+                                <a href="{{ url_for('edit_budget', id=budget.id) }}" 
+                                   class="btn btn-sm btn-outline-warning" title="ویرایش">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" 
+                                        onclick="deleteBudget({{ budget.id }})" title="حذف">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">هیچ بودجه‌ای تعریف نشده است</h5>
+            <p class="text-muted">برای شروع، بودجه جدید ایجاد کنید.</p>
+            <a href="{{ url_for('add_budget') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> ایجاد بودجه اول
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteBudget(budgetId) {
+    if (confirm('آیا مطمئن هستید که می‌خواهید این بودجه را حذف کنید؟')) {
+        fetch(`/budgets/${budgetId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('خطا در حذف بودجه: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('خطا در حذف بودجه');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]').getAttribute('content');
+}
+</script>
+{% endblock %}

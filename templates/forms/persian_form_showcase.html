@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}نمایش فرم‌های فارسی پیشرفته - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item">فرم‌ها</li>
+<li class="breadcrumb-item active">نمونه فرم‌های پیشرفته</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Enhanced Form Features Demo -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <h4 class="alert-heading">
+                    <i class="fas fa-star"></i> ویژگی‌های پیشرفته اضافه شده بر اساس درخواست شما:
+                </h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="mb-2">
+                            <li><strong>تقویم شمسی کامل:</strong> جایگزینی Flatpickr با تقویم فارسی واقعی</li>
+                            <li><strong>اعتبارسنجی لحظه‌ای:</strong> بررسی کد ملی، شماره تلفن، و ایمیل</li>
+                            <li><strong>فرمت‌بندی خودکار:</strong> اعداد فارسی و هزارگان</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="mb-0">
+                            <li><strong>نمایش/مخفی رمز عبور:</strong> دکمه تغییر حالت نمایش</li>
+                            <li><strong>شمارنده کاراکتر:</strong> برای فیلدهای محدود</li>
+                            <li><strong>پیام‌های خطای فارسی:</strong> راهنمایی کاربرپسند</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Examples Grid -->
+    <div class="row">
+        <!-- Customer Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-plus"></i> فرم افزودن مشتری</h5>
+                </div>
+                <div class="card-body">
+                    <form class="enhanced-form" onsubmit="return demonstrateForm(event, 'customer')">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control" 
+                                       placeholder="نام و نام خانوادگی *"
+                                       required
+                                       maxlength="50">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control national-id" 
+                                       placeholder="کد ملی *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="tel" 
+                                       class="form-control" 
+                                       placeholder="شماره تلفن همراه *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="email" 
+                                       class="form-control" 
+                                       placeholder="آدرس ایمیل">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <textarea class="form-control" 
+                                          placeholder="آدرس کامل"
+                                          rows="3"
+                                          maxlength="200"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-save"></i> ثبت مشتری
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-box"></i> فرم افزودن محصول</h5>
+                </div>
+                <div class="card-body">
+                    <form class="enhanced-form" onsubmit="return demonstrateForm(event, 'product')">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control" 
+                                       placeholder="نام محصول *"
+                                       required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="text" 
+                                       class="form-control persian-number" 
+                                       placeholder="طول (سانتی متر)"
+                                       >
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="text" 
+                                       class="form-control persian-number" 
+                                       placeholder="عرض (سانتی متر)">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="text" 
+                                       class="form-control persian-number" 
+                                       placeholder="ارتفاع (سانتی متر)">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="text" 
+                                       class="form-control persian-number" 
+                                       placeholder="قیمت فروش (ریال) *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <select class="form-select" required>
+                                    <option value="">نوع مواد *</option>
+                                    <option value="cardboard">مقوای موج‌دار</option>
+                                    <option value="kraft">کرافت</option>
+                                    <option value="double-wall">دو جداره</option>
+                                    <option value="industrial">صنعتی</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-plus"></i> افزودن محصول
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Transaction Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> فرم تراکنش مالی</h5>
+                </div>
+                <div class="card-body">
+                    <form class="enhanced-form" onsubmit="return demonstrateForm(event, 'transaction')">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <select class="form-select" required>
+                                    <option value="">نوع تراکنش *</option>
+                                    <option value="income">دریافتی</option>
+                                    <option value="expense">پرداختی</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control persian-number" 
+                                       placeholder="مبلغ (ریال) *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="date" 
+                                       class="form-control persian-date-picker" 
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control iban" 
+                                       placeholder="شماره حساب (اختیاری)">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <textarea class="form-control" 
+                                          placeholder="توضیحات تراکنش"
+                                          rows="2"
+                                          maxlength="150"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-warning w-100">
+                                    <i class="fas fa-check"></i> ثبت تراکنش
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Registration Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-cog"></i> فرم ثبت کاربر</h5>
+                </div>
+                <div class="card-body">
+                    <form class="enhanced-form" onsubmit="return demonstrateForm(event, 'user')">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control" 
+                                       placeholder="نام کاربری *"
+                                       required
+                                       minlength="3"
+                                       maxlength="20">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="text" 
+                                       class="form-control" 
+                                       placeholder="نام کامل *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="email" 
+                                       class="form-control" 
+                                       placeholder="ایمیل *"
+                                       required>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input type="password" 
+                                       class="form-control" 
+                                       placeholder="رمز عبور *"
+                                       required
+                                       minlength="8">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <select class="form-select" required>
+                                    <option value="">نقش کاربری *</option>
+                                    <option value="admin">مدیر</option>
+                                    <option value="accountant">حسابدار</option>
+                                    <option value="employee">کارمند</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-info w-100">
+                                    <i class="fas fa-user-plus"></i> ایجاد کاربر
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Demonstration -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-cogs"></i> آزمایش ویژگی‌های پیشرفته</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <h6>تقویم شمسی:</h6>
+                            <input type="date" class="form-control persian-date-picker" placeholder="انتخاب تاریخ">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6>فرمت اعداد فارسی:</h6>
+                            <input type="text" class="form-control persian-number" placeholder="مبلغ به ریال">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <h6>رمز عبور با نمایش:</h6>
+                            <input type="password" class="form-control" placeholder="رمز عبور خود">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>اعتبارسنجی کد ملی:</h6>
+                            <input type="text" class="form-control national-id" placeholder="کد ملی ۱۰ رقمی">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6>شماره شبا:</h6>
+                            <input type="text" class="form-control iban" placeholder="IR123456789012345678901234">
+                        </div>
+                        <div class="col-12">
+                            <h6>متن با شمارنده کاراکتر:</h6>
+                            <textarea class="form-control" placeholder="توضیحات..." maxlength="100" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function demonstrateForm(event, formType) {
+    event.preventDefault();
+    
+    // Show success message based on form type
+    const messages = {
+        customer: 'مشتری با موفقیت در سیستم ثبت شد!',
+        product: 'محصول جدید به فهرست اضافه شد!',
+        transaction: 'تراکنش مالی ثبت و در گزارش‌ها نمایش داده خواهد شد!',
+        user: 'کاربر جدید با دسترسی‌های مشخص شده ایجاد شد!'
+    };
+    
+    // Show animated success notification
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-success alert-dismissible fade show position-fixed';
+    notification.style.cssText = `
+        top: 20px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        z-index: 9999;
+        min-width: 400px;
+        animation: slideDown 0.5s ease-out;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-check-circle me-2"></i>
+        ${messages[formType]}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 4000);
+    
+    // Reset form
+    event.target.reset();
+    
+    return false;
+}
+
+// Add CSS for animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش سفارش{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">ویرایش سفارش</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">اطلاعات سفارش</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_id" class="form-label">مشتری</label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                <option value="">انتخاب مشتری</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}" {% if order.customer_id == customer.id %}selected{% endif %}>{{ customer.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="order_date" class="form-label">تاریخ سفارش</label>
+                            <input type="text" class="form-control" id="order_date" name="order_date" value="{{ order.get_jalali_order_date() }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">یادداشت</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ order.notes }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="status" class="form-label">وضعیت</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>در انتظار</option>
+                            <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>تایید شده</option>
+                            <option value="producing" {% if order.status == 'producing' %}selected{% endif %}>در حال تولید</option>
+                            <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>تکمیل شده</option>
+                            <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </div>
+                    <hr>
+                    <h5>اقلام سفارش</h5>
+                    <div id="order-items">
+                        {% for item in order.items %}
+                        <div class="row order-item">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">محصول</label>
+                                <select class="form-select" name="product_id[]" required>
+                                    <option value="">انتخاب محصول</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.id }}" {% if item.product_id == product.id %}selected{% endif %}>{{ product.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">تعداد</label>
+                                <input type="number" class="form-control" name="quantity[]" value="{{ item.quantity }}" min="1" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">قیمت واحد</label>
+                                <input type="number" class="form-control" name="unit_price[]" value="{{ item.unit_price }}" required>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">مجموع</label>
+                                <input type="number" class="form-control" name="line_total[]" value="{{ item.line_total }}" readonly>
+                            </div>
+                            <div class="col-md-1 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-danger" onclick="removeOrderItem(this)">حذف</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addOrderItem()">افزودن قلم</button>
+                    <hr>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function addOrderItem() {
+        const orderItems = document.getElementById('order-items');
+        const newItem = orderItems.children[0].cloneNode(true);
+        newItem.querySelectorAll('input').forEach(input => input.value = '');
+        orderItems.appendChild(newItem);
+    }
+
+    function removeOrderItem(button) {
+        const orderItem = button.closest('.order-item');
+        if (document.querySelectorAll('.order-item').length > 1) {
+            orderItem.remove();
+        }
+    }
+
+    document.addEventListener('change', function(e) {
+        if (e.target.name === 'quantity[]' || e.target.name === 'unit_price[]') {
+            const orderItem = e.target.closest('.order-item');
+            const quantity = orderItem.querySelector('input[name="quantity[]"]').value;
+            const unitPrice = orderItem.querySelector('input[name="unit_price[]"]').value;
+            orderItem.querySelector('input[name="line_total[]"]').value = quantity * unitPrice;
+        }
+    });
+</script>
+{% endblock %}

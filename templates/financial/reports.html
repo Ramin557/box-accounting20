@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش‌های مالی - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">گزارش‌های مالی</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-line text-primary"></i>
+                        گزارش‌های مالی
+                    </h3>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-download"></i> خروجی
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="exportToPDF()">
+                                <i class="fas fa-file-pdf text-danger"></i> PDF
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="exportToExcel()">
+                                <i class="fas fa-file-excel text-success"></i> Excel
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Financial Report Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="reportTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab">
+                                <i class="fas fa-chart-pie"></i> خلاصه مالی
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="budget-tab" data-bs-toggle="tab" data-bs-target="#budget" type="button" role="tab">
+                                <i class="fas fa-calculator"></i> بودجه
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="cashflow-tab" data-bs-toggle="tab" data-bs-target="#cashflow" type="button" role="tab">
+                                <i class="fas fa-money-bill-wave"></i> جریان نقدی
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profitloss-tab" data-bs-toggle="tab" data-bs-target="#profitloss" type="button" role="tab">
+                                <i class="fas fa-chart-bar"></i> سود و زیان
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="reportTabsContent">
+                        <!-- Summary Tab -->
+                        <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                            <div class="row">
+                                <!-- Financial KPIs -->
+                                <div class="col-md-3 col-sm-6 mb-4">
+                                    <div class="stat-card bg-primary text-white">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-coins"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <h3 class="persian-number">۱۲۵,۰۰۰,۰۰۰</h3>
+                                            <p>کل درآمد ماهانه</p>
+                                            <small class="stat-change">
+                                                <i class="fas fa-arrow-up"></i> ۱۵٪ نسبت به ماه قبل
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3 col-sm-6 mb-4">
+                                    <div class="stat-card bg-success text-white">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <h3 class="persian-number">۸۵,۰۰۰,۰۰۰</h3>
+                                            <p>سود خالص</p>
+                                            <small class="stat-change">
+                                                <i class="fas fa-arrow-up"></i> ۲۳٪ نسبت به ماه قبل
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3 col-sm-6 mb-4">
+                                    <div class="stat-card bg-warning text-dark">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-credit-card"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <h3 class="persian-number">۴۰,۰۰۰,۰۰۰</h3>
+                                            <p>هزینه‌های عملیاتی</p>
+                                            <small class="stat-change">
+                                                <i class="fas fa-arrow-down"></i> ۸٪ نسبت به ماه قبل
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3 col-sm-6 mb-4">
+                                    <div class="stat-card bg-info text-white">
+                                        <div class="stat-icon">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <div class="stat-content">
+                                            <h3 class="persian-number">۵۵,۰۰۰,۰۰۰</h3>
+                                            <p>موجودی حساب‌های بانکی</p>
+                                            <small class="stat-change">
+                                                <i class="fas fa-arrow-up"></i> ۱۲٪ نسبت به ماه قبل
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts Row -->
+                            <div class="row mt-4">
+                                <div class="col-lg-8">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>نمودار درآمد و هزینه ماهانه</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="monthlyRevenueChart" height="100"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>توزیع هزینه‌ها</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <canvas id="expensePieChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Budget Tab -->
+                        <div class="tab-pane fade" id="budget" role="tabpanel">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="mb-4">گزارش تطبیق بودجه</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>کد بودجه</th>
+                                                    <th>عنوان</th>
+                                                    <th>بودجه مصوب</th>
+                                                    <th>هزینه واقعی</th>
+                                                    <th>انحراف</th>
+                                                    <th>درصد انحراف</th>
+                                                    <th>وضعیت</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="persian-number">۱۴۰۳-۰۱</td>
+                                                    <td>تولید جعبه مقوایی</td>
+                                                    <td class="persian-number">۲۰,۰۰۰,۰۰۰ ریال</td>
+                                                    <td class="persian-number">۱۸,۵۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-success persian-number">-۱,۵۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-success persian-number">-۷.۵٪</td>
+                                                    <td><span class="badge bg-success">در بودجه</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="persian-number">۱۴۰۳-۰۲</td>
+                                                    <td>بازاریابی و فروش</td>
+                                                    <td class="persian-number">۱۰,۰۰۰,۰۰۰ ریال</td>
+                                                    <td class="persian-number">۱۲,۰۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-danger persian-number">+۲,۰۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-danger persian-number">+۲۰٪</td>
+                                                    <td><span class="badge bg-danger">خارج از بودجه</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="persian-number">۱۴۰۳-۰۳</td>
+                                                    <td>هزینه‌های اداری</td>
+                                                    <td class="persian-number">۸,۰۰۰,۰۰۰ ریال</td>
+                                                    <td class="persian-number">۷,۸۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-success persian-number">-۲۰۰,۰۰۰ ریال</td>
+                                                    <td class="text-success persian-number">-۲.۵٪</td>
+                                                    <td><span class="badge bg-success">در بودجه</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cash Flow Tab -->
+                        <div class="tab-pane fade" id="cashflow" role="tabpanel">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="mb-4">جریان نقدی</h4>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <canvas id="cashFlowChart" height="100"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Profit & Loss Tab -->
+                        <div class="tab-pane fade" id="profitloss" role="tabpanel">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="mb-4">گزارش سود و زیان</h4>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    <th>شرح</th>
+                                                    <th>مبلغ (ریال)</th>
+                                                    <th>درصد از کل فروش</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="table-primary">
+                                                    <th>درآمد فروش</th>
+                                                    <td class="persian-number">۱۲۵,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۱۰۰٪</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>بهای تمام شده کالای فروخته شده</td>
+                                                    <td class="persian-number">۷۵,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۶۰٪</td>
+                                                </tr>
+                                                <tr class="table-info">
+                                                    <th>سود ناخالص</th>
+                                                    <td class="persian-number">۵۰,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۴۰٪</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>هزینه‌های فروش و اداری</td>
+                                                    <td class="persian-number">۲۵,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۲۰٪</td>
+                                                </tr>
+                                                <tr class="table-success">
+                                                    <th>سود عملیاتی</th>
+                                                    <td class="persian-number">۲۵,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۲۰٪</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>هزینه‌های مالی</td>
+                                                    <td class="persian-number">۳,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۲.۴٪</td>
+                                                </tr>
+                                                <tr class="table-warning">
+                                                    <th>سود خالص</th>
+                                                    <td class="persian-number">۲۲,۰۰۰,۰۰۰</td>
+                                                    <td class="persian-number">۱۷.۶٪</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Revenue Chart
+    const monthlyCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+            datasets: [{
+                label: 'درآمد',
+                data: [85000000, 92000000, 78000000, 105000000, 115000000, 125000000],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'هزینه',
+                data: [65000000, 68000000, 72000000, 75000000, 78000000, 85000000],
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('fa-IR').format(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Expense Pie Chart
+    const pieCtx = document.getElementById('expensePieChart').getContext('2d');
+    new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['تولید', 'بازاریابی', 'اداری', 'مالی'],
+            datasets: [{
+                data: [60, 20, 15, 5],
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#dc3545'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+    
+    // Cash Flow Chart
+    const cashFlowCtx = document.getElementById('cashFlowChart').getContext('2d');
+    new Chart(cashFlowCtx, {
+        type: 'bar',
+        data: {
+            labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+            datasets: [{
+                label: 'ورودی نقدی',
+                data: [75000000, 85000000, 68000000, 95000000, 105000000, 115000000],
+                backgroundColor: '#28a745',
+                borderColor: '#28a745',
+                borderWidth: 1
+            }, {
+                label: 'خروجی نقدی',
+                data: [-55000000, -62000000, -58000000, -70000000, -75000000, -80000000],
+                backgroundColor: '#dc3545',
+                borderColor: '#dc3545',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: function(value) {
+                            return new Intl.NumberFormat('fa-IR').format(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+function exportToPDF() {
+    window.print();
+}
+
+function exportToExcel() {
+    // Implementation for Excel export
+    alert('خروجی Excel در حال آماده‌سازی است...');
+}
+</script>
+{% endblock %}

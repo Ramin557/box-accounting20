@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% from "components/box_calculator.html" import box_calculator, size_selector, material_selector, box_types_grid, production_status_badge %}
+
+{% block title %}داشبورد تولید جعبه{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-industry me-2 text-primary"></i>
+            داشبورد تولید جعبه‌سازی
+        </h1>
+        <div>
+            <button class="btn btn-manufacturing" onclick="location.href='{{ url_for('orders') }}'">
+                <i class="fas fa-plus"></i>
+                سفارش جدید
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">سفارشات امروز</h4>
+                            <h2>{{ daily_orders or 12 }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #048A81, #54C6EB);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">در حال تولید</h4>
+                            <h2>{{ production_count or 8 }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-industry fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #F49900, #FFB30F);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">تکمیل شده</h4>
+                            <h2>{{ completed_count or 15 }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-gradient text-white" style="background: linear-gradient(135deg, #EF6461, #E63946);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">درآمد امروز</h4>
+                            <h2>{{ daily_revenue or '2.5م' }} تومان</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-money-bill-wave fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Box Calculator -->
+    <div class="row mb-4">
+        <div class="col-12">
+            {{ box_calculator() }}
+        </div>
+    </div>
+
+    <!-- Quick Actions and Recent Orders -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        سفارشات اخیر
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table manufacturing-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>شماره سفارش</th>
+                                    <th>مشتری</th>
+                                    <th>نوع جعبه</th>
+                                    <th>ابعاد</th>
+                                    <th>تعداد</th>
+                                    <th>وضعیت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders[:5] if recent_orders %}
+                                <tr>
+                                    <td>
+                                        <strong>#{{ order.id or '001' }}</strong>
+                                    </td>
+                                    <td>{{ order.customer_name or 'شرکت نمونه' }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            {{ order.box_type or 'مقوای موج‌دار' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ order.dimensions or '30×25×20' }} سم
+                                        </small>
+                                    </td>
+                                    <td>{{ order.quantity or 100 }}</td>
+                                    <td>
+                                        {{ production_status_badge(order.status or 'in_production') }}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="مشاهده">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="شروع تولید" 
+                                                    onclick="BoxManufacturingManager.quickActions.startProduction({{ order.id or 1 }})">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="چاپ برچسب"
+                                                    onclick="BoxManufacturingManager.quickActions.printLabel({{ order.id or 1 }})">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>001</td>
+                                    <td>شرکت تولیدی امید</td>
+                                    <td><span class="badge bg-secondary">مقوای موج‌دار</span></td>
+                                    <td><small class="text-muted">30×25×20 سم</small></td>
+                                    <td>500</td>
+                                    <td>{{ production_status_badge('in_production') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="مشاهده">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" title="شروع تولید">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="چاپ برچسب">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>002</td>
+                                    <td>فروشگاه کیوان</td>
+                                    <td><span class="badge bg-secondary">دو جداره</span></td>
+                                    <td><small class="text-muted">40×30×25 سم</small></td>
+                                    <td>200</td>
+                                    <td>{{ production_status_badge('completed') }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" title="مشاهده">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-warning" title="تکمیل تولید">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" title="چاپ برچسب">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Size Selector -->
+            {{ size_selector() }}
+            
+            <!-- Quick Box Types -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-boxes me-2"></i>
+                        انواع جعبه
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {{ box_types_grid() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Production Timeline -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-timeline me-2"></i>
+                        خط زمانی تولید امروز
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">08:00 - شروع تولید سفارش #001</h6>
+                                <p class="text-muted mb-0">500 عدد جعبه مقوای موج‌دار - شرکت تولیدی امید</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-warning"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">10:30 - اتمام برش مواد</h6>
+                                <p class="text-muted mb-0">مرحله برش برای سفارش #001 تکمیل شد</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-info"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">14:00 - شروع مونتاژ</h6>
+                                <p class="text-muted mb-0">مرحله مونتاژ و بسته‌بندی آغاز شد</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="mb-1">16:30 - آماده تحویل</h6>
+                                <p class="text-muted mb-0">سفارش #002 آماده ارسال می‌باشد</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -1.5rem;
+    top: 0.25rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #007bff;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize production dashboard
+    console.log('Box manufacturing dashboard loaded');
+    
+    // Auto-refresh data every 5 minutes
+    setInterval(function() {
+        // This would typically refresh production status
+        console.log('Refreshing production data...');
+    }, 300000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}نمونه فرم بهبود یافته{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">فرم نمونه با بهبودهای UI/UX</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ csrf_token() }}
+                    
+                    <!-- Name Field with Accessibility -->
+                    <div class="form-group mb-3">
+                        <label for="name" class="form-label required">نام</label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="name" 
+                               name="name" 
+                               required 
+                               aria-describedby="name-help name-error"
+                               placeholder="نام خود را وارد کنید">
+                        <div id="name-help" class="form-text">نام باید حداقل ۲ کاراکتر باشد</div>
+                        <div id="name-error" class="invalid-feedback">
+                            لطفاً نام معتبر وارد کنید
+                        </div>
+                        <div class="valid-feedback">
+                            نام معتبر است
+                        </div>
+                    </div>
+
+                    <!-- Email with Real-time Validation -->
+                    <div class="form-group mb-3">
+                        <label for="email" class="form-label required">ایمیل</label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               required 
+                               aria-describedby="email-help email-error"
+                               placeholder="example@domain.com">
+                        <div id="email-help" class="form-text">آدرس ایمیل معتبر وارد کنید</div>
+                        <div id="email-error" class="invalid-feedback">
+                            فرمت ایمیل صحیح نیست
+                        </div>
+                        <div class="valid-feedback">
+                            ایمیل معتبر است
+                        </div>
+                    </div>
+
+                    <!-- Currency Input with Persian Formatting -->
+                    <div class="form-group mb-3">
+                        <label for="amount" class="form-label">مبلغ (ریال)</label>
+                        <input type="text" 
+                               class="form-control persian-numbers" 
+                               id="amount" 
+                               name="amount" 
+                               data-currency="true"
+                               aria-describedby="amount-help"
+                               placeholder="۰">
+                        <div id="amount-help" class="form-text">مبلغ به ریال وارد شود</div>
+                    </div>
+
+                    <!-- Select with Enhanced Styling -->
+                    <div class="form-group mb-3">
+                        <label for="category" class="form-label">دسته‌بندی</label>
+                        <select class="form-select" id="category" name="category" aria-describedby="category-help">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="income">درآمد</option>
+                            <option value="expense">هزینه</option>
+                            <option value="transfer">انتقال</option>
+                        </select>
+                        <div id="category-help" class="form-text">نوع تراکنش را انتخاب کنید</div>
+                    </div>
+
+                    <!-- Date Input with Persian Calendar -->
+                    <div class="form-group mb-3">
+                        <label for="date" class="form-label">تاریخ</label>
+                        <input type="text" 
+                               class="form-control persian-date-picker" 
+                               id="date" 
+                               name="date" 
+                               aria-describedby="date-help"
+                               readonly
+                               placeholder="تاریخ را انتخاب کنید">
+                        <div id="date-help" class="form-text">روی فیلد کلیک کنید تا تقویم باز شود</div>
+                    </div>
+
+                    <!-- Textarea with Character Counter -->
+                    <div class="form-group mb-3">
+                        <label for="description" class="form-label">توضیحات</label>
+                        <textarea class="form-control" 
+                                  id="description" 
+                                  name="description" 
+                                  rows="3" 
+                                  maxlength="500"
+                                  aria-describedby="description-help description-counter"
+                                  placeholder="توضیحات اضافی..."></textarea>
+                        <div class="d-flex justify-content-between">
+                            <div id="description-help" class="form-text">توضیحات اختیاری</div>
+                            <div id="description-counter" class="form-text">
+                                <span class="character-count">0</span> / 500
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkbox with Enhanced Styling -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agree" name="agree" required>
+                        <label class="form-check-label" for="agree">
+                            با <a href="#" class="text-primary">قوانین و مقررات</a> موافقم
+                        </label>
+                        <div class="invalid-feedback">
+                            باید با قوانین موافقت کنید
+                        </div>
+                    </div>
+
+                    <!-- Submit Button with Loading State -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="spinner" aria-hidden="true"></span>
+                            <span class="btn-text">ثبت اطلاعات</span>
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            بازنشانی
+                        </button>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                            بازگشت
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Character Counter Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('description');
+    const counter = document.querySelector('.character-count');
+    
+    if (textarea && counter) {
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            counter.textContent = count;
+            
+            // Change color based on usage
+            const percentage = count / 500;
+            if (percentage > 0.9) {
+                counter.style.color = '#dc3545';
+            } else if (percentage > 0.7) {
+                counter.style.color = '#ffc107';
+            } else {
+                counter.style.color = '#6c757d';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

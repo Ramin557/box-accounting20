@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت چک‌ها - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">مدیریت چک‌ها</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2><i class="fas fa-money-check me-2"></i>مدیریت چک‌ها</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCheckModal">
+                    <i class="fas fa-plus me-2"></i>چک جدید
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>کل چک‌ها</h5>
+                            <h2>۱۵</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-money-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>پاس شده</h5>
+                            <h2>۱۲</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>در انتظار</h5>
+                            <h2>۲</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>برگشت خورده</h5>
+                            <h2>۱</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-times-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checks List -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>لیست چک‌ها
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>شماره چک</th>
+                            <th>بانک</th>
+                            <th>مبلغ</th>
+                            <th>تاریخ سررسید</th>
+                            <th>صاحب چک</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>۱۲۳۴۵۶۷۸</td>
+                            <td>بانک ملی</td>
+                            <td>۵,۰۰۰,۰۰۰ ریال</td>
+                            <td>۱۴۰۳/۰۵/۱۵</td>
+                            <td>احمد محمدی</td>
+                            <td><span class="badge bg-success">پاس شده</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editCheck(1)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCheck(1)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۸۷۶۵۴۳۲۱</td>
+                            <td>بانک پارسیان</td>
+                            <td>۳,۲۰۰,۰۰۰ ریال</td>
+                            <td>۱۴۰۳/۰۶/۱۰</td>
+                            <td>فاطمه احمدی</td>
+                            <td><span class="badge bg-warning">در انتظار</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-warning me-1" onclick="editCheck(2)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteCheck(2)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Check Modal -->
+<div class="modal fade" id="addCheckModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">افزودن چک جدید</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="checkForm">
+                    <div class="mb-3">
+                        <label for="checkNumber" class="form-label">شماره چک *</label>
+                        <input type="text" class="form-control" id="checkNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bankName" class="form-label">نام بانک *</label>
+                        <select class="form-select" id="bankName" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="melli">بانک ملی</option>
+                            <option value="parsian">بانک پارسیان</option>
+                            <option value="tejarat">بانک تجارت</option>
+                            <option value="mellat">بانک ملت</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="checkAmount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="checkAmount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dueDate" class="form-label">تاریخ سررسید *</label>
+                        <input type="date" class="form-control" id="dueDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="checkOwner" class="form-label">صاحب چک *</label>
+                        <input type="text" class="form-control" id="checkOwner" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="checkStatus" class="form-label">وضعیت</label>
+                        <select class="form-select" id="checkStatus">
+                            <option value="pending">در انتظار</option>
+                            <option value="passed">پاس شده</option>
+                            <option value="bounced">برگشت خورده</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                <button type="button" class="btn btn-primary" onclick="saveCheck()">ذخیره</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editCheck(id) {
+    // Implementation for editing check
+    alert('ویرایش چک با شناسه: ' + id);
+}
+
+function deleteCheck(id) {
+    if(confirm('آیا از حذف این چک اطمینان دارید؟')) {
+        // Implementation for deleting check
+        alert('چک با شناسه ' + id + ' حذف شد');
+    }
+}
+
+function saveCheck() {
+    // Implementation for saving check
+    const form = document.getElementById('checkForm');
+    if(form.checkValidity()) {
+        alert('چک با موفقیت ذخیره شد');
+        // Close modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addCheckModal'));
+        modal.hide();
+        // Reset form
+        form.reset();
+    } else {
+        form.reportValidity();
+    }
+}
+</script>
+{% endblock %}

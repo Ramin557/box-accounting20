@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}تست تقویم شمسی{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">تست تقویم شمسی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-alt"></i>
+                    تست تقویم شمسی مدرن با تعطیلات
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- تست تاریخ ساده -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-header">
+                                <h6 class="mb-0">انتخاب تاریخ ساده</h6>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">تاریخ تولد:</label>
+                                        <input type="date" class="form-control" name="birth_date" data-persian-datepicker="true">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">تاریخ استخدام:</label>
+                                        <input type="date" class="form-control" name="hire_date" data-persian-datepicker="true">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- تست بازه تاریخ -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card bg-light">
+                            <div class="card-header">
+                                <h6 class="mb-0">انتخاب بازه تاریخ</h6>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="mb-3">
+                                        <label class="form-label">از تاریخ:</label>
+                                        <input type="date" class="form-control" name="from_date">
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">تا تاریخ:</label>
+                                        <input type="date" class="form-control" name="to_date">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- اطلاعات تقویم -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-info-circle"></i>
+                                    ویژگی‌های تقویم شمسی پیاده‌سازی شده
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6 class="text-primary">✓ ویژگی‌های اصلی:</h6>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success"></i> تقویم شمسی کامل با ماه‌های فارسی</li>
+                                            <li><i class="fas fa-check text-success"></i> نمایش تعطیلات رسمی ایران</li>
+                                            <li><i class="fas fa-check text-success"></i> واسط کاربری مدرن و زیبا</li>
+                                            <li><i class="fas fa-check text-success"></i> پشتیبانی کامل از RTL</li>
+                                            <li><i class="fas fa-check text-success"></i> تبدیل خودکار تاریخ شمسی به میلادی</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="text-primary">🎯 تعطیلات پشتیبانی شده:</h6>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <small>
+                                                    • نوروز (۱-۴ فروردین)<br>
+                                                    • روز جمهوری (۱۲ فروردین)<br>
+                                                    • سیزده بدر (۱۳ فروردین)<br>
+                                                    • پیروزی انقلاب (۲۲ بهمن)<br>
+                                                    • رحلت امام خمینی (۱۴ خرداد)<br>
+                                                    • قیام ۱۵ خرداد
+                                                </small>
+                                            </div>
+                                            <div class="col-6">
+                                                <small>
+                                                    • عید فطر<br>
+                                                    • عید قربان<br>
+                                                    • عید غدیر<br>
+                                                    • تاسوعا و عاشورا<br>
+                                                    • اربعین<br>
+                                                    • و سایر مناسبت‌های مذهبی
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- نمایش تاریخ امروز -->
+                <div class="alert alert-info mt-4" role="alert">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-calendar-day"></i>
+                        تاریخ امروز
+                    </h6>
+                    <div id="today-persian-date" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Display today's date in Persian
+    const today = new Date();
+    const persianDate = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+    }).format(today);
+    
+    document.getElementById('today-persian-date').innerHTML = `
+        <strong style="direction: rtl;">${persianDate}</strong>
+        <br><small class="text-muted">تقویم بر اساس تاریخ شمسی ایران</small>
+    `;
+});
+</script>
+{% endblock %}

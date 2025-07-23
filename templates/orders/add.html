@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}سفارش جدید - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('orders') }}">سفارشات</a></li>
+<li class="breadcrumb-item active">سفارش جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-shopping-cart text-primary"></i>
+                ثبت سفارش جدید
+            </h2>
+            <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به لیست
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Order Form -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات سفارش
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="orderForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="row">
+                        <!-- Customer Selection -->
+                        <div class="col-md-6 mb-3">
+                            <label for="customer_id" class="form-label">مشتری <span class="text-danger">*</span></label>
+                            <select class="form-select" id="customer_id" name="customer_id" required>
+                                <option value="">انتخاب مشتری</option>
+                                {% for customer in customers %}
+                                <option value="{{ customer.id }}">{{ customer.name }}{% if customer.company_name %} - {{ customer.company_name }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="delivery_date" class="form-label">تاریخ تحویل</label>
+                            <input type="date" class="form-control" id="delivery_date" name="delivery_date" data-persian-datepicker="true">
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="notes" class="form-label">یادداشت</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="توضیحات اضافی سفارش..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Order Items -->
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="text-primary">اقلام سفارش</h6>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addOrderItem()">
+                                    <i class="fas fa-plus"></i>
+                                    افزودن قلم
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="orderItemsTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 40%">محصول</th>
+                                            <th style="width: 15%">تعداد</th>
+                                            <th style="width: 20%">قیمت واحد</th>
+                                            <th style="width: 20%">مجموع</th>
+                                            <th style="width: 5%">حذف</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orderItemsBody">
+                                        <!-- Order items will be added here dynamically -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-light">
+                                            <td colspan="3"><strong>جمع کل (بدون مالیات):</strong></td>
+                                            <td><strong id="subtotal">0 تومان</strong></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="table-light">
+                                            <td colspan="3"><strong>مالیات (9%):</strong></td>
+                                            <td><strong id="tax">0 تومان</strong></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr class="table-primary">
+                                            <td colspan="3"><strong>مبلغ نهایی:</strong></td>
+                                            <td><strong id="total">0 تومان</strong></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i>
+                            ثبت سفارش
+                        </button>
+                        
+                        <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times"></i>
+                            انصراف
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let itemCounter = 0;
+// Products data for dynamic product selection
+const products = [
+    {% for product in products %}
+    {
+        id: {{ product.id }},
+        name: "{{ product.name }}",
+        code: "{{ product.code }}",
+        selling_price: {{ product.selling_price }},
+        current_stock: {{ product.current_stock }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+function addOrderItem() {
+    itemCounter++;
+    const tbody = document.getElementById('orderItemsBody');
+    const row = document.createElement('tr');
+    row.id = `item-${itemCounter}`;
+    
+    row.innerHTML = `
+        <td>
+            <select class="form-select" name="product_id[]" onchange="updateProductInfo(this, ${itemCounter})" required>
+                <option value="">انتخاب محصول</option>
+                ${products.map(p => `<option value="${p.id}" data-price="${p.selling_price}" data-stock="${p.current_stock}">${p.name} (کد: ${p.code})</option>`).join('')}
+            </select>
+            <small class="text-muted" id="stock-info-${itemCounter}"></small>
+        </td>
+        <td>
+            <input type="number" class="form-control" name="quantity[]" min="1" step="1" onchange="calculateLineTotal(${itemCounter})" required>
+        </td>
+        <td>
+            <input type="number" class="form-control" name="unit_price[]" min="0" step="100" onchange="calculateLineTotal(${itemCounter})" required>
+        </td>
+        <td>
+            <span class="line-total" id="line-total-${itemCounter}">0 تومان</span>
+        </td>
+        <td>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeOrderItem(${itemCounter})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>
+    `;
+    
+    tbody.appendChild(row);
+}
+
+function removeOrderItem(itemId) {
+    const row = document.getElementById(`item-${itemId}`);
+    row.remove();
+    calculateTotals();
+}
+
+function updateProductInfo(select, itemId) {
+    const option = select.selectedOptions[0];
+    if (option.value) {
+        const price = option.dataset.price;
+        const stock = option.dataset.stock;
+        
+        // Update price
+        const priceInput = select.closest('tr').querySelector('input[name="unit_price[]"]');
+        priceInput.value = price;
+        
+        // Show stock info
+        const stockInfo = document.getElementById(`stock-info-${itemId}`);
+        stockInfo.textContent = `موجودی: ${stock} عدد`;
+        stockInfo.className = `text-${stock > 0 ? 'success' : 'danger'}`;
+        
+        calculateLineTotal(itemId);
+    }
+}
+
+function calculateLineTotal(itemId) {
+    const row = document.getElementById(`item-${itemId}`);
+    const quantity = parseFloat(row.querySelector('input[name="quantity[]"]').value) || 0;
+    const unitPrice = parseFloat(row.querySelector('input[name="unit_price[]"]').value) || 0;
+    const lineTotal = quantity * unitPrice;
+    
+    const lineTotalElement = document.getElementById(`line-total-${itemId}`);
+    lineTotalElement.textContent = lineTotal.toLocaleString() + ' تومان';
+    
+    calculateTotals();
+}
+
+function calculateTotals() {
+    let subtotal = 0;
+    
+    document.querySelectorAll('.line-total').forEach(element => {
+        const value = parseFloat(element.textContent.replace(/[^0-9]/g, '')) || 0;
+        subtotal += value;
+    });
+    
+    const taxRate = 0.09; // 9% VAT
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+    
+    document.getElementById('subtotal').textContent = subtotal.toLocaleString() + ' تومان';
+    document.getElementById('tax').textContent = tax.toLocaleString() + ' تومان';
+    document.getElementById('total').textContent = total.toLocaleString() + ' تومان';
+}
+
+// Add first item on page load
+document.addEventListener('DOMContentLoaded', function() {
+    addOrderItem();
+});
+
+// Set minimum delivery date to today
+document.getElementById('delivery_date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

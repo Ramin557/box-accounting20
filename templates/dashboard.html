@@ -117,13 +117,13 @@
         var myChart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: [{% for item in daily_revenue %}"{{ item[0] }}",{% endfor %}],
+                labels: [{% for item in daily_revenue %}"{{ item.date }}"{% if not loop.last %},{% endif %}{% endfor %}],
                 datasets: [{
                     label: "درآمد",
                     backgroundColor: "rgba(75, 192, 192, 0.2)",
                     borderColor: "rgba(75, 192, 192, 1)",
-                    data: [{% for item in daily_revenue %}{{ item[1] }},{% endfor %}],
-                    fill: false,
+                    data: [{% for item in daily_revenue %}{{ item.revenue }}{% if not loop.last %},{% endif %}{% endfor %}],
+                    fill: false
                 }]
             },
             options: {
@@ -137,9 +137,9 @@
         var myChart2 = new Chart(ctx2, {
             type: "doughnut",
             data: {
-                labels: [{% for item in order_status_data %}"{{ item[0] }}",{% endfor %}],
+                labels: [{% for item in order_status_data %}"{{ item.0 }}"{% if not loop.last %},{% endif %}{% endfor %}],
                 datasets: [{
-                    data: [{% for item in order_status_data %}{{ item[1] }},{% endfor %}],
+                    data: [{% for item in order_status_data %}{{ item.1 }}{% if not loop.last %},{% endif %}{% endfor %}],
                     backgroundColor: [
                         "rgba(255, 99, 132, 0.2)",
                         "rgba(54, 162, 235, 0.2)",

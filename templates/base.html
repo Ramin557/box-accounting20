@@ -5,18 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}سیستم حسابداری{% endblock %}</title>
     
-    <!-- Bootstrap RTL CSS -->
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="باکس حسابداری">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192x192.svg') }}">
+    
+    <!-- Performance Optimized CSS Loading -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    <!-- Dark Mode CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dark-mode.css') }}">
-    <!-- Custom Select Component CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom-select.css') }}">
-    <!-- UI Enhancements CSS (Back Button, Persian Calendar, Currency) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/ui-enhancements.css') }}">
+    
+    <!-- Critical CSS - Load Immediately -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/performance-optimized.css') }}">
+    
+    <!-- Non-Critical CSS - Load Asynchronously for Better Performance -->
+    <link rel="preload" href="{{ url_for('static', filename='css/custom.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/dark-mode.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/custom-select.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/ui-fixes.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/global-loading.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/ui-enhancements.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/persian-improvements.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/mobile-responsive.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/custom-navigation.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
     <!-- CSS Variables for better theme management -->
     <style>
@@ -246,31 +259,87 @@
                     </a>
                     
                     <!-- گزارشات -->
-                    <a class="nav-link {% if request.endpoint.startswith('reports') or request.endpoint == 'tax_reports' %}active{% endif %}" href="{{ url_for('tax_reports') }}">
-                        <i class="fas fa-chart-line"></i>
-                        گزارشات
+                    <hr class="text-white-50">
+                    <div class="px-3 py-2">
+                        <small class="text-white-50">گزارشات</small>
+                    </div>
+                    
+                    <a class="nav-link {% if request.endpoint == 'inventory_reports' %}active{% endif %}" href="{{ url_for('inventory_reports') }}">
+                        <i class="fas fa-warehouse"></i>
+                        گزارش موجودی
                     </a>
                     
+                    <a class="nav-link {% if request.endpoint == 'customer_reports' %}active{% endif %}" href="{{ url_for('customer_reports') }}">
+                        <i class="fas fa-users"></i>
+                        گزارش مشتریان
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'production_reports' %}active{% endif %}" href="{{ url_for('production_reports') }}">
+                        <i class="fas fa-industry"></i>
+                        گزارش تولید
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'financial_reports' %}active{% endif %}" href="{{ url_for('financial_reports') }}">
+                        <i class="fas fa-chart-line"></i>
+                        گزارش مالی
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'tax_reports' %}active{% endif %}" href="{{ url_for('tax_reports') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        گزارش مالیاتی
+                    </a>
+                    
+                    <!-- مدیریت مالی -->
+                    <hr class="text-white-50">
+                    <div class="px-3 py-2">
+                        <small class="text-white-50">مدیریت مالی</small>
+                    </div>
+                    
+                    <a class="nav-link {% if request.endpoint == 'financial_payments' %}active{% endif %}" href="{{ url_for('financial_payments') }}">
+                        <i class="fas fa-money-bill-wave"></i>
+                        دریافت و پرداخت
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'checks' %}active{% endif %}" href="{{ url_for('checks') }}">
+                        <i class="fas fa-money-check"></i>
+                        مدیریت چک‌ها
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'bank_accounts' %}active{% endif %}" href="{{ url_for('bank_accounts') }}">
+                        <i class="fas fa-university"></i>
+                        حساب‌های بانکی
+                    </a>
+                    
+                    <a class="nav-link {% if request.endpoint == 'budgeting' %}active{% endif %}" href="{{ url_for('budgeting') }}">
+                        <i class="fas fa-chart-pie"></i>
+                        بودجه‌بندی
+                    </a>
+
                     <!-- RBAC Management (for users with appropriate permissions) -->
                     {% if has_permission('manage_users') or has_permission('manage_roles') %}
                     <hr class="text-white-50">
                     <div class="px-3 py-2">
-                        <small class="text-white-50">مدیریت دسترسی</small>
+                        <small class="text-white-50">مدیریت سیستم</small>
                     </div>
                     
                     {% if has_permission('manage_users') %}
-                    <a class="nav-link {% if request.endpoint.startswith('rbac_users') %}active{% endif %}" href="{{ url_for('rbac_users') }}">
+                    <a class="nav-link {% if request.endpoint.startswith('users') %}active{% endif %}" href="{{ url_for('users') }}">
                         <i class="fas fa-users-cog"></i>
                         مدیریت کاربران
                     </a>
                     {% endif %}
                     
                     {% if has_permission('manage_roles') %}
-                    <a class="nav-link {% if request.endpoint.startswith('rbac_roles') %}active{% endif %}" href="{{ url_for('rbac_roles') }}">
+                    <a class="nav-link {% if request.endpoint.startswith('roles') %}active{% endif %}" href="{{ url_for('roles') }}">
                         <i class="fas fa-user-shield"></i>
                         نقش‌ها و دسترسی‌ها
                     </a>
                     {% endif %}
+                    
+                    <a class="nav-link {% if request.endpoint == 'admin_panel' %}active{% endif %}" href="{{ url_for('admin_panel') }}">
+                        <i class="fas fa-cogs"></i>
+                        پنل مدیریت
+                    </a>
                     {% endif %}
                     
                     <hr class="text-white-50">
@@ -320,12 +389,16 @@
                     </div>
                     
                     <div class="d-flex align-items-center">
+                        <!-- Persian Date and Time Display -->
+                        <div class="me-3 text-center">
+                            <div id="persian-date" class="small text-muted"></div>
+                            <div id="persian-time" class="small text-primary fw-bold"></div>
+                        </div>
+                        
                         <span class="text-muted me-3">
                             خوش آمدید، {{ current_user.full_name }}
                             <span class="badge bg-primary">{{ current_user.get_role_display_name() }}</span>
                         </span>
-                        
-
                         
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -339,16 +412,23 @@
                                 {% if has_permission('manage_users') or has_permission('manage_roles') %}
                                     <li><h6 class="dropdown-header">مدیریت دسترسی</h6></li>
                                     {% if has_permission('manage_users') %}
-                                        <li><a class="dropdown-item" href="{{ url_for('rbac_users') }}"><i class="fas fa-users-cog"></i> کاربران</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('users') }}"><i class="fas fa-users-cog"></i> کاربران</a></li>
                                     {% endif %}
                                     {% if has_permission('manage_roles') %}
-                                        <li><a class="dropdown-item" href="{{ url_for('rbac_roles') }}"><i class="fas fa-user-shield"></i> نقش‌ها</a></li>
-                                        <li><a class="dropdown-item" href="{{ url_for('rbac_permissions') }}"><i class="fas fa-key"></i> دسترسی‌ها</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('roles') }}"><i class="fas fa-user-shield"></i> نقش‌ها</a></li>
                                     {% endif %}
                                     <li><hr class="dropdown-divider"></li>
                                 {% endif %}
                                 
+                                <li><a class="dropdown-item" href="{{ url_for('calendar') }}"><i class="fas fa-calendar-alt"></i> تقویم فارسی</a></li>
                                 <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-user-cog"></i> تنظیمات</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="toggleDarkMode()" id="darkModeToggle">
+                                    <span class="toggle-icon">
+                                        <i class="fas fa-moon moon-icon"></i>
+                                        <i class="fas fa-sun sun-icon" style="display: none;"></i>
+                                    </span>
+                                    حالت تاریک
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a></li>
                             </ul>
@@ -386,15 +466,106 @@
         </div>
     </div>
     
-    <!-- Bootstrap JS Bundle with Popper -->
+    <!-- Performance Optimized JavaScript Loading -->
+    <!-- Critical JS - Load Immediately -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/dark-mode.js') }}"></script>
     
-    <!-- Prevent MetaMask injection errors -->
+    <!-- Enhanced Persian DatePicker (Replaces Flatpickr) -->
+    <script src="{{ url_for('static', filename='js/persian-datepicker-optimized.js') }}" defer></script>
+    
+    <!-- Advanced Form Enhancement -->
+    <script src="{{ url_for('static', filename='js/form-enhancement.js') }}" defer></script>
+    
+    <!-- Non-Critical JS - Load Asynchronously -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="{{ url_for('static', filename='js/custom.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/dark-mode.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/box-manufacturing.js') }}" defer></script>
+    
+    <!-- UI/UX Enhancements -->
+    <script src="{{ url_for('static', filename='js/ui-enhancements.js') }}" defer></script>
+    
+    <!-- Complete Persian Localization - Final Step -->
+    <script src="{{ url_for('static', filename='js/complete-persian-localization.js') }}" defer></script>
+    
+    <!-- Custom Navigation JavaScript -->
+    <script src="{{ url_for('static', filename='js/custom-navigation.js') }}" defer></script>
+    
+    <!-- PWA Service Worker Registration -->
     <script>
-        // Handle unhandled promise rejections from browser extensions
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registered successfully');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+        
+        // Persian Date/Time Display
+        function updatePersianDateTime() {
+            const now = new Date();
+            const persianDate = new Intl.DateTimeFormat('fa-IR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            }).format(now);
+            
+            const persianTime = new Intl.DateTimeFormat('fa-IR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            }).format(now);
+            
+            const dateElement = document.getElementById('persian-date');
+            const timeElement = document.getElementById('persian-time');
+            
+            if (dateElement) dateElement.textContent = persianDate;
+            if (timeElement) timeElement.textContent = persianTime;
+        }
+        
+        // Update time every second
+        setInterval(updatePersianDateTime, 1000);
+        // Initial update
+        document.addEventListener('DOMContentLoaded', updatePersianDateTime);
+        
+        // Enhanced Dark Mode Implementation
+        function toggleDarkMode() {
+            const body = document.body;
+            const toggle = document.getElementById('darkModeToggle');
+            const isDark = body.classList.contains('dark-mode');
+            
+            if (isDark) {
+                // Switch to light mode
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                toggle.innerHTML = '<span class="toggle-icon"><i class="fas fa-moon moon-icon"></i></span> حالت تاریک';
+            } else {
+                // Switch to dark mode
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                toggle.innerHTML = '<span class="toggle-icon"><i class="fas fa-sun sun-icon"></i></span> حالت روشن';
+            }
+        }
+        
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const toggle = document.getElementById('darkModeToggle');
+            
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                if (toggle) {
+                    toggle.innerHTML = '<span class="toggle-icon"><i class="fas fa-sun sun-icon"></i></span> حالت روشن';
+                }
+            }
+        });
+        
+        // Prevent MetaMask injection errors
         window.addEventListener('unhandledrejection', function(event) {
             // Suppress MetaMask-related errors
             if (event.reason && (

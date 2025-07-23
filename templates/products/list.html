@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}محصولات - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">محصولات</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-box text-primary"></i>
+                مدیریت محصولات
+            </h2>
+            <a href="{{ url_for('add_product') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                محصول جدید
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="جستجو در نام، کد یا توضیحات محصول...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" name="category">
+                            <option value="">همه دسته‌بندی‌ها</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                                جستجو
+                            </button>
+                            <a href="{{ url_for('products') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i>
+                                پاک کردن
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if products.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>کد محصول</th>
+                                <th>نام محصول</th>
+                                <th>دسته‌بندی</th>
+                                <th>ابعاد</th>
+                                <th>قیمت فروش</th>
+                                <th>موجودی</th>
+                                <th>وضعیت موجودی</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products.items %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">{{ product.code }}</strong>
+                                </td>
+                                <td>
+                                    <strong>{{ product.name }}</strong>
+                                    {% if product.description %}
+                                    <br><small class="text-muted">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if product.category %}
+                                    <span class="badge bg-secondary">{{ product.category }}</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if product.length and product.width and product.height %}
+                                    <small class="text-muted">
+                                        {{ product.length }}×{{ product.width }}×{{ product.height }}
+                                        <br>{{ product.material_type or '' }}
+                                    </small>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ "{:,.0f}".format(product.selling_price) }} تومان</strong>
+                                    {% if product.cost_price > 0 %}
+                                    <br><small class="text-muted">خرید: {{ "{:,.0f}".format(product.cost_price) }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if product.current_stock > product.min_stock_level %}success{% elif product.current_stock > 0 %}warning{% else %}danger{% endif %} fs-6">
+                                        {{ product.current_stock }} {{ product.unit }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if product.current_stock <= 0 %}
+                                    <span class="badge bg-danger">تمام شده</span>
+                                    {% elif product.current_stock <= product.min_stock_level %}
+                                    <span class="badge bg-warning">کم موجود</span>
+                                    {% else %}
+                                    <span class="badge bg-success">موجود</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-info" onclick="viewProduct({{ product.id }})" title="مشاهده">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <a href="{{ url_for('edit_product', id=product.id) }}" class="btn btn-outline-primary" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-secondary" onclick="adjustStock({{ product.id }})" title="تنظیم موجودی">
+                                            <i class="fas fa-warehouse"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="deleteProduct({{ product.id }}, '{{ product.name }}')" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if products.pages > 1 %}
+                <nav aria-label="صفحه‌بندی محصولات" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if products.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('products', page=products.prev_num, search=search, category=category) }}">قبلی</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in products.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != products.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('products', page=page_num, search=search, category=category) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('products', page=products.next_num, search=search, category=category) }}">بعدی</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-box fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">هیچ محصولی یافت نشد</h5>
+                    <p class="text-muted">برای شروع، محصول جدید اضافه کنید.</p>
+                    <a href="{{ url_for('add_product') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        محصول جدید
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Alert -->
+{% if products.items %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    هشدار موجودی
+                </h6>
+            </div>
+            <div class="card-body">
+                {% set low_stock = products.items | selectattr('current_stock', 'le', 10) | list %}
+                {% if low_stock %}
+                <p class="mb-2">محصولات کم موجود یا تمام شده:</p>
+                <div class="row">
+                    {% for product in low_stock %}
+                    <div class="col-md-4 mb-2">
+                        <span class="badge bg-{{ 'danger' if product.current_stock <= 0 else 'warning' }}">
+                            {{ product.name }} - {{ product.current_stock }} {{ product.unit }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-success mb-0">
+                    <i class="fas fa-check-circle"></i>
+                    همه محصولات دارای موجودی کافی هستند.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewProduct(productId) {
+    fetch(`/products/${productId}/view`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const product = data.product;
+            const content = `
+                <div class="row">
+                    <div class="col-md-6"><strong>کد محصول:</strong> ${product.code}</div>
+                    <div class="col-md-6"><strong>نام محصول:</strong> ${product.name}</div>
+                    <div class="col-md-6"><strong>دسته‌بندی:</strong> ${product.category || '-'}</div>
+                    <div class="col-md-6"><strong>واحد:</strong> ${product.unit}</div>
+                    <div class="col-md-6"><strong>ابعاد:</strong> ${product.dimensions || '-'}</div>
+                    <div class="col-md-6"><strong>نوع مواد:</strong> ${product.material_type || '-'}</div>
+                    <div class="col-md-6"><strong>قیمت خرید:</strong> ${product.cost_price.toLocaleString()} تومان</div>
+                    <div class="col-md-6"><strong>قیمت فروش:</strong> ${product.selling_price.toLocaleString()} تومان</div>
+                    <div class="col-md-6"><strong>موجودی فعلی:</strong> ${product.current_stock}</div>
+                    <div class="col-md-6"><strong>حداقل موجودی:</strong> ${product.min_stock_level}</div>
+                    <div class="col-12 mt-2"><strong>توضیحات:</strong> ${product.description || 'ندارد'}</div>
+                </div>
+            `;
+            
+            // Create and show modal
+            const modalHtml = `
+                <div class="modal fade" id="productModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">مشاهده محصول</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">${content}</div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal and add new one
+            const existingModal = document.getElementById('productModal');
+            if (existingModal) existingModal.remove();
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            const modal = new bootstrap.Modal(document.getElementById('productModal'));
+            modal.show();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('خطا در دریافت اطلاعات محصول');
+    });
+}
+
+function deleteProduct(productId, productName) {
+    if (confirm(`آیا از حذف محصول "${productName}" اطمینان دارید؟\nاین عمل قابل بازگشت نیست.`)) {
+        fetch(`/products/${productId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'خطا در حذف محصول');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در حذف محصول');
+        });
+    }
+}
+
+function adjustStock(productId) {
+    const newStock = prompt('موجودی جدید را وارد کنید:');
+    if (newStock !== null && !isNaN(newStock)) {
+        fetch(`/products/${productId}/adjust-stock`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ new_stock: parseInt(newStock) })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'خطا در تنظیم موجودی');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در تنظیم موجودی');
+        });
+    }
+}
+</script>
+{% endblock %}

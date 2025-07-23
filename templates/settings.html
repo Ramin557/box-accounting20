@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block title %}تنظیمات سیستم{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">تنظیمات</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-cog"></i>
+                        تنظیمات سیستم
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Navigation Tabs -->
+                    <ul class="nav nav-tabs mb-4" id="settingsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab">
+                                <i class="fas fa-user"></i> پروفایل کاربری
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">
+                                <i class="fas fa-users"></i> مدیریت کاربران
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="financial-tab" data-bs-toggle="tab" data-bs-target="#financial" type="button" role="tab">
+                                <i class="fas fa-money-check-alt"></i> مدیریت مالی
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
+                                <i class="fas fa-shield-alt"></i> امنیت سیستم
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="backup-tab" data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab">
+                                <i class="fas fa-download"></i> پشتیبان‌گیری
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="settingsTabContent">
+                        <!-- پروفایل کاربری -->
+                        <div class="tab-pane fade show active" id="profile" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5 class="mb-3">اطلاعات شخصی</h5>
+                                    <form method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="full_name" class="form-label">نام کامل</label>
+                                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                                       value="{{ current_user.full_name or '' }}" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="username" class="form-label">نام کاربری</label>
+                                                <input type="text" class="form-control" id="username" name="username" 
+                                                       value="{{ current_user.username }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">ایمیل</label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                   value="{{ current_user.email }}">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">رمز عبور جدید</label>
+                                            <input type="password" class="form-control" id="password" name="password" 
+                                                   placeholder="برای تغییر رمز عبور وارد کنید">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> ذخیره تغییرات
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5 class="mb-3">اطلاعات حساب</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <p><strong>نقش:</strong> {{ 'مدیر سیستم' if current_user.is_admin() else 'حسابدار' }}</p>
+                                            <p><strong>تاریخ عضویت:</strong> {{ current_user.get_jalali_created_date() }}</p>
+                                            <p><strong>وضعیت:</strong> 
+                                                <span class="badge bg-success">فعال</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- مدیریت کاربران -->
+                        <div class="tab-pane fade" id="users" role="tabpanel">
+                            {% if current_user.is_admin() %}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>لیست کاربران</h5>
+                                <a href="{{ url_for('admin_add_user') }}" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> افزودن کاربر
+                                </a>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>نام کامل</th>
+                                            <th>نام کاربری</th>
+                                            <th>ایمیل</th>
+                                            <th>نقش</th>
+                                            <th>وضعیت</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ current_user.full_name or 'نامشخص' }}</td>
+                                            <td>{{ current_user.username }}</td>
+                                            <td>{{ current_user.email }}</td>
+                                            <td>{{ 'مدیر' if current_user.is_admin() else 'حسابدار' }}</td>
+                                            <td><span class="badge bg-success">فعال</span></td>
+                                            <td>
+                                                <a href="#" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                شما دسترسی به مدیریت کاربران ندارید.
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- مدیریت مالی -->
+                        <div class="tab-pane fade" id="financial" role="tabpanel">
+                            <h5 class="mb-3">تنظیمات مالی</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-university"></i> حساب‌های بانکی</h6>
+                                            <p class="text-muted">مدیریت حساب‌های بانکی شرکت</p>
+                                            <a href="{{ url_for('financial_banks') }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i> مشاهده
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-chart-pie"></i> بودجه‌بندی</h6>
+                                            <p class="text-muted">تنظیمات بودجه و برنامه‌ریزی مالی</p>
+                                            <a href="{{ url_for('budget') }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i> مشاهده
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-money-check"></i> مدیریت چک‌ها</h6>
+                                            <p class="text-muted">پیگیری چک‌های دریافتی و پرداختی</p>
+                                            <a href="{{ url_for('financial_checks') }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i> مشاهده
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-credit-card"></i> دریافت و پرداخت</h6>
+                                            <p class="text-muted">مدیریت دریافت‌ها و پرداخت‌ها</p>
+                                            <a href="{{ url_for('financial_payments') }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-eye"></i> مشاهده
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- امنیت سیستم -->
+                        <div class="tab-pane fade" id="security" role="tabpanel">
+                            <h5 class="mb-3">تنظیمات امنیتی</h5>
+                            <form method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">ورود دو مرحله‌ای</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="two_factor" name="two_factor">
+                                            <label class="form-check-label" for="two_factor">
+                                                فعال‌سازی احراز هویت دو مرحله‌ای
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">مدت انقضای جلسه (دقیقه)</label>
+                                        <input type="number" class="form-control" name="session_timeout" value="120" min="30" max="480">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">IP های مجاز</label>
+                                    <textarea class="form-control" name="allowed_ips" rows="3" placeholder="هر IP را در خط جداگانه وارد کنید"></textarea>
+                                    <div class="form-text">برای عدم محدودیت خالی بگذارید</div>
+                                </div>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save"></i> ذخیره تنظیمات امنیتی
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- پشتیبان‌گیری -->
+                        <div class="tab-pane fade" id="backup" role="tabpanel">
+                            <h5 class="mb-3">مدیریت پشتیبان</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-download"></i> ایجاد پشتیبان</h6>
+                                            <p class="text-muted">ایجاد فایل پشتیبان از کل سیستم</p>
+                                            <button onclick="createBackup()" class="btn btn-success">
+                                                <i class="fas fa-download"></i> ایجاد پشتیبان
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="fas fa-upload"></i> بازیابی از پشتیبان</h6>
+                                            <p class="text-muted">بازگردانی سیستم از فایل پشتیبان</p>
+                                            <input type="file" class="form-control mb-2" id="backupFile" accept=".sql,.db">
+                                            <button onclick="restoreBackup()" class="btn btn-warning">
+                                                <i class="fas fa-upload"></i> بازیابی
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function createBackup() {
+    if (confirm('آیا از ایجاد پشتیبان اطمینان دارید؟')) {
+        window.location.href = '{{ url_for("backup") }}';
+    }
+}
+
+function restoreBackup() {
+    const fileInput = document.getElementById('backupFile');
+    if (!fileInput.files.length) {
+        alert('لطفاً ابتدا فایل پشتیبان را انتخاب کنید.');
+        return;
+    }
+    
+    if (confirm('هشدار: بازیابی از پشتیبان تمام اطلاعات فعلی را جایگزین خواهد کرد. آیا ادامه می‌دهید؟')) {
+        const formData = new FormData();
+        formData.append('backup_file', fileInput.files[0]);
+        
+        fetch('{{ url_for("restore_backup") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('بازیابی با موفقیت انجام شد. صفحه بازنشانی می‌شود.');
+                location.reload();
+            } else {
+                alert('خطا در بازیابی: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطا در بازیابی فایل');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,69 +1,115 @@
 {% extends "base.html" %}
 
-{% block title %}افزودن پرداخت جدید{% endblock %}
+{% block title %}ثبت پرداخت جدید{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('financial_payments') }}">دریافت و پرداخت</a></li>
+<li class="breadcrumb-item active">ثبت پرداخت جدید</li>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1 class="h3 mb-3">افزودن پرداخت جدید</h1>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">ثبت پرداخت جدید</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="customer_id" class="form-label">مشتری</label>
+                        <select class="form-select" id="customer_id" name="customer_id">
+                            <option value="">انتخاب مشتری</option>
+                            {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="invoice_id" class="form-label">فاکتور مرتبط</label>
+                        <select class="form-select" id="invoice_id" name="invoice_id">
+                            <option value="">انتخاب فاکتور</option>
+                            {% for invoice in invoices %}
+                            <option value="{{ invoice.id }}">فاکتور شماره {{ invoice.invoice_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_type" class="form-label">نوع تراکنش *</label>
+                        <select class="form-select" id="payment_type" name="payment_type" required>
+                            <option value="">انتخاب نوع</option>
+                            <option value="received">دریافت</option>
+                            <option value="paid">پرداخت</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="1000" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_date" class="form-label">تاریخ پرداخت *</label>
+                        <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">روش پرداخت *</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="">انتخاب روش</option>
+                            <option value="cash">نقدی</option>
+                            <option value="check">چک</option>
+                            <option value="bank_transfer">حواله بانکی</option>
+                            <option value="card">کارت</option>
+                            <option value="promissory_note">سفته</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="notes" class="form-label">توضیحات</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="توضیحات اضافی در مورد این پرداخت..."></textarea>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('financial_payments') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> ثبت پرداخت
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">اطلاعات پرداخت</h5>
-            </div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="customer_id" class="form-label">مشتری</label>
-                            <select class="form-select" id="customer_id" name="customer_id" required>
-                                <option value="">انتخاب مشتری</option>
-                                {% for customer in customers %}
-                                <option value="{{ customer.id }}">{{ customer.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="invoice_id" class="form-label">فاکتور</label>
-                            <select class="form-select" id="invoice_id" name="invoice_id">
-                                <option value="">انتخاب فاکتور</option>
-                                {% for invoice in invoices %}
-                                <option value="{{ invoice.id }}">{{ invoice.invoice_number }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="amount" class="form-label">مبلغ</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="payment_date" class="form-label">تاریخ پرداخت</label>
-                            <input type="text" class="form-control" id="payment_date" name="payment_date" value="{{ jdatetime.datetime.now().strftime('%Y/%m/%d') }}" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="payment_method" class="form-label">روش پرداخت</label>
-                        <select class="form-select" id="payment_method" name="payment_method" required>
-                            <option value="cash">نقدی</option>
-                            <option value="check">چک</option>
-                            <option value="transfer">انتقال بانکی</option>
-                            <option value="card">کارت</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">یادداشت</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">ذخیره</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+// Auto-set today's date
+document.getElementById('payment_date').value = new Date().toISOString().split('T')[0];
+
+// Dynamic invoice loading based on customer selection
+document.getElementById('customer_id').addEventListener('change', function() {
+    const customerId = this.value;
+    const invoiceSelect = document.getElementById('invoice_id');
+    
+    if (customerId) {
+        // This would typically load invoices via AJAX
+        // For now, we'll leave the manual selection
+    }
+});
+</script>
 {% endblock %}

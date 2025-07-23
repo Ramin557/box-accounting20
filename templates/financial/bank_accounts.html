@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}حساب‌های بانکی{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">حساب‌های بانکی</li>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2>مدیریت حساب‌های بانکی</h2>
+            <a href="{{ url_for('add_bank_account') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> حساب جدید
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Bank Account Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ accounts|length }}</h3>
+                <p class="stat-label mb-0">تعداد حساب‌ها</p>
+                <small class="text-muted">فعال</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ "{:,.0f}".format(total_balance) }}</h3>
+                <p class="stat-label mb-0">مجموع موجودی</p>
+                <small class="text-muted">ریال</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ recent_transactions|length }}</h3>
+                <p class="stat-label mb-0">تراکنش‌های اخیر</p>
+                <small class="text-muted">۱۰ روز گذشته</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <h3 class="stat-number">{{ accounts|selectattr('is_primary')|list|length }}</h3>
+                <p class="stat-label mb-0">حساب اصلی</p>
+                <small class="text-muted">تنظیم شده</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Bank Accounts List -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">فهرست حساب‌های بانکی</h5>
+            </div>
+            <div class="card-body">
+                {% if accounts %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>نام حساب</th>
+                                <th>بانک</th>
+                                <th>شماره حساب</th>
+                                <th>نوع حساب</th>
+                                <th>موجودی</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for account in accounts %}
+                            <tr>
+                                <td>
+                                    <strong>{{ account.account_name }}</strong>
+                                    {% if account.is_primary %}
+                                        <span class="badge bg-primary ms-1">اصلی</span>
+                                    {% endif %}
+                                    {% if account.branch_name %}
+                                        <br><small class="text-muted">شعبه: {{ account.branch_name }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ account.bank_name }}</td>
+                                <td>
+                                    {{ account.account_number }}
+                                    {% if account.iban %}
+                                        <br><small class="text-muted">شبا: {{ account.iban }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge 
+                                        {% if account.account_type == 'checking' %}bg-info
+                                        {% elif account.account_type == 'savings' %}bg-success
+                                        {% else %}bg-warning{% endif %}">
+                                        {% if account.account_type == 'checking' %}جاری
+                                        {% elif account.account_type == 'savings' %}پس‌انداز
+                                        {% else %}تجاری{% endif %}
+                                    </span>
+                                </td>
+                                <td class="{% if account.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ "{:,.0f}".format(account.balance) }} {{ account.currency }}
+                                </td>
+                                <td>
+                                    <span class="badge {% if account.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if account.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('bank_account_transactions', id=account.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" title="تراکنش‌ها">
+                                            <i class="fas fa-list"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                onclick="editBankAccount({{ account.id }})" title="ویرایش">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                onclick="deleteBankAccount({{ account.id }})" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-university fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">هیچ حسابی تعریف نشده است</h5>
+                    <p class="text-muted">برای شروع، حساب بانکی جدید اضافه کنید.</p>
+                    <a href="{{ url_for('add_bank_account') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> اضافه کردن حساب اول
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Recent Transactions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">تراکنش‌های اخیر</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                {% for transaction in recent_transactions[:5] %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                        <div class="avatar-sm bg-{% if transaction.transaction_type == 'deposit' %}success{% else %}danger{% endif %} rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="fas fa-{% if transaction.transaction_type == 'deposit' %}arrow-down{% else %}arrow-up{% endif %} text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ transaction.description[:30] }}...</h6>
+                        <small class="text-muted">{{ transaction.get_jalali_transaction_date() }}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="fw-bold {% if transaction.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                            {{ "{:,.0f}".format(transaction.amount) }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-3">
+                    <i class="fas fa-receipt fa-2x text-muted mb-2"></i>
+                    <p class="text-muted mb-0">هیچ تراکنشی ثبت نشده</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">عملیات سریع</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="showBalanceReport()">
+                        <i class="fas fa-chart-bar"></i> گزارش موجودی
+                    </button>
+                    <button class="btn btn-outline-success btn-sm" onclick="reconcileAccounts()">
+                        <i class="fas fa-balance-scale"></i> تطبیق حساب‌ها
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="exportBankData()">
+                        <i class="fas fa-download"></i> صدور اکسل
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteBankAccount(accountId) {
+    if (confirm('آیا مطمئن هستید که می‌خواهید این حساب بانکی را حذف کنید؟')) {
+        fetch(`/bank_accounts/${accountId}/delete`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('خطا در حذف حساب: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('خطا در حذف حساب بانکی');
+            console.error('Error:', error);
+        });
+    }
+}
+
+function editBankAccount(accountId) {
+    window.location.href = `/bank_accounts/${accountId}/edit`;
+}
+
+function showBalanceReport() {
+    // Implementation for balance report
+    alert('گزارش موجودی در حال آماده‌سازی...');
+}
+
+function reconcileAccounts() {
+    // Implementation for account reconciliation
+    alert('تطبیق حساب‌ها در حال انجام...');
+}
+
+function exportBankData() {
+    // Implementation for data export
+    window.location.href = '/bank_accounts/export';
+}
+
+function getCsrfToken() {
+    return document.querySelector('meta[name=csrf-token]').getAttribute('content');
+}
+
+// Balance update animation
+document.addEventListener('DOMContentLoaded', function() {
+    const balanceElements = document.querySelectorAll('.stat-number');
+    balanceElements.forEach(element => {
+        const finalValue = parseFloat(element.textContent.replace(/,/g, ''));
+        if (!isNaN(finalValue)) {
+            animateValue(element, 0, finalValue, 1000);
+        }
+    });
+});
+
+function animateValue(element, start, end, duration) {
+    const increment = (end - start) / (duration / 50);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+            clearInterval(timer);
+            current = end;
+        }
+        element.textContent = Math.floor(current).toLocaleString();
+    }, 50);
+}
+</script>
+{% endblock %}

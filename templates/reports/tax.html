@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش مالیاتی{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('reports') }}">گزارشات</a></li>
+<li class="breadcrumb-item active">گزارش مالیاتی</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        گزارش مالیاتی
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ '{:,}'.format(total_tax or 0) }}</div>
+                                <div class="stat-label">مجموع مالیات (ریال)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ '{:,}'.format(total_sales or 0) }}</div>
+                                <div class="stat-label">مجموع فروش (ریال)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-calendar"></i>
+                        بازه زمانی: از {{ from_date }} تا {{ to_date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

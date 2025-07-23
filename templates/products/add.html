@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}محصول جدید - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('products') }}">محصولات</a></li>
+<li class="breadcrumb-item active">محصول جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Page Header -->
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-box text-primary"></i>
+                افزودن محصول جدید
+            </h2>
+            <a href="{{ url_for('products') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به لیست
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Product Form -->
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات محصول
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="row">
+                        <!-- Basic Information -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-primary border-bottom pb-2">اطلاعات پایه</h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="code" class="form-label">کد محصول <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="code" name="code" required placeholder="BOX001">
+                            <div class="form-text">کد محصول باید منحصر به فرد باشد</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">نام محصول <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required placeholder="جعبه کوچک ۲۰×۱۵×۱۰">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">دسته‌بندی</label>
+                            <div data-custom-select='{"storageKey": "productCategories", "placeholder": "دسته‌بندی محصول را انتخاب کنید", "addNewText": "افزودن دسته‌بندی جدید"}'>
+                                <select class="form-control" id="category" name="category">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="جعبه‌های کوچک">جعبه‌های کوچک</option>
+                                    <option value="جعبه‌های متوسط">جعبه‌های متوسط</option>
+                                    <option value="جعبه‌های بزرگ">جعبه‌های بزرگ</option>
+                                    <option value="جعبه‌های ویژه">جعبه‌های ویژه</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="unit" class="form-label">واحد اندازه‌گیری</label>
+                            <div data-custom-select='{"storageKey": "measurementUnits", "placeholder": "واحد اندازه‌گیری را انتخاب کنید", "addNewText": "افزودن واحد جدید"}'>
+                                <select class="form-select" id="unit" name="unit">
+                                    <option value="عدد">عدد</option>
+                                    <option value="کیلوگرم">کیلوگرم</option>
+                                    <option value="متر">متر</option>
+                                    <option value="بسته">بسته</option>
+                                    <option value="کارتن">کارتن</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="description" class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="توضیحات تفصیلی محصول..."></textarea>
+                        </div>
+                        
+                        <!-- Box Specifications -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-primary border-bottom pb-2">مشخصات جعبه</h6>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="length" class="form-label">طول (سانتی‌متر)</label>
+                            <input type="number" class="form-control" id="length" name="length" step="0.1" min="0" placeholder="20">
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="width" class="form-label">عرض (سانتی‌متر)</label>
+                            <input type="number" class="form-control" id="width" name="width" step="0.1" min="0" placeholder="15">
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="height" class="form-label">ارتفاع (سانتی‌متر)</label>
+                            <input type="number" class="form-control" id="height" name="height" step="0.1" min="0" placeholder="10">
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="material_type" class="form-label">نوع مواد</label>
+                            <div data-custom-select='{"storageKey": "materialTypes", "placeholder": "نوع مواد را انتخاب کنید", "addNewText": "افزودن نوع مواد جدید"}'>
+                                <select class="form-select" id="material_type" name="material_type">
+                                    <option value="">انتخاب کنید</option>
+                                    <option value="کارتن معمولی">کارتن معمولی</option>
+                                    <option value="کارتن ضخیم">کارتن ضخیم</option>
+                                    <option value="کارتن صنعتی">کارتن صنعتی</option>
+                                    <option value="کارتن مقوایی">کارتن مقوایی</option>
+                                    <option value="پلاستیک">پلاستیک</option>
+                                    <option value="چوب">چوب</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Pricing -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-primary border-bottom pb-2">قیمت‌گذاری</h6>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="cost_price" class="form-label">قیمت تمام شده (تومان)</label>
+                            <input type="number" class="form-control" id="cost_price" name="cost_price" min="0" step="100" placeholder="5000">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="selling_price" class="form-label">قیمت فروش (تومان) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="selling_price" name="selling_price" min="0" step="100" required placeholder="8000">
+                        </div>
+                        
+                        <!-- Inventory -->
+                        <div class="col-12 mb-4">
+                            <h6 class="text-primary border-bottom pb-2">مدیریت موجودی</h6>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="current_stock" class="form-label">موجودی فعلی</label>
+                            <input type="number" class="form-control" id="current_stock" name="current_stock" min="0" value="0">
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="min_stock_level" class="form-label">حداقل موجودی</label>
+                            <input type="number" class="form-control" id="min_stock_level" name="min_stock_level" min="0" value="0">
+                            <div class="form-text">هشدار کم موجودی در این حد ارسال می‌شود</div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="max_stock_level" class="form-label">حداکثر موجودی</label>
+                            <input type="number" class="form-control" id="max_stock_level" name="max_stock_level" min="1" value="1000">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i>
+                            ذخیره محصول
+                        </button>
+                        
+                        <a href="{{ url_for('products') }}" class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-times"></i>
+                            انصراف
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-generate product code based on name
+document.getElementById('name').addEventListener('input', function(e) {
+    const name = e.target.value;
+    const codeField = document.getElementById('code');
+    
+    if (!codeField.value && name) {
+        // Simple code generation - take first letters and add numbers
+        let code = 'BOX';
+        const words = name.split(' ');
+        if (words.length > 1) {
+            code += words.slice(0, 2).map(w => w.substring(0, 1)).join('').toUpperCase();
+        }
+        code += String(Math.floor(Math.random() * 900) + 100);
+        codeField.value = code;
+    }
+});
+
+// Calculate profit margin
+function updateProfitMargin() {
+    const costPrice = parseFloat(document.getElementById('cost_price').value) || 0;
+    const sellingPrice = parseFloat(document.getElementById('selling_price').value) || 0;
+    
+    if (costPrice > 0 && sellingPrice > 0) {
+        const margin = ((sellingPrice - costPrice) / sellingPrice * 100).toFixed(1);
+        const profit = sellingPrice - costPrice;
+        
+        // Show margin info (you can add a div to display this)
+        console.log(`Profit Margin: ${margin}%, Profit: ${profit.toLocaleString()} تومان`);
+    }
+}
+
+document.getElementById('cost_price').addEventListener('input', updateProfitMargin);
+document.getElementById('selling_price').addEventListener('input', updateProfitMargin);
+
+// Format numbers with thousands separator
+function formatNumber(input) {
+    input.addEventListener('blur', function(e) {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value)) {
+            e.target.value = value.toLocaleString();
+        }
+    });
+    
+    input.addEventListener('focus', function(e) {
+        const value = e.target.value.replace(/,/g, '');
+        e.target.value = value;
+    });
+}
+
+formatNumber(document.getElementById('cost_price'));
+formatNumber(document.getElementById('selling_price'));
+</script>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% set page_title = "مدیریت کاربران RBAC" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="fas fa-users me-2"></i>
+                    مدیریت کاربران
+                </h2>
+                {% if has_permission('manage_users') %}
+                <a href="{{ url_for('rbac_create_user') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    کاربر جدید
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-gradient-primary">
+                    <h5 class="card-title text-white mb-0">
+                        <i class="fas fa-list me-2"></i>
+                        لیست کاربران سیستم
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>نام کاربری</th>
+                                    <th>نام کامل</th>
+                                    <th>ایمیل</th>
+                                    <th>نقش فعلی</th>
+                                    <th>آخرین ورود</th>
+                                    <th>وضعیت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ user.username }}</strong>
+                                        {% if user.id == current_user.id %}
+                                        <span class="badge bg-info">شما</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.full_name }}</td>
+                                    <td>
+                                        <small class="text-muted">{{ user.email }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ user.get_role_display_name() }}</span>
+                                        {% if has_permission('manage_users') and user.id != current_user.id %}
+                                        <br>
+                                        <small>
+                                            <a href="#" onclick="showChangeRoleModal({{ user.id }}, '{{ user.full_name }}', {{ user.role_id or 0 }})" 
+                                               class="text-decoration-none">
+                                                <i class="fas fa-edit"></i>
+                                                تغییر نقش
+                                            </a>
+                                        </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ user.get_jalali_last_login() }}</small>
+                                    </td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span class="badge bg-success">فعال</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">غیرفعال</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-info" 
+                                                    onclick="showUserPermissions({{ user.id }})"
+                                                    title="مشاهده دسترسی‌ها">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            {% if has_permission('manage_users') and user.id != current_user.id %}
+                                            <a href="{{ url_for('admin_edit_user', user_id=user.id) }}" 
+                                               class="btn btn-sm btn-outline-primary" 
+                                               title="ویرایش کاربر">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">هیچ کاربری یافت نشد.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Role Modal -->
+<div class="modal fade" id="changeRoleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">تغییر نقش کاربر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="changeRoleForm" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <div class="modal-body">
+                    <p>تغییر نقش کاربر: <strong id="userNameToChange"></strong></p>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">نقش جدید:</label>
+                        <select name="role_id" class="form-select" required>
+                            <option value="">انتخاب نقش...</option>
+                            {% for role in roles %}
+                            <option value="{{ role.id }}">{{ role.display_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        تغییر نقش
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- User Permissions Modal -->
+<div class="modal fade" id="userPermissionsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">دسترسی‌های کاربر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="userPermissionsContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">در حال بارگذاری...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showChangeRoleModal(userId, userName, currentRoleId) {
+    document.getElementById('userNameToChange').textContent = userName;
+    document.getElementById('changeRoleForm').action = '/rbac/users/' + userId + '/update-role';
+    
+    // Set current role as selected
+    const roleSelect = document.querySelector('#changeRoleModal select[name="role_id"]');
+    roleSelect.value = currentRoleId;
+    
+    var modal = new bootstrap.Modal(document.getElementById('changeRoleModal'));
+    modal.show();
+}
+
+function showUserPermissions(userId) {
+    const modal = new bootstrap.Modal(document.getElementById('userPermissionsModal'));
+    modal.show();
+    
+    // Load user permissions via AJAX
+    fetch('/api/user/' + userId + '/permissions')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('userPermissionsContent').innerHTML = 
+                    '<div class="alert alert-danger">' + data.error + '</div>';
+            } else {
+                let html = '<h6>کاربر: ' + data.username + '</h6>';
+                html += '<p>نقش: <span class="badge bg-primary">' + data.role + '</span></p>';
+                html += '<h6>دسترسی‌ها:</h6>';
+                
+                if (data.permissions.length > 0) {
+                    html += '<div class="row">';
+                    data.permissions.forEach(permission => {
+                        html += '<div class="col-md-6 mb-2">';
+                        html += '<span class="badge bg-success">' + permission + '</span>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p class="text-muted">هیچ دسترسی خاصی تعریف نشده است.</p>';
+                }
+                
+                document.getElementById('userPermissionsContent').innerHTML = html;
+            }
+        })
+        .catch(error => {
+            document.getElementById('userPermissionsContent').innerHTML = 
+                '<div class="alert alert-danger">خطا در بارگذاری اطلاعات</div>';
+        });
+}
+</script>
+{% endblock %}

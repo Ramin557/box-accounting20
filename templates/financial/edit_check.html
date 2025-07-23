@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش چک{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('checks') }}">مدیریت چک‌ها</a></li>
+<li class="breadcrumb-item active">ویرایش چک</li>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">ویرایش چک شماره {{ check.check_number }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="check_number" class="form-label">شماره چک *</label>
+                        <input type="text" class="form-control" id="check_number" name="check_number" value="{{ check.check_number }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="bank_account_id" class="form-label">حساب بانکی *</label>
+                        <select class="form-select" id="bank_account_id" name="bank_account_id" required>
+                            {% for account in bank_accounts %}
+                            <option value="{{ account.id }}" {% if account.id == check.bank_account_id %}selected{% endif %}>
+                                {{ account.account_name }} - {{ account.bank_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="check_type" class="form-label">نوع چک *</label>
+                        <select class="form-select" id="check_type" name="check_type" required>
+                            <option value="issued" {% if check.check_type == 'issued' %}selected{% endif %}>چک صادره</option>
+                            <option value="received" {% if check.check_type == 'received' %}selected{% endif %}>چک دریافتی</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">وضعیت *</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="issued" {% if check.status == 'issued' %}selected{% endif %}>صادر شده</option>
+                            <option value="deposited" {% if check.status == 'deposited' %}selected{% endif %}>سپرده شده</option>
+                            <option value="cleared" {% if check.status == 'cleared' %}selected{% endif %}>تسویه شده</option>
+                            <option value="bounced" {% if check.status == 'bounced' %}selected{% endif %}>برگشتی</option>
+                            <option value="cancelled" {% if check.status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payee_payor" class="form-label">گیرنده/پرداخت کننده *</label>
+                        <input type="text" class="form-control" id="payee_payor" name="payee_payor" value="{{ check.payee_payor }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">مبلغ (ریال) *</label>
+                        <input type="number" class="form-control" id="amount" name="amount" value="{{ check.amount }}" step="1000" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="issue_date" class="form-label">تاریخ صدور *</label>
+                        <input type="date" class="form-control" id="issue_date" name="issue_date" value="{{ check.issue_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">تاریخ سررسید *</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date" value="{{ check.due_date.strftime('%Y-%m-%d') }}" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="description" class="form-label">توضیحات</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ check.description }}</textarea>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('checks') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> ذخیره تغییرات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

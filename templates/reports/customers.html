@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش مشتریان{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-users me-2 text-primary"></i>
+            گزارش مشتریان
+        </h1>
+        <div>
+            <button class="btn btn-manufacturing" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                چاپ گزارش
+            </button>
+            <button class="btn btn-outline-primary" onclick="exportToExcel('customers')">
+                <i class="fas fa-file-excel"></i>
+                اکسل
+            </button>
+        </div>
+    </div>
+
+    <!-- Customer Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل مشتریان</h6>
+                            <h3>{{ total_customers }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">مشتریان فعال</h6>
+                            <h3>{{ active_customers }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل اعتبار</h6>
+                            <h3>{{ "{:,}".format(total_credit_limit) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-credit-card fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل بدهی</h6>
+                            <h3>{{ "{:,}".format(total_balance) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-balance-scale fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">جزئیات مشتریان</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table manufacturing-table" id="customersTable">
+                    <thead>
+                        <tr>
+                            <th>کد مشتری</th>
+                            <th>نام مشتری</th>
+                            <th>تلفن</th>
+                            <th>حد اعتبار</th>
+                            <th>موجودی فعلی</th>
+                            <th>آخرین خرید</th>
+                            <th>وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td><strong>{{ customer.code or customer.id }}</strong></td>
+                            <td>{{ customer.name }}</td>
+                            <td>{{ customer.phone or '-' }}</td>
+                            <td>{{ "{:,}".format(customer.credit_limit or 0) }} ریال</td>
+                            <td>
+                                <span class="{% if customer.current_balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    {{ "{:,}".format(customer.current_balance or 0) }} ریال
+                                </span>
+                            </td>
+                            <td>{{ customer.created_at.strftime('%Y/%m/%d') if customer.created_at else '-' }}</td>
+                            <td>
+                                {% if customer.is_active %}
+                                    <span class="badge bg-success">فعال</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">غیرفعال</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Analysis -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        تحلیل مشتریان بر اساس اعتبار
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="creditChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-trophy me-2"></i>
+                        برترین مشتریان
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for customer in customers[:5] %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>{{ customer.name }}</strong><br>
+                            <small class="text-muted">{{ customer.phone or 'بدون تلفن' }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary">
+                                {{ "{:,}".format(customer.credit_limit or 0) }} ریال
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportToExcel(type) {
+    const table = document.getElementById('customersTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "گزارش مشتریان"});
+    XLSX.writeFile(wb, `customers_report_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+</script>
+{% endblock %}

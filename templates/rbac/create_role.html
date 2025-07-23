@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% set page_title = "ایجاد نقش جدید" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    ایجاد نقش جدید
+                </h2>
+                <a href="{{ url_for('rbac_roles') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    بازگشت
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header bg-gradient-primary">
+                    <h5 class="card-title text-white mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        اطلاعات نقش جدید
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">نام سیستمی *</label>
+                                    <input type="text" name="name" class="form-control" required
+                                           placeholder="مثال: sales_manager">
+                                    <small class="text-muted">فقط حروف انگلیسی، اعداد و خط زیر مجاز است</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">نام نمایشی *</label>
+                                    <input type="text" name="display_name" class="form-control" required
+                                           placeholder="مثال: مدیر فروش">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">توضیحات</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                      placeholder="توضیح مختصری در مورد این نقش و مسئولیت‌هایش..."></textarea>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            پس از ایجاد نقش، می‌توانید دسترسی‌های مورد نیاز را به آن اختصاص دهید.
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i>
+                                ایجاد نقش
+                            </button>
+                            <a href="{{ url_for('rbac_roles') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i>
+                                انصراف
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

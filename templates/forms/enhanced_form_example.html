@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}فرم پیشرفته - سیستم حسابداری{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">فرم پیشرفته با اعتبارسنجی</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-edit text-primary"></i>
+                        فرم پیشرفته با اعتبارسنجی کامل
+                    </h3>
+                    <small class="text-muted">
+                        این فرم شامل تمام ویژگی‌های پیشرفته فارسی‌سازی و اعتبارسنجی است
+                    </small>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" action="#" class="enhanced-form">
+                        {{ csrf_token() }}
+                        
+                        <div class="row">
+                            <!-- Personal Information Section -->
+                            <div class="col-12">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-user"></i> اطلاعات شخصی
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fullName" class="form-label">نام و نام خانوادگی *</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="fullName" 
+                                           name="full_name"
+                                           placeholder="نام و نام خانوادگی خود را وارد کنید"
+                                           required
+                                           maxlength="100"
+                                           minlength="3">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="nationalId" class="form-label">کد ملی *</label>
+                                    <input type="text" 
+                                           class="form-control national-id" 
+                                           id="nationalId" 
+                                           name="national_id"
+                                           placeholder="کد ملی ده رقمی"
+                                           required
+                                           maxlength="10">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="birthDate" class="form-label">تاریخ تولد *</label>
+                                    <input type="date" 
+                                           class="form-control persian-date-picker" 
+                                           id="birthDate" 
+                                           name="birth_date"
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">جنسیت *</label>
+                                    <select class="form-select" id="gender" name="gender" required>
+                                        <option value="">انتخاب کنید</option>
+                                        <option value="male">مرد</option>
+                                        <option value="female">زن</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Contact Information Section -->
+                            <div class="col-12 mt-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-phone"></i> اطلاعات تماس
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="mobile" class="form-label">تلفن همراه *</label>
+                                    <input type="tel" 
+                                           class="form-control" 
+                                           id="mobile" 
+                                           name="mobile"
+                                           placeholder="۰۹۱۲ ۳۴۵ ۶۷۸۹"
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">ایمیل *</label>
+                                    <input type="email" 
+                                           class="form-control" 
+                                           id="email" 
+                                           name="email"
+                                           placeholder="example@domain.com"
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">آدرس کامل</label>
+                                    <textarea class="form-control" 
+                                              id="address" 
+                                              name="address"
+                                              rows="3"
+                                              placeholder="آدرس کامل خود را وارد کنید"
+                                              maxlength="500"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="postalCode" class="form-label">کد پستی</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="postalCode" 
+                                           name="postal_code"
+                                           placeholder="۱۲۳۴۵۶۷۸۹۰"
+                                           pattern="[0-9]{10}"
+                                           maxlength="10">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">شهر</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="city" 
+                                           name="city"
+                                           placeholder="نام شهر">
+                                </div>
+                            </div>
+                            
+                            <!-- Financial Information Section -->
+                            <div class="col-12 mt-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-money-bill"></i> اطلاعات مالی
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="salary" class="form-label">حقوق ماهانه</label>
+                                    <input type="text" 
+                                           class="form-control persian-number" 
+                                           id="salary" 
+                                           name="salary"
+                                           placeholder="۰">
+                                    <div class="form-text">مبلغ به ریال وارد شود</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="bankAccount" class="form-label">شماره حساب بانکی</label>
+                                    <input type="text" 
+                                           class="form-control iban" 
+                                           id="bankAccount" 
+                                           name="bank_account"
+                                           placeholder="IR123456789012345678901234">
+                                </div>
+                            </div>
+                            
+                            <!-- Security Section -->
+                            <div class="col-12 mt-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-lock"></i> امنیت
+                                </h5>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">رمز عبور *</label>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="password" 
+                                           name="password"
+                                           placeholder="حداقل ۸ کاراکتر"
+                                           required
+                                           minlength="8">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="confirmPassword" class="form-label">تکرار رمز عبور *</label>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="confirmPassword" 
+                                           name="confirm_password"
+                                           placeholder="تکرار رمز عبور"
+                                           required>
+                                </div>
+                            </div>
+                            
+                            <!-- Preferences Section -->
+                            <div class="col-12 mt-4">
+                                <h5 class="mb-3 text-primary">
+                                    <i class="fas fa-cogs"></i> تنظیمات
+                                </h5>
+                            </div>
+                            
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="notifications" 
+                                               name="notifications"
+                                               value="1">
+                                        <label class="form-check-label" for="notifications">
+                                            دریافت اطلاع‌رسانی‌های ایمیلی
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               id="terms" 
+                                               name="terms"
+                                               value="1"
+                                               required>
+                                        <label class="form-check-label" for="terms">
+                                            قوانین و مقررات را مطالعه کرده و می‌پذیرم *
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Buttons -->
+                            <div class="col-12 mt-4">
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                                        <i class="fas fa-arrow-right"></i> انصراف
+                                    </button>
+                                    
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-warning me-2">
+                                            <i class="fas fa-undo"></i> پاک کردن
+                                        </button>
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-check"></i> ثبت اطلاعات
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        فیلدهای مشخص شده با * الزامی هستند. این فرم شامل اعتبارسنجی کامل سمت کاربر و تبدیل خودکار اعداد به فارسی است.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo Information Card -->
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info">
+                <h5 class="alert-heading">
+                    <i class="fas fa-rocket"></i> ویژگی‌های پیشرفته این فرم:
+                </h5>
+                <ul class="mb-0">
+                    <li><strong>تقویم شمسی:</strong> انتخاب تاریخ با تقویم فارسی کامل</li>
+                    <li><strong>اعتبارسنجی لحظه‌ای:</strong> بررسی صحت اطلاعات در حین تایپ</li>
+                    <li><strong>نمایش/مخفی کردن رمز عبور:</strong> قابلیت نمایش رمز عبور</li>
+                    <li><strong>فرمت‌بندی خودکار:</strong> شماره تلفن، کد ملی، و مبالغ مالی</li>
+                    <li><strong>شمارنده کاراکتر:</strong> برای فیلدهای محدود به طول</li>
+                    <li><strong>پیام‌های خطای فارسی:</strong> راهنمایی کاربر به زبان فارسی</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Additional form validation for password confirmation
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    function validatePasswordMatch() {
+        if (confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('رمز عبور مطابقت ندارد');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+    
+    password.addEventListener('input', validatePasswordMatch);
+    confirmPassword.addEventListener('input', validatePasswordMatch);
+    
+    // Demo form submission
+    document.querySelector('.enhanced-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show success message
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show';
+        alert.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            فرم با موفقیت ارسال شد! (این فقط یک نمونه است)
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.querySelector('.card-body').insertBefore(alert, document.querySelector('.enhanced-form'));
+        
+        // Scroll to top
+        document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    });
+});
+</script>
+{% endblock %}

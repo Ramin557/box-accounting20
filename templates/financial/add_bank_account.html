@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}حساب بانکی جدید{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('bank_accounts') }}">حساب‌های بانکی</a></li>
+<li class="breadcrumb-item active">حساب جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">اضافه کردن حساب بانکی جدید</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="account_name" class="form-label">نام حساب <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="account_name" name="account_name" required>
+                                <div class="form-text">مثال: حساب جاری اصلی</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bank_name" class="form-label">نام بانک <span class="text-danger">*</span></label>
+                                <select class="form-select" id="bank_name" name="bank_name" required>
+                                    <option value="">انتخاب بانک...</option>
+                                    <option value="بانک ملی ایران">بانک ملی ایران</option>
+                                    <option value="بانک صادرات ایران">بانک صادرات ایران</option>
+                                    <option value="بانک تجارت">بانک تجارت</option>
+                                    <option value="بانک کشاورزی">بانک کشاورزی</option>
+                                    <option value="بانک صنعت و معدن">بانک صنعت و معدن</option>
+                                    <option value="بانک رفاه کارگران">بانک رفاه کارگران</option>
+                                    <option value="بانک پارسیان">بانک پارسیان</option>
+                                    <option value="بانک پاسارگاد">بانک پاسارگاد</option>
+                                    <option value="بانک کارآفرین">بانک کارآفرین</option>
+                                    <option value="بانک سامان">بانک سامان</option>
+                                    <option value="بانک دی">بانک دی</option>
+                                    <option value="بانک ایران زمین">بانک ایران زمین</option>
+                                    <option value="سایر">سایر...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="account_number" class="form-label">شماره حساب <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="account_number" name="account_number" 
+                                       placeholder="123456789012" required>
+                                <div class="form-text">شماره حساب بدون خط تیره</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="iban" class="form-label">شماره شبا</label>
+                                <input type="text" class="form-control" id="iban" name="iban" 
+                                       placeholder="IR123456789012345678901234" maxlength="26">
+                                <div class="form-text">شماره شبا با IR شروع می‌شود</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="account_type" class="form-label">نوع حساب</label>
+                                <select class="form-select" id="account_type" name="account_type">
+                                    <option value="checking">جاری</option>
+                                    <option value="savings">پس‌انداز</option>
+                                    <option value="business">تجاری</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="currency" class="form-label">واحد پول</label>
+                                <select class="form-select" id="currency" name="currency">
+                                    <option value="IRR">ریال ایران</option>
+                                    <option value="USD">دلار آمریکا</option>
+                                    <option value="EUR">یورو</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="balance" class="form-label">موجودی اولیه</label>
+                                <input type="number" class="form-control" id="balance" name="balance" 
+                                       value="0" step="1000">
+                                <div class="form-text">موجودی فعلی حساب</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="branch_name" class="form-label">نام شعبه</label>
+                                <input type="text" class="form-control" id="branch_name" name="branch_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="branch_code" class="form-label">کد شعبه</label>
+                                <input type="text" class="form-control" id="branch_code" name="branch_code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="swift_code" class="form-label">کد SWIFT</label>
+                        <input type="text" class="form-control" id="swift_code" name="swift_code" maxlength="11">
+                        <div class="form-text">برای تراکنش‌های بین‌المللی</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_primary" name="is_primary">
+                            <label class="form-check-label" for="is_primary">
+                                <strong>حساب اصلی</strong>
+                                <div class="form-text">این حساب به عنوان حساب اصلی شرکت تنظیم شود</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">توضیحات</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                  placeholder="اطلاعات اضافی در مورد این حساب..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('bank_accounts') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> بازگشت
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> ذخیره حساب
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Iranian Banks Help -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">راهنمای بانک‌های ایران</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>بانک‌های دولتی:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-university text-primary"></i> بانک ملی ایران</li>
+                            <li><i class="fas fa-university text-primary"></i> بانک صادرات ایران</li>
+                            <li><i class="fas fa-university text-primary"></i> بانک تجارت</li>
+                            <li><i class="fas fa-university text-primary"></i> بانک کشاورزی</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>بانک‌های خصوصی:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-university text-success"></i> بانک پارسیان</li>
+                            <li><i class="fas fa-university text-success"></i> بانک سامان</li>
+                            <li><i class="fas fa-university text-success"></i> بانک پاسارگاد</li>
+                            <li><i class="fas fa-university text-success"></i> بانک کارآفرین</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>نکات مهم:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-info-circle text-info"></i> شماره شبا با IR شروع می‌شود</li>
+                            <li><i class="fas fa-info-circle text-info"></i> شماره حساب بدون خط تیره</li>
+                            <li><i class="fas fa-info-circle text-info"></i> فقط یک حساب اصلی مجاز</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto format IBAN
+document.getElementById('iban').addEventListener('input', function(e) {
+    let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (value && !value.startsWith('IR')) {
+        value = 'IR' + value;
+    }
+    if (value.length > 26) {
+        value = value.substring(0, 26);
+    }
+    e.target.value = value;
+});
+
+// Auto format account number
+document.getElementById('account_number').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+// Bank name custom input
+document.getElementById('bank_name').addEventListener('change', function(e) {
+    if (e.target.value === 'سایر') {
+        const customName = prompt('نام بانک را وارد کنید:');
+        if (customName) {
+            const option = new Option(customName, customName, true, true);
+            e.target.insertBefore(option, e.target.lastElementChild);
+        } else {
+            e.target.selectedIndex = 0;
+        }
+    }
+});
+
+// Validate form
+document.querySelector('form').addEventListener('submit', function(e) {
+    const iban = document.getElementById('iban').value;
+    const accountNumber = document.getElementById('account_number').value;
+    
+    if (iban && !iban.match(/^IR[0-9]{24}$/)) {
+        e.preventDefault();
+        alert('شماره شبا باید در قالب صحیح (IR + 24 رقم) باشد.');
+        return;
+    }
+    
+    if (accountNumber.length < 8) {
+        e.preventDefault();
+        alert('شماره حساب باید حداقل 8 رقم باشد.');
+        return;
+    }
+});
+
+// Format balance with thousand separators
+document.getElementById('balance').addEventListener('blur', function(e) {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+        e.target.value = value.toLocaleString();
+    }
+});
+
+// Remove formatting before submit
+document.querySelector('form').addEventListener('submit', function(e) {
+    const balanceInput = document.getElementById('balance');
+    balanceInput.value = balanceInput.value.replace(/,/g, '');
+});
+</script>
+{% endblock %}

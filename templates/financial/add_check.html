@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}چک جدید{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('checks') }}">مدیریت چک‌ها</a></li>
+<li class="breadcrumb-item active">چک جدید</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">ثبت چک جدید</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="check_number" class="form-label">شماره چک <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="check_number" name="check_number" required>
+                                <div class="form-text">شماره منحصر به فرد چک</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="check_type" class="form-label">نوع چک <span class="text-danger">*</span></label>
+                                <select class="form-select" id="check_type" name="check_type" required>
+                                    <option value="">انتخاب نوع چک...</option>
+                                    <option value="issued">چک صادره (پرداختی)</option>
+                                    <option value="received">چک دریافتی</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="bank_account_id" class="form-label">حساب بانکی <span class="text-danger">*</span></label>
+                        <select class="form-select" id="bank_account_id" name="bank_account_id" required>
+                            <option value="">انتخاب حساب بانکی...</option>
+                            {% for account in bank_accounts %}
+                            <option value="{{ account.id }}">
+                                {{ account.account_name }} - {{ account.bank_name }} ({{ account.account_number }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">حساب بانکی مربوط به این چک</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="payee_payor" class="form-label">پرداخت‌کننده/گیرنده <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="payee_payor" name="payee_payor" required>
+                                <div class="form-text">نام شخص یا شرکت مربوطه</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">مبلغ چک (ریال) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="amount" name="amount" required min="1000">
+                                <div class="form-text">مبلغ به ریال</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="issue_date" class="form-label">تاریخ صدور <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control persian-date" id="issue_date" name="issue_date" required>
+                                <div class="form-text">تاریخ صدور چک</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="due_date" class="form-label">تاریخ سررسید <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control persian-date" id="due_date" name="due_date" required>
+                                <div class="form-text">تاریخ قابل وصول چک</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Related Party Selection -->
+                    <div id="related_party_section" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="customer_id" class="form-label">مشتری مربوطه</label>
+                                    <select class="form-select" id="customer_id" name="customer_id">
+                                        <option value="">انتخاب مشتری...</option>
+                                        {% for customer in customers %}
+                                        <option value="{{ customer.id }}">{{ customer.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="supplier_id" class="form-label">تأمین‌کننده مربوطه</label>
+                                    <select class="form-select" id="supplier_id" name="supplier_id">
+                                        <option value="">انتخاب تأمین‌کننده...</option>
+                                        {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">شرح چک</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" 
+                                  placeholder="توضیحات مربوط به چک..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">یادداشت‌ها</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                  placeholder="یادداشت‌های داخلی..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('checks') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-right"></i> بازگشت
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> ذخیره چک
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Check Guidelines -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="card-title mb-0">راهنمای ثبت چک</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>چک‌های صادره:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-arrow-up text-primary"></i> چک‌هایی که شما به دیگران می‌دهید</li>
+                            <li><i class="fas fa-user text-primary"></i> پرداخت‌کننده: نام شرکت شما</li>
+                            <li><i class="fas fa-money-bill text-primary"></i> موجودی حساب کاهش می‌یابد</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>چک‌های دریافتی:</h6>
+                        <ul class="list-unstyled small">
+                            <li><i class="fas fa-arrow-down text-success"></i> چک‌هایی که از دیگران می‌گیرید</li>
+                            <li><i class="fas fa-user text-success"></i> پرداخت‌کننده: نام شخص یا شرکت</li>
+                            <li><i class="fas fa-money-bill text-success"></i> پس از وصول موجودی افزایش می‌یابد</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <h6><i class="fas fa-info-circle me-2"></i>نکات مهم:</h6>
+                    <ul class="mb-0">
+                        <li>شماره چک باید منحصر به فرد باشد</li>
+                        <li>تاریخ سررسید نباید کمتر از تاریخ صدور باشد</li>
+                        <li>حتماً حساب بانکی صحیح را انتخاب کنید</li>
+                        <li>مبلغ چک را با دقت وارد کنید</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Show/hide related party section based on check type
+document.getElementById('check_type').addEventListener('change', function(e) {
+    const relatedPartySection = document.getElementById('related_party_section');
+    const payeePayorLabel = document.querySelector('label[for="payee_payor"]');
+    
+    if (e.target.value === 'issued') {
+        relatedPartySection.style.display = 'block';
+        payeePayorLabel.textContent = 'گیرنده چک';
+        document.getElementById('payee_payor').placeholder = 'نام گیرنده چک...';
+    } else if (e.target.value === 'received') {
+        relatedPartySection.style.display = 'block';
+        payeePayorLabel.textContent = 'پرداخت‌کننده چک';
+        document.getElementById('payee_payor').placeholder = 'نام پرداخت‌کننده چک...';
+    } else {
+        relatedPartySection.style.display = 'none';
+    }
+});
+
+// Auto-calculate due date (30 days after issue date)
+document.getElementById('issue_date').addEventListener('change', function(e) {
+    if (e.target.value && e.target.value.match(/^\d{4}\/\d{2}\/\d{2}$/)) {
+        const [year, month, day] = e.target.value.split('/').map(Number);
+        
+        // Add 30 days (simple calculation)
+        let newDay = day + 30;
+        let newMonth = month;
+        let newYear = year;
+        
+        // Handle month overflow
+        const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 29]; // Persian calendar
+        
+        while (newDay > daysInMonth[newMonth - 1]) {
+            newDay -= daysInMonth[newMonth - 1];
+            newMonth++;
+            if (newMonth > 12) {
+                newMonth = 1;
+                newYear++;
+            }
+        }
+        
+        const dueDate = `${newYear}/${newMonth.toString().padStart(2, '0')}/${newDay.toString().padStart(2, '0')}`;
+        document.getElementById('due_date').value = dueDate;
+    }
+});
+
+// Format amount with thousand separators
+document.getElementById('amount').addEventListener('blur', function(e) {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value)) {
+        // Show formatted value in a tooltip or adjacent element
+        const formattedValue = value.toLocaleString() + ' ریال';
+        e.target.title = formattedValue;
+        
+        // Update a display element if it exists
+        let displayElement = document.getElementById('amount_display');
+        if (!displayElement) {
+            displayElement = document.createElement('small');
+            displayElement.id = 'amount_display';
+            displayElement.className = 'form-text text-success';
+            e.target.parentNode.appendChild(displayElement);
+        }
+        displayElement.textContent = formattedValue;
+    }
+});
+
+// Validate form before submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const issueDate = document.getElementById('issue_date').value;
+    const dueDate = document.getElementById('due_date').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    
+    // Validate dates
+    if (issueDate >= dueDate) {
+        e.preventDefault();
+        alert('تاریخ سررسید باید بعد از تاریخ صدور باشد.');
+        return;
+    }
+    
+    // Validate amount
+    if (amount < 1000) {
+        e.preventDefault();
+        alert('مبلغ چک باید حداقل ۱۰۰۰ ریال باشد.');
+        return;
+    }
+    
+    // Confirm submission
+    if (!confirm('آیا از صحت اطلاعات وارد شده اطمینان دارید؟')) {
+        e.preventDefault();
+    }
+});
+
+// Auto-complete payee/payor from customers/suppliers
+document.getElementById('customer_id').addEventListener('change', function(e) {
+    if (e.target.value) {
+        const selectedText = e.target.options[e.target.selectedIndex].text;
+        document.getElementById('payee_payor').value = selectedText;
+        document.getElementById('supplier_id').selectedIndex = 0; // Reset supplier
+    }
+});
+
+document.getElementById('supplier_id').addEventListener('change', function(e) {
+    if (e.target.value) {
+        const selectedText = e.target.options[e.target.selectedIndex].text;
+        document.getElementById('payee_payor').value = selectedText;
+        document.getElementById('customer_id').selectedIndex = 0; // Reset customer
+    }
+});
+
+// Check number uniqueness (simple client-side check)
+document.getElementById('check_number').addEventListener('blur', function(e) {
+    const checkNumber = e.target.value;
+    if (checkNumber) {
+        // In a real implementation, this would check against existing checks
+        // For now, just show a format suggestion
+        if (!checkNumber.match(/^\d+$/)) {
+            e.target.setCustomValidity('شماره چک باید فقط عدد باشد');
+        } else {
+            e.target.setCustomValidity('');
+        }
+    }
+});
+</script>
+{% endblock %}

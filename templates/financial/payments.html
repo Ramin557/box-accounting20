@@ -1,231 +1,152 @@
 {% extends "base.html" %}
 
-{% block title %}دریافت و پرداخت - سیستم حسابداری{% endblock %}
-
-{% block breadcrumb_items %}
-<li class="breadcrumb-item active">دریافت و پرداخت</li>
-{% endblock %}
+{% block title %}دریافت و پرداخت{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="fas fa-credit-card text-primary"></i>
-                مدیریت دریافت و پرداخت
-            </h2>
-            <div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addPaymentModal">
-                    <i class="fas fa-plus"></i> دریافت/پرداخت جدید
-                </button>
-            </div>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-money-bill-wave me-2 text-primary"></i>
+            دریافت و پرداخت
+        </h1>
+        <div>
+            <a href="{{ url_for('add_financial_payment') }}" class="btn btn-manufacturing">
+                <i class="fas fa-plus"></i>
+                ثبت تراکنش جدید
+            </a>
         </div>
     </div>
-</div>
 
-<div class="row">
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">کل دریافت‌ها</h5>
-                        <h4 class="mb-0">۱۲۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
+    <!-- Payment Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل دریافت‌ها</h6>
+                            <h3>{{ "{:,}".format(payments|selectattr('payment_type', 'equalto', 'received')|map(attribute='amount')|sum) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-down fa-2x" style="color: #28a745;"></i>
+                        </div>
                     </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-arrow-up fa-2x"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">کل پرداخت‌ها</h6>
+                            <h3>{{ "{:,}".format(payments|selectattr('payment_type', 'equalto', 'paid')|map(attribute='amount')|sum) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-arrow-up fa-2x" style="color: #dc3545;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">تعداد تراکنش‌ها</h6>
+                            <h3>{{ payments|length }}</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-exchange-alt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">موجودی خالص</h6>
+                            <h3>{{ "{:,}".format((payments|selectattr('payment_type', 'equalto', 'received')|map(attribute='amount')|sum) - (payments|selectattr('payment_type', 'equalto', 'paid')|map(attribute='amount')|sum)) }} ریال</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-wallet fa-2x"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-danger">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">کل پرداخت‌ها</h5>
-                        <h4 class="mb-0">۸۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-arrow-down fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">موجودی نقد</h5>
-                        <h4 class="mb-0">۴۰,۰۰۰,۰۰۰ <small>تومان</small></h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-wallet fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3 mb-4">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="card-title">در انتظار تأیید</h5>
-                        <h4 class="mb-0">۵,۰۰۰,۰۰۰ <small>تومان</small></h4>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="fas fa-hourglass-half fa-2x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="fas fa-list"></i>
-                    لیست تراکنش‌ها
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>شماره تراکنش</th>
-                                <th>نوع</th>
-                                <th>مبلغ</th>
-                                <th>تاریخ</th>
-                                <th>وضعیت</th>
-                                <th>توضیحات</th>
-                                <th>عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>PAY-000001</td>
-                                <td><span class="badge bg-success">دریافت</span></td>
-                                <td>۵,۰۰۰,۰۰۰ تومان</td>
-                                <td>۱۴۰۳/۰۴/۲۸</td>
-                                <td><span class="badge bg-success">تأیید شده</span></td>
-                                <td>پرداخت فاکتور INV-000001</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning">
+    <!-- Payments Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">تاریخچه تراکنش‌ها</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table manufacturing-table">
+                    <thead>
+                        <tr>
+                            <th>شماره</th>
+                            <th>تاریخ</th>
+                            <th>نوع تراکنش</th>
+                            <th>مبلغ</th>
+                            <th>روش پرداخت</th>
+                            <th>توضیحات</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td><strong>#{{ payment.id }}</strong></td>
+                            <td>{{ payment.payment_date.strftime('%Y/%m/%d') if payment.payment_date else '-' }}</td>
+                            <td>
+                                {% if payment.payment_type == 'received' %}
+                                    <span class="badge bg-success">دریافت</span>
+                                {% else %}
+                                    <span class="badge bg-danger">پرداخت</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="fw-bold {% if payment.payment_type == 'received' %}text-success{% else %}text-danger{% endif %}">
+                                    {{ "{:,}".format(payment.amount) }} ریال
+                                </span>
+                            </td>
+                            <td>{{ payment.payment_method or 'نقدی' }}</td>
+                            <td>{{ payment.description or payment.notes or '-' }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('edit_financial_payment', id=payment.id) }}" class="btn btn-outline-primary" title="ویرایش">
                                         <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>PAY-000002</td>
-                                <td><span class="badge bg-danger">پرداخت</span></td>
-                                <td>۲,۰۰۰,۰۰۰ تومان</td>
-                                <td>۱۴۰۳/۰۴/۲۷</td>
-                                <td><span class="badge bg-warning">در انتظار</span></td>
-                                <td>خرید مواد اولیه</td>
-                                <td>
-                                    <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <nav>
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">قبلی</a>
-                        </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">بعدی</a>
-                        </li>
-                    </ul>
-                </nav>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('delete_financial_payment', id=payment.id) }}" class="d-inline" 
+                                          onsubmit="return confirm('آیا از حذف این تراکنش اطمینان دارید؟')">
+                                        <button type="submit" class="btn btn-outline-danger" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                هیچ تراکنشی ثبت نشده است
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Payment Modal -->
-<div class="modal fade" id="addPaymentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">دریافت/پرداخت جدید</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="payment_type" class="form-label">نوع تراکنش</label>
-                            <select class="form-select" id="payment_type" name="payment_type" required>
-                                <option value="">انتخاب کنید</option>
-                                <option value="income">دریافت</option>
-                                <option value="expense">پرداخت</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="amount" class="form-label">مبلغ (تومان)</label>
-                            <input type="number" class="form-control" id="amount" name="amount" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="payment_date" class="form-label">تاریخ تراکنش</label>
-                            <input type="date" class="form-control" id="payment_date" name="payment_date" 
-                                   data-persian-datepicker="true" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="payment_method" class="form-label">روش پرداخت</label>
-                            <select class="form-select" id="payment_method" name="payment_method" required>
-                                <option value="">انتخاب کنید</option>
-                                <option value="cash">نقد</option>
-                                <option value="bank">بانکی</option>
-                                <option value="check">چک</option>
-                                <option value="installment">اقساطی</option>
-                            </select>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="description" class="form-label">توضیحات</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
-                    <button type="submit" class="btn btn-primary">ثبت تراکنش</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

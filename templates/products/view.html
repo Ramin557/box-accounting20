@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}مشاهده محصول - {{ product.name }}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('products') }}">محصولات</a></li>
+<li class="breadcrumb-item active">مشاهده محصول</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-box text-primary"></i>
+                {{ product.name }}
+            </h2>
+            <div>
+                <a href="{{ url_for('edit_product', id=product.id) }}" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> ویرایش
+                </a>
+                <a href="{{ url_for('products') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i> بازگشت
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle"></i>
+                    اطلاعات محصول
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <strong>کد محصول:</strong>
+                        <p class="mb-0">{{ product.code or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>نام محصول:</strong>
+                        <p class="mb-0">{{ product.name or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>واحد:</strong>
+                        <p class="mb-0">{{ product.unit or '-' }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>دسته‌بندی:</strong>
+                        <p class="mb-0">{{ product.category or '-' }}</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>توضیحات:</strong>
+                        <p class="mb-0">{{ product.description or '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-ruler-combined"></i>
+                    مشخصات فنی
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4 mb-3">
+                        <strong>طول:</strong>
+                        <p class="mb-0">{{ product.length or '-' }} سانتی‌متر</p>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <strong>عرض:</strong>
+                        <p class="mb-0">{{ product.width or '-' }} سانتی‌متر</p>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <strong>ارتفاع:</strong>
+                        <p class="mb-0">{{ product.height or '-' }} سانتی‌متر</p>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <strong>نوع مواد:</strong>
+                        <p class="mb-0">{{ product.material_type or '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-dollar-sign"></i>
+                    اطلاعات قیمت
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <strong>قیمت خرید:</strong>
+                        <p class="mb-0 text-info">{{ "{:,}".format(product.cost_price|int) }} تومان</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>قیمت فروش:</strong>
+                        <p class="mb-0 text-success">{{ "{:,}".format(product.selling_price|int) }} تومان</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>سود خالص:</strong>
+                        <p class="mb-0 text-primary">{{ "{:,}".format((product.selling_price - product.cost_price)|int) }} تومان</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>درصد سود:</strong>
+                        <p class="mb-0 text-warning">
+                            {% if product.cost_price > 0 %}
+                                {{ "%.1f"|format(((product.selling_price - product.cost_price) / product.cost_price * 100)) }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-warehouse"></i>
+                    اطلاعات موجودی
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <strong>موجودی فعلی:</strong>
+                        <p class="mb-0 
+                           {% if product.current_stock <= product.min_stock_level %}text-danger
+                           {% elif product.current_stock <= product.min_stock_level * 2 %}text-warning
+                           {% else %}text-success{% endif %}">
+                            {{ product.current_stock }} {{ product.unit }}
+                        </p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>حداقل موجودی:</strong>
+                        <p class="mb-0">{{ product.min_stock_level }} {{ product.unit }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>حداکثر موجودی:</strong>
+                        <p class="mb-0">{{ product.max_stock_level }} {{ product.unit }}</p>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <strong>وضعیت:</strong>
+                        <p class="mb-0">
+                            {% if product.current_stock <= 0 %}
+                                <span class="badge bg-danger">ناموجود</span>
+                            {% elif product.current_stock <= product.min_stock_level %}
+                                <span class="badge bg-warning">کمبود موجودی</span>
+                            {% else %}
+                                <span class="badge bg-success">موجود</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-history"></i>
+                    تاریخچه حرکت انبار
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stock_movements %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>تاریخ</th>
+                                    <th>نوع حرکت</th>
+                                    <th>مقدار</th>
+                                    <th>موجودی بعد از حرکت</th>
+                                    <th>توضیحات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for movement in stock_movements %}
+                                <tr>
+                                    <td>{{ movement.get_jalali_created_date() }}</td>
+                                    <td>
+                                        {% if movement.movement_type == 'in' %}
+                                            <span class="badge bg-success">ورود</span>
+                                        {% elif movement.movement_type == 'out' %}
+                                            <span class="badge bg-danger">خروج</span>
+                                        {% else %}
+                                            <span class="badge bg-info">تنظیم</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if movement.movement_type == 'in' %}
+                                            <span class="text-success">+{{ movement.quantity }}</span>
+                                        {% else %}
+                                            <span class="text-danger">-{{ movement.quantity }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ movement.stock_after }}</td>
+                                    <td>{{ movement.notes or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">هیچ حرکت انباری یافت نشد.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

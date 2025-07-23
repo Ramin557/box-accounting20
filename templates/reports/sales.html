@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}گزارش فروش{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="h3 mb-3">گزارش فروش</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">فیلتر گزارش</h5>
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">اعمال</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">خلاصه فروش</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>تاریخ</th>
+                            <th>تعداد فاکتور</th>
+                            <th>مجموع فروش</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in sales_data %}
+                        <tr>
+                            <td>{{ row.date }}</td>
+                            <td>{{ row.invoice_count }}</td>
+                            <td>{{ "{:,.0f}".format(row.total_sales) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">مشتریان برتر</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام مشتری</th>
+                            <th>تعداد فاکتور</th>
+                            <th>مجموع خرید</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in top_customers %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.invoice_count }}</td>
+                            <td>{{ "{:,.0f}".format(row.total_amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">محصولات پرفروش</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>تعداد فروش</th>
+                            <th>مجموع فروش</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in top_products %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.total_quantity }}</td>
+                            <td>{{ "{:,.0f}".format(row.total_amount) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
