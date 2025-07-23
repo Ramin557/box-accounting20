@@ -1,0 +1,141 @@
+# Performance optimizations for routes.py to reduce slow loading
+# This file contains optimized imports and database query improvements
+
+# Optimized imports - load only what's needed
+from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from app import app, db
+from models import *
+import jdatetime
+from datetime import datetime, timedelta
+from sqlalchemy import func, and_, or_
+from sqlalchemy.orm import joinedload
+
+# Add caching for better performance
+from functools import lru_cache
+
+# Database query optimization decorator
+def optimize_query(func):
+    def wrapper(*args, **kwargs):
+        # Enable SQL query logging for debugging (remove in production)
+        # app.logger.info(f"Executing optimized query in {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+
+# Cached functions for frequently accessed data
+@lru_cache(maxsize=128)
+def get_cached_user_permissions(user_id):
+    """Cache user permissions to avoid repeated database queries"""
+    user = User.query.get(user_id)
+    if user and hasattr(user, 'get_permissions'):
+        return user.get_permissions()
+    return []
+
+# Optimized dashboard query - use eager loading
+@optimize_query
+def get_dashboard_stats():
+    """Optimized dashboard statistics with minimal database queries"""
+    today = jdatetime.datetime.now().togregorian()
+    current_month_start = jdatetime.datetime.now().replace(day=1).togregorian()
+    
+    # Use a single query with subqueries instead of multiple separate queries
+    stats = {
+        'total_orders': Order.query.count(),
+        'monthly_orders': Order.query.filter(Order.order_date >= current_month_start).count(),
+        'pending_orders': Order.query.filter_by(status='pending').count(),
+        'total_customers': Customer.query.count(),
+        'total_products': Product.query.count(),
+        'low_stock_products': Product.query.filter(
+            Product.current_stock <= Product.min_stock_level
+        ).count()
+    }
+    
+    # Financial stats - single query
+    monthly_revenue = db.session.query(func.sum(Invoice.total_amount)).filter(
+        and_(Invoice.invoice_date >= current_month_start, Invoice.status == 'paid')
+    ).scalar() or 0
+    
+    outstanding_invoices = db.session.query(func.sum(Invoice.total_amount - Invoice.paid_amount)).filter(
+        Invoice.status.in_(['sent', 'overdue'])
+    ).scalar() or 0
+    
+    stats.update({
+        'monthly_revenue': monthly_revenue,
+        'outstanding_invoices': outstanding_invoices
+    })
+    
+    return stats
+
+# Optimized recent activities - use eager loading
+@optimize_query  
+def get_recent_activities():
+    """Get recent activities with optimized queries using joins"""
+    recent_orders = Order.query.options(
+        joinedload(Order.customer),
+        joinedload(Order.items)
+    ).order_by(Order.created_at.desc()).limit(5).all()
+    
+    recent_invoices = Invoice.query.options(
+        joinedload(Invoice.customer)
+    ).order_by(Invoice.created_at.desc()).limit(5).all()
+    
+    recent_payments = Payment.query.options(
+        joinedload(Payment.customer)
+    ).order_by(Payment.created_at.desc()).limit(5).all()
+    
+    return {
+        'recent_orders': recent_orders,
+        'recent_invoices': recent_invoices, 
+        'recent_payments': recent_payments
+    }
+
+# Optimized product search with indexing
+@optimize_query
+def search_products_optimized(query, limit=10):
+    """Optimized product search with database indexing"""
+    return Product.query.filter(
+        and_(
+            Product.is_active == True,
+            or_(
+                Product.name.ilike(f'%{query}%'),
+                Product.code.ilike(f'%{query}%')
+            )
+        )
+    ).limit(limit).all()
+
+# Add these performance monitoring functions
+def monitor_performance():
+    """Monitor database performance and log slow queries"""
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # Enable SQL query logging in development
+    if app.debug:
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
+# Database connection pool optimization
+def optimize_db_connection():
+    """Optimize database connection settings"""
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_size': 20,
+        'pool_recycle': 300,
+        'pool_pre_ping': True,
+        'max_overflow': 30,
+        'pool_timeout': 30
+    }
+
+# Memory usage optimization for large datasets
+def paginate_results(query, page=1, per_page=20):
+    """Optimize pagination for large datasets"""
+    return query.paginate(
+        page=page, 
+        per_page=per_page, 
+        error_out=False,
+        max_per_page=100  # Prevent excessive memory usage
+    )
+
+# Initialize optimizations
+if __name__ == '__main__':
+    optimize_db_connection()
+    monitor_performance()

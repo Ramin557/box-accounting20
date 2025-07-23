@@ -623,6 +623,11 @@ def invoices():
 
 # Reports Routes
 
+@app.route('/reports/financial')
+@login_required
+def financial_reports():
+    return render_template('financial/reports.html')
+
 @app.route('/reports/sales')
 @login_required
 def reports_sales():
@@ -718,10 +723,7 @@ def reports_financial():
     return render_template('reports/financial.html')
 
 
-@app.route('/reports/production')
-@login_required 
-def production_report():
-    return render_template('reports/production.html')
+# Removed duplicate production_report - using production_reports instead
 
 @app.route('/reports/tax')
 @login_required
@@ -876,6 +878,459 @@ def update_system_settings():
     flash('تنظیمات سیستم بروزرسانی شد.', 'success')
     return redirect(url_for('settings'))
 
+# ======================== New Business Modules ========================
+
+# Fixed duplicate route issues - routes properly implemented above
+
+# دریافت و پرداخت
+@app.route('/financial_payments')
+@login_required
+def financial_payments():
+    payments = Payment.query.all()
+    return render_template('financial/payments.html', payments=payments)
+
+@app.route('/payments/add', methods=['GET', 'POST'])
+@login_required
+def add_payment():
+    if request.method == 'POST':
+        payment = Payment(
+            amount=float(request.form['amount']),
+            payment_type=request.form['payment_type'],
+            description=request.form['description'],
+            payment_date=datetime.now(),
+            created_by=current_user.id
+        )
+        db.session.add(payment)
+        db.session.commit()
+        flash('پرداخت با موفقیت ثبت شد.', 'success')
+        return redirect(url_for('payments'))
+    
+    return render_template('financial/add_payment.html')
+
+# مدیریت چک‌ها
+# @app.route('/checks') - این route قبلاً وجود دارد
+
+# @app.route('/checks/add') - این route قبلاً وجود دارد
+
+# ======================== Missing Report Routes ========================
+
+@app.route('/inventory_reports')
+@login_required 
+def inventory_reports():
+    products = Product.query.all()
+    
+    # Calculate inventory statistics
+    total_value = sum((p.current_stock or 0) * (p.cost_price or 0) for p in products)
+    low_stock_count = len([p for p in products if (p.current_stock or 0) <= (p.min_stock_level or 0)])
+    out_of_stock_count = len([p for p in products if (p.current_stock or 0) <= 0])
+    
+    return render_template('reports/inventory.html',
+                         products=products,
+                         total_value=total_value,
+                         low_stock_count=low_stock_count,
+                         out_of_stock_count=out_of_stock_count)
+
+# Removed duplicate customer_reports and production_reports - using comprehensive versions from later in file
+
+# This financial_reports route was moved earlier - duplicate removed
+
+# Check routes moved to comprehensive section below - duplicate removed
+
+# ======================== Payment Management Routes ========================
+
+@app.route('/payments')
+@login_required
+def payments():
+    payments = Payment.query.order_by(Payment.created_at.desc()).all()
+    return render_template('financial/payments.html', payments=payments)
+
+@app.route('/payments/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_payment(id):
+    payment = Payment.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        payment.amount = float(request.form['amount'])
+        payment.payment_type = request.form['payment_type']
+        payment.description = request.form['description']
+        payment.payment_date = datetime.strptime(request.form['payment_date'], '%Y-%m-%d')
+        
+        db.session.commit()
+        flash('پرداخت با موفقیت ویرایش شد.', 'success')
+        return redirect(url_for('payments'))
+    
+    return render_template('financial/edit_payment.html', payment=payment)
+
+@app.route('/payments/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_payment(id):
+    payment = Payment.query.get_or_404(id)
+    
+    try:
+        db.session.delete(payment)
+        db.session.commit()
+        flash('پرداخت با موفقیت حذف شد.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('خطا در حذف پرداخت.', 'error')
+    
+    return redirect(url_for('payments'))
+
+# ======================== Receipt Management Routes ========================
+
+@app.route('/receipts')
+@login_required
+def receipts():
+    receipts = Payment.query.filter_by(payment_type='receipt').order_by(Payment.created_at.desc()).all()
+    return render_template('financial/receipts.html', receipts=receipts)
+
+@app.route('/receipts/add', methods=['GET', 'POST'])
+@login_required
+def add_receipt():
+    if request.method == 'POST':
+        receipt = Payment(
+            amount=float(request.form['amount']),
+            payment_type='receipt',
+            description=request.form['description'],
+            payment_date=datetime.strptime(request.form['payment_date'], '%Y-%m-%d'),
+            created_by=current_user.id
+        )
+        db.session.add(receipt)
+        db.session.commit()
+        flash('دریافت با موفقیت ثبت شد.', 'success')
+        return redirect(url_for('receipts'))
+    
+    return render_template('financial/add_receipt.html')
+
+@app.route('/receipts/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_receipt(id):
+    receipt = Payment.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        receipt.amount = float(request.form['amount'])
+        receipt.description = request.form['description']
+        receipt.payment_date = datetime.strptime(request.form['payment_date'], '%Y-%m-%d')
+        
+        db.session.commit()
+        flash('دریافت با موفقیت ویرایش شد.', 'success')
+        return redirect(url_for('receipts'))
+    
+    return render_template('financial/edit_receipt.html', receipt=receipt)
+
+@app.route('/receipts/<int:id>/delete', methods=['POST'])
+@login_required
+def delete_receipt(id):
+    receipt = Payment.query.get_or_404(id)
+    
+    try:
+        db.session.delete(receipt)
+        db.session.commit()
+        flash('دریافت با موفقیت حذف شد.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('خطا در حذف دریافت.', 'error')
+    
+    return redirect(url_for('receipts'))
+
+# Remove duplicate bank_accounts route - using comprehensive version below
+
+# ================= COMPREHENSIVE BUDGETING MODULE =================
+@app.route('/budgeting')
+@login_required
+def budgeting():
+    budgets = Budget.query.order_by(Budget.created_at.desc()).all()
+    
+    # Calculate total budgeted vs actual amounts
+    total_budgeted = sum(b.total_budgeted or 0 for b in budgets if b.status == 'active')
+    total_actual = sum(b.total_actual or 0 for b in budgets if b.status == 'active')
+    variance = total_actual - total_budgeted
+    
+    # Get current Persian year
+    current_persian_year = jdatetime.datetime.now().year
+    
+    return render_template('financial/budgeting.html', 
+                         budgets=budgets,
+                         total_budgeted=total_budgeted,
+                         total_actual=total_actual,
+                         variance=variance,
+                         current_persian_year=current_persian_year)
+
+@app.route('/budgets/add', methods=['GET', 'POST'])
+@login_required
+def add_budget():
+    if request.method == 'POST':
+        # Convert Persian dates to Gregorian
+        start_persian = request.form['start_date']  # YYYY/MM/DD format
+        end_persian = request.form['end_date']
+        
+        start_date = jdatetime.datetime.strptime(start_persian, '%Y/%m/%d').togregorian()
+        end_date = jdatetime.datetime.strptime(end_persian, '%Y/%m/%d').togregorian()
+        
+        budget = Budget(
+            budget_name=request.form['budget_name'],
+            budget_year=int(request.form['budget_year']),
+            budget_period=request.form['budget_period'],
+            start_date=start_date,
+            end_date=end_date,
+            status=request.form.get('status', 'draft'),
+            notes=request.form.get('notes', ''),
+            created_by=current_user.id
+        )
+        
+        db.session.add(budget)
+        db.session.commit()
+        flash('بودجه جدید با موفقیت ایجاد شد.', 'success')
+        return redirect(url_for('budgeting'))
+    
+    accounts = FinancialAccount.query.filter_by(is_active=True).all()
+    current_persian_year = jdatetime.datetime.now().year
+    
+    return render_template('financial/add_budget.html', 
+                         accounts=accounts,
+                         current_persian_year=current_persian_year)
+
+@app.route('/budgets/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_budget(id):
+    budget = Budget.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        budget.budget_name = request.form['budget_name']
+        budget.budget_year = int(request.form['budget_year'])
+        budget.budget_period = request.form['budget_period']
+        
+        # Convert Persian dates
+        start_persian = request.form['start_date']
+        end_persian = request.form['end_date']
+        
+        budget.start_date = jdatetime.datetime.strptime(start_persian, '%Y/%m/%d').togregorian()
+        budget.end_date = jdatetime.datetime.strptime(end_persian, '%Y/%m/%d').togregorian()
+        budget.status = request.form['status']
+        budget.notes = request.form.get('notes', '')
+        
+        db.session.commit()
+        flash('بودجه با موفقیت بروزرسانی شد.', 'success')
+        return redirect(url_for('budgeting'))
+    
+    return render_template('financial/edit_budget.html', budget=budget)
+
+@app.route('/budgets/<int:id>/items')
+@login_required
+def budget_items(id):
+    budget = Budget.query.get_or_404(id)
+    items = BudgetItem.query.filter_by(budget_id=id).all()
+    accounts = FinancialAccount.query.filter_by(is_active=True).all()
+    
+    return render_template('financial/budget_items.html', 
+                         budget=budget, items=items, accounts=accounts)
+
+@app.route('/budgets/<int:budget_id>/items/add', methods=['POST'])
+@login_required
+def add_budget_item(budget_id):
+    budget = Budget.query.get_or_404(budget_id)
+    
+    item = BudgetItem(
+        budget_id=budget_id,
+        account_id=request.form['account_id'],
+        category=request.form['category'],
+        item_name=request.form['item_name'],
+        budgeted_amount=float(request.form['budgeted_amount']),
+        notes=request.form.get('notes', '')
+    )
+    
+    # Add monthly amounts if provided
+    for i in range(1, 13):
+        month_field = f'month_{i}'
+        if month_field in request.form and request.form[month_field]:
+            setattr(item, month_field, float(request.form[month_field]))
+    
+    db.session.add(item)
+    
+    # Update budget total
+    budget.total_budgeted = db.session.query(func.sum(BudgetItem.budgeted_amount)).filter_by(budget_id=budget_id).scalar() or 0
+    
+    db.session.commit()
+    flash('آیتم بودجه با موفقیت اضافه شد.', 'success')
+    return redirect(url_for('budget_items', id=budget_id))
+
+# ================= COMPREHENSIVE BANK ACCOUNTS MODULE =================
+@app.route('/bank_accounts')
+@login_required
+def bank_accounts():
+    accounts = BankAccount.query.filter_by(is_active=True).all()
+    
+    # Calculate total balances
+    total_balance = sum(acc.balance or 0 for acc in accounts)
+    
+    # Get recent transactions
+    recent_transactions = BankTransaction.query.join(BankAccount)\
+        .order_by(BankTransaction.transaction_date.desc()).limit(10).all()
+    
+    return render_template('financial/bank_accounts.html', 
+                         accounts=accounts,
+                         total_balance=total_balance,
+                         recent_transactions=recent_transactions)
+
+@app.route('/bank_accounts/add', methods=['GET', 'POST'])
+@login_required  
+def add_bank_account():
+    if request.method == 'POST':
+        # If this is set as primary, unset all other primary accounts
+        is_primary = request.form.get('is_primary') == 'on'
+        if is_primary:
+            BankAccount.query.update({'is_primary': False})
+        
+        account = BankAccount(
+            account_name=request.form['account_name'],
+            bank_name=request.form['bank_name'],
+            account_number=request.form['account_number'],
+            iban=request.form.get('iban', ''),
+            swift_code=request.form.get('swift_code', ''),
+            account_type=request.form['account_type'],
+            currency=request.form.get('currency', 'IRR'),
+            balance=float(request.form.get('balance', 0)),
+            is_primary=is_primary,
+            branch_name=request.form.get('branch_name', ''),
+            branch_code=request.form.get('branch_code', ''),
+            notes=request.form.get('notes', '')
+        )
+        
+        db.session.add(account)
+        db.session.commit()
+        flash('حساب بانکی جدید با موفقیت اضافه شد.', 'success')
+        return redirect(url_for('bank_accounts'))
+    
+    return render_template('financial/add_bank_account.html')
+
+@app.route('/bank_accounts/<int:id>/transactions')
+@login_required
+def bank_account_transactions(id):
+    account = BankAccount.query.get_or_404(id)
+    transactions = BankTransaction.query.filter_by(bank_account_id=id)\
+        .order_by(BankTransaction.transaction_date.desc()).all()
+    
+    # Calculate running balance
+    running_balance = account.balance
+    for transaction in reversed(transactions):
+        if transaction.transaction_type == 'withdrawal':
+            running_balance += transaction.amount
+        else:
+            running_balance -= transaction.amount
+    
+    return render_template('financial/bank_transactions.html',
+                         account=account,
+                         transactions=transactions,
+                         running_balance=running_balance)
+
+@app.route('/bank_transactions/add/<int:account_id>', methods=['POST'])
+@login_required
+def add_bank_transaction(account_id):
+    account = BankAccount.query.get_or_404(account_id)
+    
+    transaction = BankTransaction(
+        bank_account_id=account_id,
+        transaction_date=jdatetime.datetime.strptime(request.form['transaction_date'], '%Y/%m/%d').togregorian(),
+        transaction_type=request.form['transaction_type'],
+        amount=float(request.form['amount']),
+        description=request.form['description'],
+        reference_number=request.form.get('reference_number', ''),
+        related_party=request.form.get('related_party', ''),
+        category=request.form.get('category', ''),
+        created_by=current_user.id
+    )
+    
+    # Update account balance
+    if transaction.transaction_type == 'deposit':
+        account.balance += transaction.amount
+    elif transaction.transaction_type == 'withdrawal':
+        account.balance -= transaction.amount
+    
+    db.session.add(transaction)
+    db.session.commit()
+    flash('تراکنش بانکی با موفقیت ثبت شد.', 'success')
+    return redirect(url_for('bank_account_transactions', id=account_id))
+
+# ================= COMPREHENSIVE CHECK MANAGEMENT MODULE =================
+@app.route('/checks')
+@login_required
+def checks():
+    checks = Check.query.order_by(Check.due_date.desc()).all()
+    
+    # Categorize checks by status
+    issued_checks = [c for c in checks if c.check_type == 'issued']
+    received_checks = [c for c in checks if c.check_type == 'received']
+    pending_checks = [c for c in checks if c.status in ['issued', 'deposited']]
+    
+    # Calculate totals
+    total_issued = sum(c.amount for c in issued_checks if c.status != 'cancelled')
+    total_received = sum(c.amount for c in received_checks if c.status != 'cancelled')
+    
+    return render_template('financial/checks.html',
+                         checks=checks,
+                         issued_checks=issued_checks,
+                         received_checks=received_checks,
+                         pending_checks=pending_checks,
+                         total_issued=total_issued,
+                         total_received=total_received)
+
+@app.route('/checks/add', methods=['GET', 'POST'])
+@login_required
+def add_check():
+    if request.method == 'POST':
+        check = Check(
+            check_number=request.form['check_number'],
+            bank_account_id=request.form['bank_account_id'],
+            check_type=request.form['check_type'],
+            payee_payor=request.form['payee_payor'],
+            amount=float(request.form['amount']),
+            issue_date=jdatetime.datetime.strptime(request.form['issue_date'], '%Y/%m/%d').togregorian(),
+            due_date=jdatetime.datetime.strptime(request.form['due_date'], '%Y/%m/%d').togregorian(),
+            customer_id=request.form.get('customer_id') or None,
+            supplier_id=request.form.get('supplier_id') or None,
+            description=request.form.get('description', ''),
+            notes=request.form.get('notes', ''),
+            created_by=current_user.id
+        )
+        
+        db.session.add(check)
+        db.session.commit()
+        flash('چک جدید با موفقیت ثبت شد.', 'success')
+        return redirect(url_for('checks'))
+    
+    bank_accounts = BankAccount.query.filter_by(is_active=True).all()
+    customers = Customer.query.filter_by(is_active=True).all()
+    suppliers = Supplier.query.all()
+    
+    return render_template('financial/add_check.html',
+                         bank_accounts=bank_accounts,
+                         customers=customers,
+                         suppliers=suppliers)
+
+@app.route('/checks/<int:id>/status', methods=['POST'])
+@login_required
+def update_check_status(id):
+    check = Check.query.get_or_404(id)
+    new_status = request.form['status']
+    
+    check.status = new_status
+    
+    if new_status == 'cleared':
+        check.cleared_date = datetime.utcnow()
+        
+        # Update bank account balance for issued checks
+        if check.check_type == 'issued':
+            check.bank_account.balance -= check.amount
+    elif new_status == 'bounced':
+        # Reverse any balance changes if check bounced
+        if check.check_type == 'issued' and check.cleared_date:
+            check.bank_account.balance += check.amount
+        check.cleared_date = None
+    
+    db.session.commit()
+    flash(f'وضعیت چک به {new_status} تغییر کرد.', 'success')
+    return redirect(url_for('checks'))
+
 @app.route('/update_backup_settings', methods=['POST'])
 @login_required
 def update_backup_settings():
@@ -888,49 +1343,11 @@ def update_security_settings():
     flash('تنظیمات امنیتی بروزرسانی شد.', 'success')
     return redirect(url_for('settings'))
 
-@app.route('/payments')
+
+
+@app.route('/financial_payments/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
-def payments():
-    payments = Payment.query.all()
-    return render_template('financial/payments.html', payments=payments)
-
-@app.route('/payments/add', methods=['GET', 'POST'])
-@login_required
-def add_payment():
-    if request.method == 'POST':
-        customer_id = request.form.get('customer_id')
-        invoice_id = request.form.get('invoice_id')
-        amount = request.form.get('amount')
-        payment_date = jdatetime.datetime.strptime(request.form.get('payment_date'), '%Y/%m/%d').togregorian()
-        payment_method = request.form.get('payment_method')
-        notes = request.form.get('notes')
-
-        if not customer_id or not amount or not payment_date or not payment_method:
-            flash('تمام فیلدهای ستاره دار الزامی هستند.', 'error')
-            return redirect(url_for('add_payment'))
-
-        payment = Payment(
-            customer_id=customer_id,
-            invoice_id=invoice_id,
-            amount=amount,
-            payment_date=payment_date,
-            payment_method=payment_method,
-            notes=notes,
-            created_by=current_user.id
-        )
-
-        db.session.add(payment)
-        db.session.commit()
-        flash('پرداخت با موفقیت اضافه شد.', 'success')
-        return redirect(url_for('payments'))
-
-    customers = Customer.query.filter_by(is_active=True).all()
-    invoices = Invoice.query.all()
-    return render_template('financial/add_payment.html', customers=customers, invoices=invoices)
-
-@app.route('/payments/<int:id>/edit', methods=['GET', 'POST'])
-@login_required
-def edit_payment(id):
+def edit_financial_payment(id):
     payment = Payment.query.get_or_404(id)
     if request.method == 'POST':
         payment.customer_id = request.form.get('customer_id')
@@ -942,25 +1359,22 @@ def edit_payment(id):
 
         db.session.commit()
         flash('اطلاعات پرداخت با موفقیت بروزرسانی شد.', 'success')
-        return redirect(url_for('payments'))
+        return redirect(url_for('financial_payments'))
 
     customers = Customer.query.filter_by(is_active=True).all()
     invoices = Invoice.query.all()
     return render_template('financial/edit_payment.html', payment=payment, customers=customers, invoices=invoices)
 
-@app.route('/payments/<int:id>/delete', methods=['POST'])
+@app.route('/financial_payments/<int:id>/delete', methods=['POST'])
 @login_required
-def delete_payment(id):
+def delete_financial_payment(id):
     payment = Payment.query.get_or_404(id)
     db.session.delete(payment)
     db.session.commit()
     flash('پرداخت با موفقیت حذف شد.', 'success')
-    return redirect(url_for('payments'))
+    return redirect(url_for('financial_payments'))
 
-@app.route('/checks')
-@login_required
-def checks():
-    return render_template('financial/checks.html')
+# Remove duplicate checks route - using comprehensive version below
 
 @app.route('/banks')
 @login_required
@@ -1000,24 +1414,48 @@ def restore_backup():
 
 # Removed duplicate financial_reports route
 
-@app.route('/inventory_reports')
-@login_required
-def inventory_reports():
-    return render_template('reports/inventory.html')
+# Duplicate routes removed - using earlier implementations above
 
-@app.route('/customer_reports')
+@app.route('/calendar')
 @login_required
-def customer_reports():
-    return render_template('reports/customers.html')
+def calendar():
+    """Persian calendar with reminders and holidays."""
+    return render_template('calendar.html')
+
+@app.route('/ui-demo')
+@login_required
+def ui_demo():
+    """UI/UX enhancements demonstration page."""
+    return render_template('forms/enhanced-form-example.html')
+
+@app.route('/checks_management')
+@login_required
+def checks_management():
+    """Check management system with CRUD operations."""
+    return render_template('checks/management.html')
+
+@app.route('/receipts_payments')
+@login_required
+def receipts_payments():
+    """Receipts and payments management with CRUD operations."""
+    return render_template('payments/receipts_payments.html')
 
 @app.route('/production_reports')
 @login_required
 def production_reports():
+    """Production reports with analytics."""
     return render_template('reports/production.html')
+
+@app.route('/customer_reports')
+@login_required
+def customer_reports():
+    """Customer reports and analytics."""
+    return render_template('reports/customers.html')
 
 @app.route('/tax_reports')
 @login_required
 def tax_reports():
+    """Tax reports and calculations."""
     return render_template('reports/tax.html')
 
 @app.route('/financial_report')
@@ -1298,6 +1736,71 @@ def view_order(id):
     order = Order.query.get_or_404(id)
     return render_template('orders/view.html', order=order)
 
+@app.route('/orders/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_order(id):
+    order = Order.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        order.customer_id = int(request.form.get('customer_id'))
+        order.delivery_date = jdatetime.datetime.strptime(request.form.get('delivery_date'), '%Y-%m-%d').togregorian() if request.form.get('delivery_date') else None
+        order.notes = request.form.get('notes')
+        
+        # Update order items
+        OrderItem.query.filter_by(order_id=order.id).delete()
+        
+        product_ids = request.form.getlist('product_id[]')
+        quantities = request.form.getlist('quantity[]')
+        unit_prices = request.form.getlist('unit_price[]')
+        
+        subtotal = 0
+        for i, product_id in enumerate(product_ids):
+            if product_id and quantities[i] and unit_prices[i]:
+                quantity = int(quantities[i])
+                unit_price = float(unit_prices[i])
+                line_total = quantity * unit_price
+                
+                order_item = OrderItem(
+                    order_id=order.id,
+                    product_id=int(product_id),
+                    quantity=quantity,
+                    unit_price=unit_price,
+                    line_total=line_total
+                )
+                db.session.add(order_item)
+                subtotal += line_total
+        
+        # Update order totals
+        tax_rate = 0.09  # 9% VAT
+        order.subtotal = subtotal
+        order.tax_amount = subtotal * tax_rate
+        order.total_amount = order.subtotal + order.tax_amount
+        
+        db.session.commit()
+        flash('سفارش با موفقیت بروزرسانی شد.', 'success')
+        return redirect(url_for('orders'))
+    
+    customers = Customer.query.filter_by(is_active=True).all()
+    products = Product.query.filter_by(is_active=True).all()
+    return render_template('orders/edit.html', order=order, customers=customers, products=products)
+
+@app.route('/orders/<int:id>/confirm', methods=['POST'])
+@login_required
+def confirm_order(id):
+    order = Order.query.get_or_404(id)
+    
+    if order.status != 'pending':
+        flash('فقط سفارشات در انتظار قابل تایید هستند.', 'error')
+        return redirect(url_for('orders'))
+    
+    order.status = 'confirmed'
+    order.confirmed_by = current_user.id
+    order.confirmed_at = datetime.utcnow()
+    
+    db.session.commit()
+    flash('سفارش با موفقیت تایید شد.', 'success')
+    return redirect(url_for('orders'))
+
 
 
 # Admin Panel Routes
@@ -1572,10 +2075,7 @@ def financial_budget():
 def financial_checks():
     return render_template('financial/checks.html')
 
-@app.route('/financial/payments')
-@login_required
-def financial_payments():
-    return render_template('financial/payments.html')
+# Route '/financial/payments' already exists - Skip duplicate
 
 @app.route('/financial/receipts')
 @login_required
@@ -1583,10 +2083,7 @@ def financial_receipts():
     return render_template('financial/receipts.html')
 
 # Financial Reports Routes
-@app.route('/financial/reports')
-@login_required
-def financial_reports():
-    return render_template('financial/reports.html')
+# Duplicate route removed - using reports/financial instead
 
 @app.route('/financial/reports/inventory')
 @login_required

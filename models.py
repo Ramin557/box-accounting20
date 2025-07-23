@@ -409,3 +409,148 @@ class Transaction(db.Model):
     
     # Relationships
     account = db.relationship('FinancialAccount', backref='transactions')
+
+# Budget Management Models
+class Budget(db.Model):
+    __tablename__ = 'budgets'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    budget_name = db.Column(db.String(128), nullable=False)
+    budget_year = db.Column(db.Integer, nullable=False)  # Persian year
+    budget_period = db.Column(db.String(32), default='annual')  # monthly, quarterly, annual
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    total_budgeted = db.Column(Numeric(15, 2), default=0)
+    total_actual = db.Column(Numeric(15, 2), default=0)
+    status = db.Column(db.String(32), default='draft')  # draft, approved, active, closed
+    notes = db.Column(db.Text)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    items = db.relationship('BudgetItem', backref='budget', lazy=True, cascade='all, delete-orphan')
+    
+    def get_jalali_start_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.start_date).strftime('%Y/%m/%d')
+        
+    def get_jalali_end_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.end_date).strftime('%Y/%m/%d')
+    
+    def get_variance(self):
+        return self.total_actual - self.total_budgeted
+    
+    def get_variance_percentage(self):
+        if self.total_budgeted > 0:
+            return (self.get_variance() / self.total_budgeted) * 100
+        return 0
+
+class BudgetItem(db.Model):
+    __tablename__ = 'budget_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    budget_id = db.Column(db.Integer, db.ForeignKey('budgets.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('financial_accounts.id'), nullable=False)
+    category = db.Column(db.String(64), nullable=False)  # درآمد, هزینه, سرمایه‌گذاری
+    item_name = db.Column(db.String(128), nullable=False)
+    budgeted_amount = db.Column(Numeric(15, 2), nullable=False)
+    actual_amount = db.Column(Numeric(15, 2), default=0)
+    month_1 = db.Column(Numeric(15, 2), default=0)
+    month_2 = db.Column(Numeric(15, 2), default=0)
+    month_3 = db.Column(Numeric(15, 2), default=0)
+    month_4 = db.Column(Numeric(15, 2), default=0)
+    month_5 = db.Column(Numeric(15, 2), default=0)
+    month_6 = db.Column(Numeric(15, 2), default=0)
+    month_7 = db.Column(Numeric(15, 2), default=0)
+    month_8 = db.Column(Numeric(15, 2), default=0)
+    month_9 = db.Column(Numeric(15, 2), default=0)
+    month_10 = db.Column(Numeric(15, 2), default=0)
+    month_11 = db.Column(Numeric(15, 2), default=0)
+    month_12 = db.Column(Numeric(15, 2), default=0)
+    notes = db.Column(db.Text)
+    
+    # Relationships
+    account = db.relationship('FinancialAccount', backref='budget_items')
+    
+    def get_variance(self):
+        return self.actual_amount - self.budgeted_amount
+    
+    def get_variance_percentage(self):
+        if self.budgeted_amount > 0:
+            return (self.get_variance() / self.budgeted_amount) * 100
+        return 0
+
+# Bank Account Models
+class BankAccount(db.Model):
+    __tablename__ = 'bank_accounts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    account_name = db.Column(db.String(128), nullable=False)
+    bank_name = db.Column(db.String(128), nullable=False)
+    account_number = db.Column(db.String(50), unique=True, nullable=False)
+    iban = db.Column(db.String(26), unique=True)
+    swift_code = db.Column(db.String(11))
+    account_type = db.Column(db.String(32), default='checking')  # checking, savings, business
+    currency = db.Column(db.String(10), default='IRR')
+    balance = db.Column(Numeric(15, 2), default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    is_primary = db.Column(db.Boolean, default=False)
+    branch_name = db.Column(db.String(128))
+    branch_code = db.Column(db.String(20))
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    transactions = db.relationship('BankTransaction', backref='bank_account', lazy=True)
+    checks = db.relationship('Check', backref='bank_account', lazy=True)
+
+class BankTransaction(db.Model):
+    __tablename__ = 'bank_transactions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    bank_account_id = db.Column(db.Integer, db.ForeignKey('bank_accounts.id'), nullable=False)
+    transaction_date = db.Column(db.DateTime, nullable=False)
+    transaction_type = db.Column(db.String(32), nullable=False)  # deposit, withdrawal, transfer
+    amount = db.Column(Numeric(15, 2), nullable=False)
+    description = db.Column(db.String(255))
+    reference_number = db.Column(db.String(100))
+    related_party = db.Column(db.String(128))  # پایان گیرنده یا پرداخت کننده
+    category = db.Column(db.String(64))
+    reconciled = db.Column(db.Boolean, default=False)
+    reconciled_date = db.Column(db.DateTime)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def get_jalali_transaction_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.transaction_date).strftime('%Y/%m/%d')
+
+# Check Management Models
+class Check(db.Model):
+    __tablename__ = 'checks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    check_number = db.Column(db.String(50), unique=True, nullable=False)
+    bank_account_id = db.Column(db.Integer, db.ForeignKey('bank_accounts.id'), nullable=False)
+    check_type = db.Column(db.String(32), nullable=False)  # issued, received
+    payee_payor = db.Column(db.String(128), nullable=False)  # گیرنده یا پرداخت کننده
+    amount = db.Column(Numeric(15, 2), nullable=False)
+    issue_date = db.Column(db.DateTime, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(32), default='issued')  # issued, deposited, cleared, bounced, cancelled
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'))
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'))
+    description = db.Column(db.Text)
+    cleared_date = db.Column(db.DateTime)
+    notes = db.Column(db.Text)
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    def get_jalali_issue_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.issue_date).strftime('%Y/%m/%d')
+        
+    def get_jalali_due_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.due_date).strftime('%Y/%m/%d')
+        
+    def get_jalali_cleared_date(self):
+        if self.cleared_date:
+            return jdatetime.datetime.fromgregorian(datetime=self.cleared_date).strftime('%Y/%m/%d')
+        return ''
