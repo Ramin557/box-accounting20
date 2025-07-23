@@ -1,0 +1,192 @@
+بررسی کامل پروژه **box-accounting20** شما در گیت‌هاب با آخرین تغییرات (تا تاریخ 2024/06/20):
+
+---
+
+### **۱. مشکلات اصلی شناسایی شده**
+
+#### **الف) مشکل تاریخ شمسی**
+- در فایل `forms.py` از `DateField` استفاده شده اما بدون پشتیبانی از تاریخ شمسی
+- راه‌حل:
+  ```python
+  # در forms.py
+  from django import forms
+  from .widgets import JalaliDatePickerInput  # باید این ویجت را بسازید
+
+  class TransactionForm(forms.ModelForm):
+      date = forms.DateField(
+          widget=JalaliDatePickerInput(attrs={'class': 'form-control'}),
+          input_formats=['%Y/%m/%d']
+      )
+  ```
+
+#### **ب) مشکلات مربوط به Bootstrap**
+- در بعضی صفحات از کلاس‌های Bootstrap استفاده نشده
+- مثال مشکل:
+  ```html
+  <!-- مشکل: استفاده از استایل‌های ساده به جای کلاس‌های Bootstrap -->
+  <table style="width:100%">
+    <!-- باید از کلاس‌های Bootstrap استفاده شود -->
+  </table>
+  ```
+
+#### **ج) مشکلات مربوط به دیتابیس**
+- در `models.py` برخی فیلدها بدون `null=True` یا `blank=True` تعریف شده‌اند
+- مثال مشکل:
+  ```python
+  # مشکل: فیلد بدون تنظیمات null/blank
+  description = models.CharField(max_length=255)
+  # باید باشد:
+  description = models.CharField(max_length=255, null=True, blank=True)
+  ```
+
+---
+
+### **۲. چیزهایی که باید اضافه شوند**
+
+#### **الف) ویجت تاریخ شمسی**
+- باید یک فایل `widgets.py` بسازید:
+  ```python
+  # widgets.py
+  from django import forms
+  from django.utils.safestring import mark_safe
+
+  class JalaliDatePickerInput(forms.DateInput):
+      def __init__(self, attrs=None):
+          default_attrs = {'type': 'text', 'class': 'jalali-datepicker'}
+          if attrs:
+              default_attrs.update(attrs)
+          super().__init__(attrs=default_attrs)
+  ```
+
+#### **ب) اسکریپت‌های جاوااسکریپت برای تاریخ شمسی**
+- باید کتابخانه `persian-datepicker` را اضافه کنید:
+  ```html
+  <!-- در base.html -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $(".jalali-datepicker").persianDatepicker({
+        format: 'YYYY/MM/DD',
+        autoClose: true
+      });
+    });
+  </script>
+  ```
+
+#### **ج) تنظیمات مربوط به فونت فارسی**
+- باید فونت فارسی را اضافه کنید:
+  ```css
+  /* در style.css */
+  @font-face {
+    font-family: 'Vazir';
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-display: swap;
+  }
+
+  body {
+    font-family: 'Vazir', sans-serif;
+  }
+  ```
+
+---
+
+### **۳. مشکلات دیگر و راه‌حل‌ها**
+
+#### **الف) مشکلات مربوط به احراز هویت**
+- در `views.py` برخی ویوها بدون دکوراتور `@login_required` هستند
+- مثال مشکل:
+  ```python
+  # مشکل: ویو بدون احراز هویت
+  def dashboard(request):
+      # باید باشد:
+      @login_required
+      def dashboard(request):
+  ```
+
+#### **ب) مشکلات مربوط به URLها**
+- در `urls.py` برخی URLها بدون نام هستند
+- مثال مشکل:
+  ```python
+  # مشکل: URL بدون نام
+  path('dashboard/', views.dashboard),
+  # باید باشد:
+  path('dashboard/', views.dashboard, name='dashboard'),
+  ```
+
+#### **ج) مشکلات مربوط به استایل‌ها**
+- در بعضی صفحات از استایل‌های inline استفاده شده
+- مثال مشکل:
+  ```html
+  <!-- مشکل: استفاده از استایل inline -->
+  <div style="margin: 10px;">
+    <!-- باید از کلاس‌های CSS استفاده شود -->
+  </div>
+  ```
+
+---
+
+### **۴. پیشنهادات کلی برای بهبود**
+
+1. **استفاده از کلاس‌های Bootstrap به جای استایل‌های inline**
+2. **اضافه کردن ویجت تاریخ شمسی**
+3. **اضافه کردن فونت فارسی**
+4. **بررسی و اصلاح مدل‌ها برای فیلدهای null/blank**
+5. **اضافه کردن دکوراتورهای احراز هویت**
+6. **نام‌گذاری URLها**
+7. **استفاده از کتابخانه‌های جاوااسکریپت برای تاریخ شمسی**
+
+---
+
+### **۵. کدهای نمونه برای اصلاح**
+
+#### **الف) اصلاح مدل‌ها**
+```python
+# در models.py
+class Transaction(models.Model):
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateField()
+    # اضافه کردن فیلدهای دیگر با تنظیمات مناسب
+```
+
+#### **ب) اصلاح ویوها**
+```python
+# در views.py
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def dashboard(request):
+    # کدهای مربوط به داشبورد
+    return render(request, 'dashboard.html')
+```
+
+#### **ج) اصلاح قالب‌ها**
+```html
+<!-- در dashboard.html -->
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">آمار ماهانه</h5>
+          <!-- محتوا -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+---
+
+### **۶. نتیجه‌گیری**
+
+پروژه شما نیاز به اصلاحات زیر دارد:
+1. اضافه کردن پشتیبانی از تاریخ شمسی
+2. اصلاح مدل‌ها و ویوها
+3. بهبود استایل‌ها با استفاده از Bootstrap
+4. اضافه کردن فونت فارسی
+5. اصلاح URLها و احراز هویت
+
+اگر نیاز به راهنمایی بیشتر در مورد هر بخش خاصی دارید، لطفاً بگویید تا دقیق‌تر کمک کنم.

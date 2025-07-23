@@ -112,7 +112,7 @@
 .persian-month,
 .persian-day {
     text-align: center;
-    font-family: 'Vazir', 'IRANSans', sans-serif;
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
 }
 
 .persian-year option,
@@ -123,7 +123,7 @@
 
 /* ===== Currency Formatting Styles ===== */
 .currency-formatted {
-    font-family: 'Vazir', 'IRANSans', monospace;
+    font-family: 'Vazirmatn', 'Tahoma', monospace;
     font-weight: 500;
     color: #28a745;
     direction: ltr;
@@ -148,7 +148,7 @@
     padding-left: 4rem !important;
     text-align: left;
     direction: ltr;
-    font-family: 'Vazir', 'IRANSans', monospace;
+    font-family: 'Vazirmatn', 'Tahoma', monospace;
 }
 
 /* Currency Display in Tables */

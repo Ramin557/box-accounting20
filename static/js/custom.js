@@ -4,7 +4,7 @@
  */
 
 // Global variables
-let darkMode = localStorage.getItem('darkMode') === 'true';
+var darkMode = localStorage.getItem('darkMode') === 'true';
 
 /**
  * Initialize all components when DOM is ready

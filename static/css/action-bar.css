@@ -1,0 +1,228 @@
+/* Universal Action Bar System for Persian Accounting */
+
+/* Action Bar Container */
+.action-bar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+}
+
+/* Action Bar Dark Mode */
+.dark-mode .action-bar {
+    background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Action Bar Title */
+.action-bar h4 {
+    color: white;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.action-bar .breadcrumb {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.action-bar .breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+}
+
+.action-bar .breadcrumb-item a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.action-bar .breadcrumb-item.active {
+    color: white;
+}
+
+/* Action Buttons Container */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Action Buttons Styling */
+.action-bar .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.action-bar .btn-light {
+    background: rgba(255, 255, 255, 0.95);
+    color: #4a5568;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.action-bar .btn-light:hover {
+    background: white;
+    color: #2d3748;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+
+.action-bar .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.7);
+    color: white;
+    background: transparent;
+}
+
+.action-bar .btn-outline-light:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive Action Bar */
+@media (max-width: 768px) {
+    .action-bar {
+        padding: 0.75rem;
+        position: relative;
+    }
+    
+    .action-bar .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+    
+    .action-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .action-bar .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+/* Icon Spacing in Action Buttons */
+.action-bar .btn i {
+    margin-left: 0.5rem;
+}
+
+/* Special Styling for Primary Actions */
+.action-bar .btn-primary-action {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.action-bar .btn-primary-action:hover {
+    background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Export/Print Actions */
+.action-bar .btn-export {
+    background: linear-gradient(135deg, #ff7043 0%, #f4511e 100%);
+    color: white;
+    border: none;
+}
+
+.action-bar .btn-export:hover {
+    background: linear-gradient(135deg, #f4511e 0%, #ff7043 100%);
+    transform: translateY(-2px);
+}
+
+/* Search/Filter Actions */
+.action-bar .btn-filter {
+    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+    color: white;
+    border: none;
+}
+
+.action-bar .btn-filter:hover {
+    background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%);
+    transform: translateY(-2px);
+}
+
+/* Quick Stats in Action Bar */
+.action-bar .quick-stats {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-bar .quick-stats strong {
+    font-weight: 600;
+    margin-left: 0.25rem;
+}
+
+/* Animation for Action Bar */
+.action-bar {
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dropdown in Action Bar */
+.action-bar .dropdown-menu {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.dark-mode .action-bar .dropdown-menu {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+
+/* Loading state for action buttons */
+.action-bar .btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.action-bar .btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid;
+    border-color: transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

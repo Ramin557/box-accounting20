@@ -66,7 +66,7 @@ body.dark-mode {
     border-color: #444;
 }
 
-/* Dark mode for forms */
+/* Dark mode for forms - Enhanced for better text visibility */
 .dark-mode .form-control,
 .dark-mode .form-select,
 .dark-mode input[type="text"],
@@ -74,11 +74,15 @@ body.dark-mode {
 .dark-mode input[type="password"],
 .dark-mode input[type="number"],
 .dark-mode input[type="tel"],
+.dark-mode input[type="search"],
+.dark-mode input[type="url"],
+.dark-mode input[type="date"],
 .dark-mode textarea,
 .dark-mode select {
     background-color: #2a2a2a !important;
-    border-color: #444 !important;
+    border-color: #555 !important;
     color: #e0e0e0 !important;
+    caret-color: #e0e0e0 !important; /* Cursor color */
 }
 
 .dark-mode .form-control:focus,
@@ -88,8 +92,9 @@ body.dark-mode {
 .dark-mode select:focus {
     background-color: #333 !important;
     border-color: #4fc3f7 !important;
-    color: #e0e0e0 !important;
+    color: #ffffff !important; /* Ensure bright white text on focus */
     box-shadow: 0 0 0 0.2rem rgba(79, 195, 247, 0.25) !important;
+    caret-color: #ffffff !important;
 }
 
 .dark-mode .form-label {
@@ -98,6 +103,196 @@ body.dark-mode {
 
 .dark-mode .form-text {
     color: #bbb;
+}
+
+/* Dark mode placeholder text styling */
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+    color: #aaa !important;
+    opacity: 1;
+}
+
+/* Dark mode select option styling */
+.dark-mode select option {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Dark mode input group styling */
+.dark-mode .input-group-text {
+    background-color: #2a2a2a !important;
+    border-color: #555 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Enhanced Form Control Styling - Fix White Backgrounds */
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea,
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #2a2a4a !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.dark-mode input:focus,
+.dark-mode select:focus,
+.dark-mode textarea:focus,
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: #333355 !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* Price input and number inputs specific styling */
+.dark-mode input[type="number"] {
+    background-color: #2a2a4a !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode input[type="number"]:focus {
+    background-color: #333355 !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
+}
+
+/* Fix select dropdown background */
+.dark-mode select,
+.dark-mode .form-select {
+    background-color: #2a2a4a !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23aaa' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+    color: #ffffff !important;
+}
+
+/* Ensure all form elements have dark background */
+.dark-mode .form-floating > .form-control,
+.dark-mode .form-floating > .form-select {
+    background-color: #2a2a4a !important;
+    border-color: #555 !important;
+    color: #ffffff !important;
+}
+
+.dark-mode .form-floating > label {
+    color: #aaa !important;
+}
+
+/* Fix any remaining white backgrounds in forms */
+.dark-mode .bg-white {
+    background-color: #2a2a4a !important;
+}
+
+.dark-mode .text-dark {
+    color: #ffffff !important;
+}
+
+/* Comprehensive form input fixes - FORCE DARK BACKGROUNDS */
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select,
+.dark-mode .form-control,
+.dark-mode .form-select,
+.dark-mode input[type="text"],
+.dark-mode input[type="number"],
+.dark-mode input[type="email"],
+.dark-mode input[type="password"],
+.dark-mode input[type="tel"] {
+    background-color: #2a2a4a !important;
+    background: #2a2a4a !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Force white text on focus */
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus,
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: #333355 !important;
+    background: #333355 !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* Fix white backgrounds in any remaining elements */
+.dark-mode .form-group,
+.dark-mode .input-group,
+.dark-mode .form-floating {
+    background: transparent !important;
+}
+
+/* Price and number input specific fixes */
+.dark-mode input[name="selling_price"],
+.dark-mode input[name="cost_price"],
+.dark-mode input[name="price"],
+.dark-mode input[name="amount"] {
+    background-color: #2a2a4a !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+}
+
+/* Select dropdown specific fixes */
+.dark-mode .form-select option,
+.dark-mode select option {
+    background-color: #2a2a4a !important;
+    color: #ffffff !important;
+}
+
+/* Input group styling for dark mode */
+.dark-mode .input-group-append .btn {
+    border-left: 1px solid #555;
+    background-color: #2a2a4a;
+    color: #ffffff;
+}
+
+.dark-mode .input-group-append .btn:hover {
+    background-color: #333355;
+    border-color: #667eea;
+}
+
+/* Force all inputs to have dark background - ULTIMATE FIX */
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea {
+    background-color: #2a2a4a !important;
+    background: #2a2a4a !important;
+    border-color: #555 !important;
+    color: #ffffff !important;
+}
+
+/* Override Bootstrap defaults completely */
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #2a2a4a !important;
+    background-image: none !important;
+    border-color: #555 !important;
+    color: #ffffff !important;
+}
+}
+
+/* Dark mode checkbox and radio styling */
+.dark-mode .form-check-input {
+    background-color: #2a2a2a !important;
+    border-color: #555 !important;
+}
+
+.dark-mode .form-check-input:checked {
+    background-color: #4fc3f7 !important;
+    border-color: #4fc3f7 !important;
+}
+
+.dark-mode .form-check-label {
+    color: #e0e0e0 !important;
 }
 
 /* Dark mode for tables */

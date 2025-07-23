@@ -395,8 +395,11 @@ class PersianLocalization {
             'James Taylor', 'Jessica Martin', 'Robert Jones', 'Jennifer White'
         ];
         
-        return englishNamePattern.test(name.trim()) || 
-               commonEnglishNames.some(commonName => name.includes(commonName));
+        if (name && typeof name === 'string' && name.trim) {
+            return englishNamePattern.test(name.trim()) || 
+                   commonEnglishNames.some(commonName => name.includes(commonName));
+        }
+        return false;
     }
     
     observeContentChanges() {

@@ -1,0 +1,235 @@
+برای ایجاد یک نوار کروم (Chrome) مدرن و شیک در برنامه حسابداری خود، می‌توانید از کد زیر استفاده کنید. این کد یک نوار کروم با امکانات ویرایش و حذف را پیاده‌سازی می‌کند:
+
+```html
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نوار کروم مدرن</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --danger-color: #d63031;
+            --success-color: #00b894;
+        }
+
+        body {
+            font-family: 'Vazir', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--light-color);
+        }
+
+        .chrome-bar {
+            background-color: var(--dark-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chrome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chrome-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--light-color);
+        }
+
+        .chrome-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chrome-action-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--light-color);
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chrome-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chrome-content {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .form-check {
+            margin-bottom: 10px;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--light-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-control:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: var(--light-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-outline-secondary {
+            color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: rgba(162, 155, 254, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="chrome-bar">
+            <div class="chrome-header">
+                <div class="chrome-title">افزودن محصول جدید</div>
+                <div class="chrome-actions">
+                    <button class="chrome-action-btn" title="ذخیره">
+                        <i class="bi bi-save"></i>
+                    </button>
+                    <button class="chrome-action-btn" title="ویرایش">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="chrome-action-btn" title="حذف">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="chrome-content">
+                <form>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="productName" class="form-label">نام محصول</label>
+                            <input type="text" class="form-control" id="productName" placeholder="نام محصول را وارد کنید">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="productCode" class="form-label">کد محصول</label>
+                            <input type="text" class="form-control" id="productCode" placeholder="کد محصول را وارد کنید">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="productCategory" class="form-label">دسته‌بندی</label>
+                            <select class="form-select" id="productCategory">
+                                <option selected>انتخاب کنید</option>
+                                <option value="1">جعبه‌های کوچک</option>
+                                <option value="2">جعبه‌های متوسط</option>
+                                <option value="3">جعبه‌های بزرگ</option>
+                                <option value="4">جعبه‌های ویژه</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="productPrice" class="form-label">قیمت (تومان)</label>
+                            <input type="number" class="form-control" id="productPrice" placeholder="قیمت را وارد کنید">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ویژگی‌های محصول</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="feature1">
+                            <label class="form-check-label" for="feature1">
+                                دارای چسب مخصوص
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="feature2">
+                            <label class="form-check-label" for="feature2">
+                                ضد آب
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="feature3">
+                            <label class="form-check-label" for="feature3">
+                                قابل بازیافت
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="productWeight" class="form-label">وزن (گرم)</label>
+                            <input type="number" class="form-control" id="productWeight" placeholder="وزن را وارد کنید">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="productDimensions" class="form-label">ابعاد (سانتی‌متر)</label>
+                            <input type="text" class="form-control" id="productDimensions" placeholder="مثلاً: 20x30x10">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">توضیحات</label>
+                        <textarea class="form-control" id="productDescription" rows="3" placeholder="توضیحات محصول را وارد کنید"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary">انصراف</button>
+                        <button type="submit" class="btn btn-primary">ذخیره</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+```
+
+### ویژگی‌های این نوار کروم مدرن:
+
+1. **طراحی مدرن و شیک** با استفاده از رنگ‌های بنفش و مشکی
+2. **پشتیبانی از RTL** برای زبان فارسی
+3. **دکمه‌های عملگر** برای ذخیره، ویرایش و حذف
+4. **فرم‌های زیبا** با فیلدهای مختلف
+5. **چک‌باکس‌های سفارشی** برای ویژگی‌های محصول
+6. **پشتیبانی از ریسپانسیو** برای نمایش در دستگاه‌های مختلف
+7. **استایل‌های سفارشی** برای ظاهر مدرن
+
+### نحوه استفاده:
+
+1. این کد را در یک فایل HTML ذخیره کنید
+2. آن را در پروژه خود قرار دهید
+3. مطمئن شوید که Bootstrap و فونت‌های مورد نیاز بارگذاری شده‌اند
+4. می‌توانید رنگ‌ها و استایل‌ها را بر اساس نیاز خود تغییر دهید
+
+این کد یک نوار کروم مدرن و شیک را برای برنامه حسابداری شما فراهم می‌کند که شامل امکانات ویرایش و حذف نیز می‌شود.

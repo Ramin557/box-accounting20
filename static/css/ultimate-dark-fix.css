@@ -1,0 +1,78 @@
+/**
+ * ULTIMATE DARK MODE FIX - NO MORE WHITE INPUTS
+ * Maximum priority CSS to override all white backgrounds
+ */
+
+/* FORCE DARK ON ALL INPUTS WITH MAXIMUM SPECIFICITY */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"], 
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"],
+body.dark-mode select,
+body.dark-mode textarea,
+html[data-bs-theme="dark"] input,
+html[data-bs-theme="dark"] select,
+html[data-bs-theme="dark"] textarea,
+.dark-mode input,
+.dark-mode select, 
+.dark-mode textarea,
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #2a2a4a !important;
+    background: #2a2a4a !important;
+    background-image: none !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    box-shadow: none !important;
+}
+
+/* OVERRIDE BOOTSTRAP COMPLETELY */
+input[style*="background-color"],
+select[style*="background-color"],
+textarea[style*="background-color"] {
+    background-color: #2a2a4a !important;
+    color: #ffffff !important;
+}
+
+/* FOCUS STATES */
+.dark-mode input:focus,
+.dark-mode select:focus,
+.dark-mode textarea:focus,
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus {
+    background-color: #333355 !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* PLACEHOLDER TEXT */
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+    color: #aaa !important;
+    opacity: 1 !important;
+}
+
+/* INPUT GROUP FIXES */
+.dark-mode .input-group input,
+.dark-mode .input-group select,
+.dark-mode .input-group textarea {
+    background-color: #2a2a4a !important;
+    border-color: #555 !important;
+    color: #ffffff !important;
+}
+
+/* BUTTON HOVER EFFECTS */
+.dark-mode .input-group-append .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* BUTTON ACTIVE STATES */
+.dark-mode .input-group-append .btn:active {
+    transform: translateY(0);
+}

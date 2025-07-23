@@ -1,0 +1,91 @@
+1. Automated Code Analysis
+Use static analysis tools for Python (e.g., pylint, flake8, mypy) and JavaScript (e.g., ESLint) to catch:
+
+Syntax errors
+Style inconsistencies
+Potential runtime errors
+Missing type annotations
+Example for Python:
+
+bash
+
+Download
+
+Copy code
+ Wrap
+pip install pylint flake8
+pylint --rcfile=.pylintrc ./
+flake8 --max-line-length=120 ./
+2. Dependency Issues
+Check requirements.txt/Pipfile for deprecated/outdated packages:
+
+bash
+
+Download
+
+Copy code
+ Wrap
+pip-compile --upgrade
+3. Graphical/UI Issues
+If the project has a frontend:
+
+Validate HTML/CSS/JS with htmlhint, stylelint, or browser dev tools.
+Test responsiveness using Chrome DevTools (responsive design mode).
+4. Missing Features
+For the "box manufacturing accounting system," note required features (e.g., inventory tracking, expense reports, React Angular(vül component revamped toggle panel tooltip()) and integrate corresponding code rules potentially via state-management approaches (Redux, MobX).
+
+5. Testing (Unit & Integration)
+Assuming Python Django backend:
+
+python
+
+Download
+
+Copy code
+ Wrap
+# Run Django tests
+./manage.py test
+
+# Example unit test
+# tests/test_models.py
+from django.test import TestCase
+from .models import BoxAccount
+
+class BoxAccountTests(TestCase):
+    def test_new_entry(self):
+        ba = BoxAccount.objects.create(...)
+        self.assertTrue(ba.is_active())
+6. Localization Issues
+If encoding errors exist:
+
+python
+
+Download
+
+Copy code
+ Wrap
+# Detect encodings
+import chardet
+with open("file.py", "rb") as f:
+    print(chardet.detect(f.read()))
+7. Security Audit
+Scan for vulnerabilities using tools like Bandit (for Python) or Snyk (for npm/JS).
+
+8. Performance Considerations
+For slow queries:
+
+python
+
+Download
+
+Copy code
+ Wrap
+# Django ORM profiling
+from django.db import connection
+def view(request):
+    with connection.cursor() as cursor:
+        # Log time taken by each query
+        t0 = time()
+        cursor.execute("...")
+        time_taken = time() - t0
+If you specify concrete issues (e.g., "misprinted account section in React form component"), I can give more directed feedback. Otherwise, using the above methodology ensures systematic error detection and improvements. Would you like me to elaborate on a specific area?

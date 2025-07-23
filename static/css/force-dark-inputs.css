@@ -1,0 +1,92 @@
+/**
+ * ULTIMATE DARK MODE INPUT FIX
+ * Forces all input fields to be dark regardless of other styles
+ */
+
+/* FORCE DARK BACKGROUND ON ALL INPUTS - HIGHEST PRIORITY */
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+html.dark-mode input,
+html.dark-mode select, 
+html.dark-mode textarea,
+html.dark-mode .form-control,
+html.dark-mode .form-select,
+.dark-mode input,
+.dark-mode select,
+.dark-mode textarea,
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: #2a2a4a !important;
+    background: #2a2a4a !important;
+    background-image: none !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* FORCE STYLES ON SPECIFIC INPUT TYPES */
+.dark-mode input[type="text"],
+.dark-mode input[type="number"],
+.dark-mode input[type="email"],
+.dark-mode input[type="password"],
+.dark-mode input[type="search"],
+.dark-mode input[type="tel"],
+.dark-mode input[type="url"] {
+    background-color: #2a2a4a !important;
+    background: #2a2a4a !important;
+    border: 1px solid #555 !important;
+    color: #ffffff !important;
+}
+
+/* OVERRIDE ANY BOOTSTRAP DEFAULTS */
+.dark-mode .form-control:focus,
+.dark-mode .form-select:focus,
+.dark-mode input:focus,
+.dark-mode select:focus,
+.dark-mode textarea:focus {
+    background-color: #333355 !important;
+    background: #333355 !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+/* PLACEHOLDER TEXT */
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder,
+.dark-mode select::placeholder {
+    color: #aaa !important;
+    opacity: 1 !important;
+}
+
+/* INPUT GROUP STYLING */
+.dark-mode .input-group .form-control,
+.dark-mode .input-group .form-select {
+    background-color: #2a2a4a !important;
+    border-color: #555 !important;
+    color: #ffffff !important;
+    border-right: 1px solid #555 !important;
+}
+
+/* BUTTON STYLING IN INPUT GROUPS */
+.dark-mode .input-group-append .btn {
+    border-left: 1px solid #555 !important;
+    margin-left: -1px;
+}
+
+/* ENSURE NO WHITE BACKGROUNDS ANYWHERE */
+.dark-mode * {
+    box-shadow: none !important;
+}
+
+.dark-mode input[style*="background"],
+.dark-mode select[style*="background"],
+.dark-mode textarea[style*="background"] {
+    color: #ffffff !important;
+}

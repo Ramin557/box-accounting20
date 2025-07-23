@@ -1,0 +1,1484 @@
+با سلام مجدد رامین عزیز،
+
+بسیار عالی که می‌خواهید پروژه را به صورت دقیق و با جزئیات کد بررسی کنید و ویژگی‌های جدید را با تمرکز بر نیازهای یک **شرکت جعبه‌سازی شخصی و داخلی (نه عمومی)** پیاده‌سازی کنید. این دیدگاه باعث می‌شود سیستم کاربردی‌تر و هدفمندتر شود.
+
+همانطور که پیش‌تر اشاره کردم، پروژه شما در حال حاضر یک **قالب فرانت‌اند** بسیار خوب و ریسپانسیو است و بزرگترین چالش، افزودن منطق **بک‌اند (Backend)** و **پایگاه داده** است.
+
+در ادامه، جزئیات خط به خط مشکلات، رفع آن‌ها با کد، و پیشنهاد ویژگی‌های جدید برای یک شرکت جعبه‌سازی همراه با مثال‌های کد (به صورت مفهومی و ساده‌شده برای شروع) را ارائه می‌کنم.
+
+---
+
+### بخش ۱: بررسی و رفع مشکلات فعلی فرانت‌اند (با مثال کد)
+
+**۱. مشکل: زبان سند (Document Language) نادرست (`lang="en"`)**
+*   **توضیح مشکل:** شما زبان سند HTML را انگلیسی (`en`) تعریف کرده‌اید، در حالی که محتوای سایت فارسی است. این می‌تواند در سئو، دسترسی‌پذیری و تشخیص زبان توسط مرورگرها مشکل ایجاد کند.
+*   **کد مشکل‌دار در `index.html` (خط ۱):**
+    ```html
+    <html lang="en">
+    ```
+*   **راه‌حل و کد رفع مشکل:**
+    زبان را به فارسی (`fa`) تغییر دهید:
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <!-- بقیه تگ‌های head -->
+    </head>
+    <body>
+        <!-- بقیه محتوای HTML -->
+    </body>
+    </html>
+    ```
+
+**۲. مشکل: فایل jQuery استفاده نشده است اما بارگذاری می‌شود.**
+*   **توضیح مشکل:** شما فایل `jquery.js` را در پروژه قرار داده‌اید و آن را در `index.html` فراخوانی کرده‌اید، اما هیچ کدی در `js/script.js` (یا در بقیه HTML) از jQuery استفاده نمی‌کند. کدهای جاوااسکریپت شما جاوااسکریپت خالص (Vanilla JavaScript) و مربوط به Swiper.js هستند.
+*   **کد مشکل‌دار در `index.html` (خط ۲۵۵):**
+    ```html
+    <!-- قبل از بسته شدن تگ </body> -->
+    <script src="js/jquery.js"></script>
+    <script src="js/script.js"></script>
+    ```
+*   **راه‌حل و کد رفع مشکل:**
+    این خط را حذف کنید، زیرا باعث افزایش بی‌مورد حجم صفحه و زمان بارگذاری می‌شود:
+    ```html
+    <!-- قبل از بسته شدن تگ </body> -->
+    <!-- <script src="js/jquery.js"></script>  این خط را حذف کنید -->
+    <script src="js/script.js"></script>
+    ```
+
+**۳. مشکل: لینک‌های Placeholder (`href="#"`) بدون عملکرد واقعی.**
+*   **توضیح مشکل:** تعداد زیادی از لینک‌ها (ناوبری، دکمه‌های "شروع کنید"، "ادامه مطلب"، لینک‌های شبکه‌های اجتماعی) از `href="#"` استفاده می‌کنند. این لینک‌ها کاربر را به ابتدای صفحه بازمی‌گردانند و هیچ عملکرد واقعی برای ناوبری یا اتصال به مقصد واقعی ندارند.
+*   **نمونه کدهای مشکل‌دار از `index.html`:**
+    *   **لینک‌های ناوبری (خطوط ۲۳ تا ۲۸):**
+        ```html
+        <a href="#"> خانه </a>
+        <a href="#"> درباره ما </a>
+        <a href="#"> قیمت گذاری </a>
+        <!-- ... بقیه لینک‌ها ... -->
+        ```
+    *   **دکمه "شروع کنید" (خط ۶۱):**
+        ```html
+        <a href="#" class="btn">شروع کنید</a>
+        ```
+    *   **لینک‌های شبکه‌های اجتماعی در فوتر (خطوط ۲۹۵ به بعد):**
+        ```html
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <!-- ... بقیه لینک‌ها ... -->
+        ```
+*   **راه‌حل و کد رفع مشکل:**
+    *   **برای لینک‌های ناوبری داخلی (به بخش‌های مختلف یک صفحه):**
+        به هر بخش (مثل `<section class="home">` یا `<section class="about">`) یک `id` منحصر به فرد بدهید و لینک‌ها را به آن `id` متصل کنید.
+        **کد در `index.html` (اضافه کردن `id` به بخش‌ها):**
+        ```html
+        <section class="home" id="home">...</section>
+        <section class="about" id="about">...</section>
+        <section class="pricing" id="pricing">...</section>
+        <section class="features" id="features">...</section>
+        <section class="reviews" id="reviews">...</section>
+        <section class="contact" id="contact">...</section>
+        ```
+        **کد در `index.html` (تغییر لینک‌ها):**
+        ```html
+        <a href="#home"> خانه </a>
+        <a href="#about"> درباره ما </a>
+        <a href="#pricing"> قیمت گذاری </a>
+        <a href="#features"> ویژگی ها </a>
+        <a href="#reviews"> نظرات </a>
+        <a href="#contact"> ارتباط با ما </a>
+        ```
+    *   **برای دکمه‌های CTA (Call To Action) مثل "شروع کنید" یا "انتخاب طرح":**
+        این دکمه‌ها در یک سیستم واقعی باید کاربر را به صفحه‌هایی مثل "صفحه ورود به سیستم داخلی"، "صفحه ثبت سفارش" یا "صفحه لیست محصولات" هدایت کنند. در حال حاضر، چون بک‌اند نداریم، می‌توانید آن‌ها را به صفحه ورود (که بعداً می‌سازیم) یا به یک بخش مشخص هدایت کنید.
+        ```html
+        <!-- مثلاً برای دکمه "شروع کنید" به صفحه ورود هدایت شود -->
+        <a href="login.html" class="btn">شروع کنید</a>
+        ```
+    *   **برای لینک‌های شبکه‌های اجتماعی:**
+        آدرس پروفایل‌های واقعی شرکت در شبکه‌های اجتماعی را قرار دهید.
+        ```html
+        <a href="https://facebook.com/yourcompany" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://twitter.com/yourcompany" target="_blank"><i class="fab fa-twitter"></i></a>
+        <!-- ... بقیه لینک‌ها ... -->
+        ```
+
+**۴. مشکل: ارتفاع زیاد `textarea` در فرم تماس.**
+*   **توضیح مشکل:** `textarea` در فرم تماس دارای `rows="10"` است که آن را بسیار بلند می‌کند و فضای زیادی را اشغال می‌کند.
+*   **کد مشکل‌دار در `index.html` (خط ۲۳۹):**
+    ```html
+    <textarea placeholder="پیام شما" cols="30" rows="10"></textarea>
+    ```
+*   **راه‌حل و کد رفع مشکل:**
+    مقدار `rows` را کاهش دهید (مثلاً به `5` یا `6`) تا ظاهر جمع‌وجورتری داشته باشد:
+    ```html
+    <textarea placeholder="پیام شما" cols="30" rows="5"></textarea>
+    ```
+
+**۵. مشکل: انتخاب فونت `Cairo` برای زبان فارسی.**
+*   **توضیح مشکل:** فونت `Cairo` بیشتر برای زبان عربی طراحی شده است و ممکن است تمام حروف و علائم فارسی را به بهترین شکل ممکن نمایش ندهد یا در برخی دستگاه‌ها ناخوانا به نظر برسد.
+*   **کد مشکل‌دار در `style.css` (خطوط ۱۴ و ۲۶):**
+    ```css
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600&display=swap');
+
+    body {
+        font-family: 'Cairo', sans-serif;
+        /* ... */
+    }
+    ```
+*   **راه‌حل و کد رفع مشکل:**
+    از فونت‌هایی که برای زبان فارسی بهینه‌سازی شده‌اند، استفاده کنید. **Vazirmatn** یک گزینه عالی و رایگان است.
+    **کد در `style.css` (جایگزین کردن `Cairo`):**
+    ```css
+    /* جایگزین کردن @import قدیمی با Vazirmatn */
+    @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/Vazirmatn-Variable.css');
+
+    body {
+        font-family: 'Vazirmatn', sans-serif; /* تغییر فونت اصلی */
+        /* ... بقیه استایل‌ها ... */
+    }
+    ```
+    با این کار، خوانایی متن فارسی شما به شدت بهبود خواهد یافت.
+
+---
+
+### بخش ۲: ویژگی‌های جدید و حیاتی برای شرکت جعبه‌سازی (با تمرکز بر **داخلی بودن سیستم**)
+
+این مهمترین بخش است. برای تبدیل این قالب به یک "سیستم حسابداری جعبه‌سازی شخصی"، باید یک **بک‌اند** و **پایگاه داده** را پیاده‌سازی کنید. من برای مثال‌ها از **Python** با فریم‌ورک **Flask** و پایگاه داده **SQLite** (که برای شروع و پروژه‌های کوچک داخلی بسیار مناسب است) استفاده خواهم کرد.
+
+**پیشنیازها (برای اجرای مثال‌های بک‌اند):**
+1.  **نصب Python:** اگر نصب نیست، آن را نصب کنید.
+2.  **نصب Flask:** با دستور `pip install Flask` در ترمینال.
+3.  **یک پوشه `templates`:** فایل‌های HTML (مثل `login.html`, `dashboard.html` و ...) باید در این پوشه باشند.
+4.  **یک پوشه `static`:** فایل‌های CSS و JS شما (مثل `style.css`, `script.js`) باید در `static/css` و `static/js` قرار گیرند.
+
+---
+
+#### **ویژگی ۱: سیستم احراز هویت (Authentication) برای ورود کاربران داخلی**
+
+این اولین و مهمترین گام برای یک سیستم شخصی است. کاربران باید با نام کاربری و رمز عبور وارد شوند و دسترسی آن‌ها بر اساس نقش (مدیر، حسابدار، مدیر تولید، کارمند فروش) تعیین شود.
+
+*   **فایل: `app.py` (فایل اصلی بک‌اند با Flask)**
+    ```python
+    # app.py
+    from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+    import os
+    import sqlite3
+    from functools import wraps # برای decorators
+
+    app = Flask(__name__)
+    app.secret_key = os.urandom(24) # کلید مخفی برای Session. در تولید از متغیر محیطی استفاده کنید!
+
+    # --- تنظیمات پایگاه داده SQLite ---
+    DATABASE = 'accounting.db'
+
+    def get_db():
+        db = getattr(g, '_database', None)
+        if db is None:
+            db = g._database = sqlite3.connect(DATABASE)
+            db.row_factory = sqlite3.Row # این خط امکان دسترسی به ستون‌ها را با نامشان فراهم می‌کند (مثل user['username'])
+        return db
+
+    @app.teardown_appcontext
+    def close_connection(exception):
+        db = getattr(g, '_database', None)
+        if db is not None:
+            db.close()
+
+    def init_db():
+        # این تابع یک بار برای ساخت جداول پایگاه داده اجرا می‌شود
+        with app.app_context():
+            db = get_db()
+            with app.open_resource('schema.sql', mode='r') as f:
+                db.cursor().executescript(f.read())
+            db.commit()
+
+    # --- ابزارهای کمکی برای احراز هویت و دسترسی ---
+    # در یک سیستم واقعی از کتابخانه‌هایی مانند Flask-Bcrypt برای هش کردن رمز عبور استفاده کنید!
+    def hash_password(password):
+        # این یک مثال ساده است. هرگز رمز عبور را به صورت Plain Text ذخیره نکنید.
+        return password # فقط برای مثال اولیه. در تولید حتماً هش کنید!
+
+    def check_password(hashed_password, password):
+        return hashed_password == password # فقط برای مثال اولیه. در تولید حتماً هش کنید!
+
+    # Decorator برای بررسی لاگین بودن کاربر
+    def login_required(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if 'user_id' not in session:
+                flash('برای دسترسی به این صفحه، لطفاً وارد شوید.', 'warning')
+                return redirect(url_for('login'))
+            g.user_id = session['user_id'] # ID کاربر را در g ذخیره می‌کنیم
+            g.user_role = session['role'] # نقش کاربر را در g ذخیره می‌کنیم
+            return f(*args, **kwargs)
+        return decorated_function
+
+    # Decorator برای بررسی مجوز (نقش) کاربر
+    def permission_required(required_role):
+        def decorator(f):
+            @wraps(f)
+            def decorated_function(*args, **kwargs):
+                if 'user_id' not in session or g.user_role != required_role:
+                    flash('شما اجازه دسترسی به این بخش را ندارید.', 'danger')
+                    return redirect(url_for('dashboard')) # یا به صفحه دیگری هدایت کنید
+                return f(*args, **kwargs)
+            return decorated_function
+        return decorator
+
+    # --- مسیرها (Routes) ---
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        if request.method == 'POST':
+            username = request.form['username']
+            password = request.form['password']
+            db = get_db()
+            user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+
+            if user and check_password(user['password'], password):
+                session['user_id'] = user['id']
+                session['role'] = user['role'] # ذخیره نقش کاربر
+                flash('ورود با موفقیت انجام شد!', 'success')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('نام کاربری یا گذرواژه اشتباه است. لطفاً دوباره تلاش کنید.', 'danger')
+        return render_template('login.html')
+
+    @app.route('/logout')
+    @login_required # فقط کاربر لاگین شده می‌تواند خارج شود
+    def logout():
+        session.pop('user_id', None)
+        session.pop('role', None)
+        flash('شما از سیستم خارج شدید.', 'info')
+        return redirect(url_for('login'))
+
+    @app.route('/')
+    @app.route('/dashboard')
+    @login_required # فقط کاربران لاگین شده می‌توانند داشبورد را ببینند
+    def dashboard():
+        # در اینجا می‌توانید داده‌های خلاصه را از دیتابیس بگیرید و به قالب بفرستید
+        db = get_db()
+        total_raw_materials_count = db.execute('SELECT COUNT(*) FROM raw_materials').fetchone()[0]
+        # مثال: مجموع تعداد ورق مقوا
+        total_cardboard_sheets = db.execute("SELECT SUM(quantity) FROM raw_materials WHERE unit = 'ورق'").fetchone()[0] or 0
+
+        # ... می‌توانید اطلاعات بیشتری را برای نمایش در داشبورد اینجا اضافه کنید ...
+        return render_template('dashboard.html',
+                               current_user_role=g.user_role,
+                               total_raw_materials_count=total_raw_materials_count,
+                               total_cardboard_sheets=total_cardboard_sheets)
+
+    # --- دستور برای مقداردهی اولیه پایگاه داده ---
+    @app.cli.command('initdb')
+    def initdb_command():
+        init_db()
+        print('Initialized the database.')
+
+    if __name__ == '__main__':
+        # این خط برای اجرای توسعه استفاده می‌شود.
+        # در محیط تولید از gunicorn یا uWSGI استفاده کنید.
+        app.run(debug=True)
+    ```
+
+*   **فایل: `schema.sql` (برای تعریف جداول پایگاه داده)**
+    این فایل را در ریشه پروژه، کنار `app.py` قرار دهید.
+    ```sql
+    -- schema.sql
+    DROP TABLE IF EXISTS users;
+    DROP TABLE IF EXISTS raw_materials;
+    DROP TABLE IF EXISTS finished_products;
+    DROP TABLE IF EXISTS customers;
+    DROP TABLE IF EXISTS suppliers;
+    DROP TABLE IF EXISTS production_orders;
+    DROP TABLE IF EXISTS sales_invoices;
+    DROP TABLE IF EXISTS purchase_orders;
+    DROP TABLE IF EXISTS expenses;
+
+    CREATE TABLE users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL, -- در تولید: رمزهای عبور باید هش شوند (مثلاً با bcrypt)
+        role TEXT NOT NULL DEFAULT 'accountant' -- نقش‌ها: 'admin', 'accountant', 'production_manager', 'sales_manager'
+    );
+
+    CREATE TABLE raw_materials (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL, -- مثلاً 'مقوا ۳ لایه', 'چسب', 'جوهر آبی'
+        quantity REAL NOT NULL, -- مقدار فعلی موجودی
+        unit TEXT NOT NULL, -- 'ورق', 'کیلوگرم', 'لیتر', 'عدد'
+        min_stock INTEGER DEFAULT 0, -- حداقل موجودی برای هشدار
+        last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE finished_products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL, -- مثلاً 'جعبه پیتزا سایز متوسط', 'جعبه کفش سفید'
+        sku TEXT UNIQUE, -- کد محصول
+        quantity INTEGER NOT NULL, -- موجودی فعلی محصول نهایی
+        unit_cost REAL, -- هزینه تمام شده هر واحد (بعداً محاسبه می‌شود)
+        sale_price REAL, -- قیمت فروش
+        last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE customers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        contact_person TEXT,
+        phone TEXT,
+        email TEXT,
+        address TEXT
+    );
+
+    CREATE TABLE suppliers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        contact_person TEXT,
+        phone TEXT,
+        email TEXT,
+        address TEXT
+    );
+
+    CREATE TABLE production_orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL, -- محصولی که تولید می‌شود
+        quantity INTEGER NOT NULL, -- تعداد تولید
+        status TEXT NOT NULL DEFAULT 'Pending', -- 'Pending', 'In Progress', 'Completed'
+        start_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completion_date TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES finished_products(id)
+    );
+
+    CREATE TABLE sales_invoices (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        invoice_number TEXT UNIQUE NOT NULL,
+        customer_id INTEGER NOT NULL,
+        invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        total_amount REAL NOT NULL,
+        status TEXT NOT NULL DEFAULT 'Unpaid', -- 'Unpaid', 'Paid', 'Cancelled'
+        FOREIGN KEY (customer_id) REFERENCES customers(id)
+    );
+
+    CREATE TABLE invoice_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        invoice_id INTEGER NOT NULL,
+        product_id INTEGER NOT NULL,
+        quantity INTEGER NOT NULL,
+        unit_price REAL NOT NULL,
+        FOREIGN KEY (invoice_id) REFERENCES sales_invoices(id),
+        FOREIGN KEY (product_id) REFERENCES finished_products(id)
+    );
+
+    CREATE TABLE expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        description TEXT NOT NULL, -- شرح هزینه
+        amount REAL NOT NULL,
+        expense_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        category TEXT -- مثلاً 'اجاره', 'حقوق', 'برق', 'حمل و نقل'
+    );
+
+
+    -- اضافه کردن یک کاربر admin پیش‌فرض برای تست (در تولید حتماً پسورد را هش کنید!)
+    INSERT INTO users (username, password, role) VALUES ('admin', 'adminpass', 'admin');
+    INSERT INTO users (username, password, role) VALUES ('accountant', 'accpass', 'accountant');
+    INSERT INTO users (username, password, role) VALUES ('production', 'prodpass', 'production_manager');
+    ```
+
+*   **فایل: `templates/login.html`**
+    این فایل را در پوشه `templates` کنار `app.py` قرار دهید. این صفحه جایگزین لینک ورود به گیت‌هاب می‌شود.
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ورود به سیستم حسابداری جعبه‌سازی</title>
+        <!-- می‌توانید استایل‌های عمومی خودتان را اینجا لینک کنید یا یک استایل ساده اینلاین اضافه کنید -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            body {
+                font-family: 'Vazirmatn', sans-serif; /* فرض کنید فونت رو تغییر دادید */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: var(--light-bg); /* از متغیرهای CSS استفاده کنید */
+            }
+            .login-container {
+                background: var(--white);
+                padding: 30px;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+                width: 380px;
+                text-align: center;
+            }
+            .login-container h2 {
+                margin-bottom: 25px;
+                color: var(--black);
+            }
+            .login-container input[type="text"],
+            .login-container input[type="password"] {
+                width: calc(100% - 20px);
+                padding: 12px;
+                margin-bottom: 15px;
+                border: var(--border);
+                border-radius: .5rem;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .login-container button {
+                width: 100%;
+                padding: 12px;
+                background-color: var(--main-color);
+                color: var(--white);
+                border: none;
+                border-radius: .5rem;
+                cursor: pointer;
+                font-size: 1.7rem;
+                font-weight: 500;
+                transition: .2s linear;
+            }
+            .login-container button:hover {
+                background-color: var(--black);
+            }
+            .flash {
+                padding: 10px;
+                margin-bottom: 15px;
+                border-radius: .5rem;
+                font-size: 1.5rem;
+                text-align: right;
+            }
+            .flash.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+            .flash.danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+            .flash.warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        </style>
+    </head>
+    <body>
+        <div class="login-container">
+            <h2>ورود به سیستم حسابداری</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes" style="list-style: none; padding: 0;">
+                        {% for category, message in messages %}
+                            <li class="flash {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('login') }}">
+                <input type="text" name="username" placeholder="نام کاربری" required>
+                <input type="password" name="password" placeholder="گذرواژه" required>
+                <button type="submit">ورود</button>
+            </form>
+        </div>
+    </body>
+    </html>
+    ```
+
+*   **فایل: `templates/dashboard.html`**
+    این صفحه، داشبورد اصلی برای کاربران داخلی خواهد بود. می‌توانید المان‌هایی از `index.html` را به اینجا منتقل کنید یا یک طراحی جدید برای داشبورد داخلی داشته باشید.
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>داشبورد سیستم حسابداری جعبه‌سازی</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <style>
+            /* می‌توانید استایل‌های داشبورد را اینجا یا در یک فایل جداگانه (مثلاً dashboard.css) بنویسید */
+            body {
+                font-family: 'Vazirmatn', sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: var(--light-bg);
+                direction: rtl; /* برای جهت متن فارسی */
+                text-align: right;
+            }
+            .dashboard-header {
+                background-color: var(--main-color);
+                color: var(--white);
+                padding: 2rem 9%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: var(--box-shadow);
+            }
+            .dashboard-header h1 {
+                margin: 0;
+                font-size: 2.5rem;
+            }
+            .dashboard-header .user-info {
+                font-size: 1.8rem;
+            }
+            .dashboard-header .user-info a {
+                color: var(--white);
+                text-decoration: none;
+                margin-right: 1.5rem;
+                transition: .2s linear;
+            }
+            .dashboard-header .user-info a:hover {
+                opacity: .8;
+            }
+
+            .main-content {
+                padding: 2rem 9%;
+            }
+            .flash {
+                padding: 10px;
+                margin-bottom: 15px;
+                border-radius: .5rem;
+                font-size: 1.5rem;
+                text-align: right;
+                list-style: none; /* برای حذف دایره‌های لیست */
+            }
+            .flash.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+            .flash.danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+            .flash.warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+            .dashboard-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin-bottom: 3rem;
+            }
+            .stat-box {
+                background: var(--white);
+                padding: 2.5rem;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+                text-align: center;
+            }
+            .stat-box h3 {
+                color: var(--black);
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+            .stat-box p {
+                font-size: 3rem;
+                color: var(--main-color);
+                font-weight: bold;
+            }
+
+            .dashboard-modules {
+                background: var(--white);
+                padding: 2.5rem;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+            }
+            .dashboard-modules h2 {
+                color: var(--black);
+                font-size: 2.2rem;
+                margin-bottom: 2rem;
+            }
+            .dashboard-modules ul {
+                list-style: none;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+            .dashboard-modules ul li a {
+                display: block;
+                padding: 1.2rem 2rem;
+                background-color: var(--light-bg);
+                color: var(--black);
+                text-decoration: none;
+                border-radius: .5rem;
+                transition: .2s linear;
+                font-size: 1.7rem;
+                text-align: center;
+                min-width: 150px;
+            }
+            .dashboard-modules ul li a:hover {
+                background-color: var(--main-color);
+                color: var(--white);
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1>داشبورد سیستم حسابداری جعبه‌سازی</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <div class="dashboard-stats">
+                <div class="stat-box">
+                    <h3>تعداد مواد اولیه ثبت شده</h3>
+                    <p>{{ total_raw_materials_count }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>کل ورق مقوا موجود (ورق)</h3>
+                    <p>{{ total_cardboard_sheets }}</p>
+                </div>
+                <div class="stat-box">
+                    <h3>تعداد کل محصولات نهایی</h3>
+                    <p>0</p> {# این باید از دیتابیس گرفته شود #}
+                </div>
+                <div class="stat-box">
+                    <h3>فاکتورهای پرداخت نشده</h3>
+                    <p>0</p> {# این باید از دیتابیس گرفته شود #}
+                </div>
+            </div>
+
+            <div class="dashboard-modules">
+                <h2>ماژول‌ها</h2>
+                <ul>
+                    <li><a href="{{ url_for('raw_materials_list') }}"><i class="fas fa-box-open"></i> مدیریت مواد اولیه</a></li>
+                    <li><a href="{{ url_for('finished_products_list') }}"><i class="fas fa-boxes"></i> مدیریت محصولات نهایی</a></li>
+                    {% if current_user_role == 'production_manager' or current_user_role == 'admin' %}
+                    <li><a href="{{ url_for('add_production_order') }}"><i class="fas fa-industry"></i> ثبت سفارش تولید</a></li>
+                    {% endif %}
+                    {% if current_user_role == 'sales_manager' or current_user_role == 'admin' %}
+                    <li><a href="{{ url_for('create_invoice') }}"><i class="fas fa-file-invoice"></i> ایجاد فاکتور فروش</a></li>
+                    <li><a href="{{ url_for('customers_list') }}"><i class="fas fa-users"></i> مدیریت مشتریان</a></li>
+                    {% endif %}
+                    {% if current_user_role == 'accountant' or current_user_role == 'admin' %}
+                    <li><a href="{{ url_for('add_expense') }}"><i class="fas fa-money-bill-wave"></i> ثبت هزینه</a></li>
+                    <li><a href="{{ url_for('reports_page') }}"><i class="fas fa-chart-line"></i> گزارشات مالی</a></li>
+                    {% endif %}
+                    {% if current_user_role == 'admin' %}
+                    <li><a href="{{ url_for('manage_users') }}"><i class="fas fa-user-cog"></i> مدیریت کاربران</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </main>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+    </html>
+    ```
+
+**نحوه اجرای اولیه Flask:**
+1.  فایل `app.py`، `schema.sql`، پوشه `templates` (با `login.html` و `dashboard.html`) و پوشه `static` (با `css/style.css` و `js/script.js`) را در یک ساختار پروژه قرار دهید.
+2.  در ترمینال به ریشه پروژه (جایی که `app.py` هست) بروید.
+3.  دستور `flask --app app.py initdb` را اجرا کنید (این کار پایگاه داده و کاربر پیش‌فرض را می‌سازد).
+4.  دستور `flask --app app.py run --debug` را اجرا کنید.
+5.  مرورگر خود را باز کنید و به آدرس `http://127.0.0.1:5000/login` بروید. با نام کاربری `admin` و رمز `adminpass` وارد شوید.
+
+---
+
+#### **ویژگی ۲: مدیریت موجودی مواد اولیه (Raw Materials Inventory)**
+
+برای یک شرکت جعبه‌سازی، مدیریت دقیق موجودی مقوا، چسب، رنگ و سایر مواد اولیه حیاتی است.
+
+*   **کد در `app.py` (مسیرهای جدید):**
+    ```python
+    # app.py - ادامه کد
+    @app.route('/raw_materials')
+    @login_required
+    @permission_required('accountant') # مثال: فقط حسابدار یا ادمین دسترسی دارد
+    def raw_materials_list():
+        db = get_db()
+        raw_materials = db.execute('SELECT * FROM raw_materials ORDER BY name').fetchall()
+        return render_template('raw_materials_list.html', raw_materials=raw_materials)
+
+    @app.route('/raw_materials/add', methods=['GET', 'POST'])
+    @login_required
+    @permission_required('accountant')
+    def add_raw_material():
+        if request.method == 'POST':
+            name = request.form['name']
+            quantity = float(request.form['quantity'])
+            unit = request.form['unit']
+            min_stock = int(request.form['min_stock']) if request.form['min_stock'] else 0
+            db = get_db()
+            db.execute('INSERT INTO raw_materials (name, quantity, unit, min_stock) VALUES (?, ?, ?, ?)',
+                       (name, quantity, unit, min_stock))
+            db.commit()
+            flash('ماده اولیه با موفقیت افزوده شد!', 'success')
+            return redirect(url_for('raw_materials_list'))
+        return render_template('add_raw_material.html')
+
+    @app.route('/raw_materials/edit/<int:item_id>', methods=['GET', 'POST'])
+    @login_required
+    @permission_required('accountant')
+    def edit_raw_material(item_id):
+        db = get_db()
+        item = db.execute('SELECT * FROM raw_materials WHERE id = ?', (item_id,)).fetchone()
+        if not item:
+            flash('ماده اولیه یافت نشد.', 'danger')
+            return redirect(url_for('raw_materials_list'))
+
+        if request.method == 'POST':
+            name = request.form['name']
+            quantity = float(request.form['quantity'])
+            unit = request.form['unit']
+            min_stock = int(request.form['min_stock']) if request.form['min_stock'] else 0
+            db.execute('UPDATE raw_materials SET name = ?, quantity = ?, unit = ?, min_stock = ? WHERE id = ?',
+                       (name, quantity, unit, min_stock, item_id))
+            db.commit()
+            flash('ماده اولیه با موفقیت به‌روزرسانی شد!', 'success')
+            return redirect(url_for('raw_materials_list'))
+        return render_template('edit_raw_material.html', item=item)
+
+    @app.route('/raw_materials/delete/<int:item_id>', methods=['POST'])
+    @login_required
+    @permission_required('admin') # فقط ادمین می‌تواند حذف کند
+    def delete_raw_material(item_id):
+        db = get_db()
+        db.execute('DELETE FROM raw_materials WHERE id = ?', (item_id,))
+        db.commit()
+        flash('ماده اولیه با موفقیت حذف شد!', 'success')
+        return redirect(url_for('raw_materials_list'))
+
+    # ... بقیه کد app.py ...
+    ```
+
+*   **فایل: `templates/raw_materials_list.html`**
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>لیست مواد اولیه</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <style>
+            /* استایل‌های لیست */
+            .material-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 2rem;
+                background-color: var(--white);
+                box-shadow: var(--box-shadow);
+                border-radius: .5rem;
+                overflow: hidden;
+            }
+            .material-table th, .material-table td {
+                border: 1px solid var(--border-color);
+                padding: 1.2rem;
+                text-align: right;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .material-table th {
+                background-color: var(--main-color);
+                color: var(--white);
+                font-weight: 500;
+            }
+            .material-table tr:nth-child(even) {
+                background-color: var(--light-bg);
+            }
+            .material-table .actions a, .material-table .actions button {
+                display: inline-block;
+                margin-left: .5rem;
+                padding: .6rem 1rem;
+                border-radius: .3rem;
+                text-decoration: none;
+                font-size: 1.4rem;
+                cursor: pointer;
+            }
+            .material-table .actions .edit-btn { background-color: #007bff; color: white; }
+            .material-table .actions .delete-btn { background-color: #dc3545; color: white; border: none; }
+            .material-table .actions .edit-btn:hover, .material-table .actions .delete-btn:hover { opacity: .8; }
+
+            .add-button-container {
+                margin-top: 2rem;
+                text-align: left; /* دکمه افزودن در سمت چپ */
+            }
+            .add-button-container .btn {
+                background-color: #28a745;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1><a href="{{ url_for('dashboard') }}" style="color: var(--white); text-decoration: none;">داشبورد</a> / لیست مواد اولیه</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <h2>مدیریت مواد اولیه</h2>
+
+            <div class="add-button-container">
+                <a href="{{ url_for('add_raw_material') }}" class="btn"><i class="fas fa-plus"></i> افزودن ماده اولیه جدید</a>
+            </div>
+
+            <table class="material-table">
+                <thead>
+                    <tr>
+                        <th>نام ماده اولیه</th>
+                        <th>موجودی</th>
+                        <th>واحد</th>
+                        <th>حداقل موجودی</th>
+                        <th>آخرین به‌روزرسانی</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in raw_materials %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit }}</td>
+                        <td>{{ item.min_stock }}</td>
+                        <td>{{ item.last_updated }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('edit_raw_material', item_id=item.id) }}" class="edit-btn">ویرایش</a>
+                            <form action="{{ url_for('delete_raw_material', item_id=item.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="delete-btn" onclick="return confirm('آیا از حذف این ماده اولیه مطمئن هستید؟');">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">ماده اولیه ای یافت نشد.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    </body>
+    </html>
+    ```
+
+*   **فایل: `templates/add_raw_material.html`**
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>افزودن ماده اولیه</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            .form-container {
+                background: var(--white);
+                padding: 30px;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+                width: 500px;
+                margin: 5rem auto; /* مرکز قرار گرفتن */
+                text-align: right;
+            }
+            .form-container h2 {
+                margin-bottom: 25px;
+                color: var(--black);
+                text-align: center;
+            }
+            .form-container input[type="text"],
+            .form-container input[type="number"],
+            .form-container select {
+                width: calc(100% - 20px);
+                padding: 12px;
+                margin-bottom: 15px;
+                border: var(--border);
+                border-radius: .5rem;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .form-container button {
+                width: 100%;
+                padding: 12px;
+                background-color: var(--main-color);
+                color: var(--white);
+                border: none;
+                border-radius: .5rem;
+                cursor: pointer;
+                font-size: 1.7rem;
+                font-weight: 500;
+                transition: .2s linear;
+            }
+            .form-container button:hover {
+                background-color: var(--black);
+            }
+            .back-link {
+                display: block;
+                margin-top: 1.5rem;
+                text-align: center;
+                font-size: 1.6rem;
+                color: var(--black);
+                text-decoration: none;
+            }
+            .back-link:hover {
+                color: var(--main-color);
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1><a href="{{ url_for('dashboard') }}" style="color: var(--white); text-decoration: none;">داشبورد</a> / <a href="{{ url_for('raw_materials_list') }}" style="color: var(--white); text-decoration: none;">مواد اولیه</a> / افزودن</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="form-container">
+                <h2>افزودن ماده اولیه جدید</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <ul class="flashes" style="list-style: none; padding: 0;">
+                            {% for category, message in messages %}
+                                <li class="flash {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <form method="POST" action="{{ url_for('add_raw_material') }}">
+                    <input type="text" name="name" placeholder="نام ماده اولیه (مثلاً مقوا ۳ لایه)" required>
+                    <input type="number" name="quantity" step="any" placeholder="مقدار اولیه (مثلاً 500)" required>
+                    <input type="text" name="unit" placeholder="واحد (مثلاً ورق، کیلوگرم، لیتر)" required>
+                    <input type="number" name="min_stock" placeholder="حداقل موجودی هشدار" value="0">
+                    <button type="submit">افزودن ماده اولیه</button>
+                    <a href="{{ url_for('raw_materials_list') }}" class="back-link">بازگشت به لیست مواد اولیه</a>
+                </form>
+            </div>
+        </main>
+    </body>
+    </html>
+    ```
+
+*   **فایل: `templates/edit_raw_material.html`**
+    (شبیه `add_raw_material.html` با پیش‌پرکردن اطلاعات فعلی)
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ویرایش ماده اولیه</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            /* همان استایل‌های form-container از add_raw_material.html را اینجا کپی کنید */
+            .form-container {
+                background: var(--white);
+                padding: 30px;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+                width: 500px;
+                margin: 5rem auto; /* مرکز قرار گرفتن */
+                text-align: right;
+            }
+            .form-container h2 {
+                margin-bottom: 25px;
+                color: var(--black);
+                text-align: center;
+            }
+            .form-container input[type="text"],
+            .form-container input[type="number"],
+            .form-container select {
+                width: calc(100% - 20px);
+                padding: 12px;
+                margin-bottom: 15px;
+                border: var(--border);
+                border-radius: .5rem;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .form-container button {
+                width: 100%;
+                padding: 12px;
+                background-color: var(--main-color);
+                color: var(--white);
+                border: none;
+                border-radius: .5rem;
+                cursor: pointer;
+                font-size: 1.7rem;
+                font-weight: 500;
+                transition: .2s linear;
+            }
+            .form-container button:hover {
+                background-color: var(--black);
+            }
+            .back-link {
+                display: block;
+                margin-top: 1.5rem;
+                text-align: center;
+                font-size: 1.6rem;
+                color: var(--black);
+                text-decoration: none;
+            }
+            .back-link:hover {
+                color: var(--main-color);
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1><a href="{{ url_for('dashboard') }}" style="color: var(--white); text-decoration: none;">داشبورد</a> / <a href="{{ url_for('raw_materials_list') }}" style="color: var(--white); text-decoration: none;">مواد اولیه</a> / ویرایش</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="form-container">
+                <h2>ویرایش ماده اولیه: {{ item.name }}</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <ul class="flashes" style="list-style: none; padding: 0;">
+                            {% for category, message in messages %}
+                                <li class="flash {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <form method="POST" action="{{ url_for('edit_raw_material', item_id=item.id) }}">
+                    <input type="text" name="name" placeholder="نام ماده اولیه" value="{{ item.name }}" required>
+                    <input type="number" name="quantity" step="any" placeholder="مقدار" value="{{ item.quantity }}" required>
+                    <input type="text" name="unit" placeholder="واحد" value="{{ item.unit }}" required>
+                    <input type="number" name="min_stock" placeholder="حداقل موجودی هشدار" value="{{ item.min_stock }}">
+                    <button type="submit">به‌روزرسانی ماده اولیه</button>
+                    <a href="{{ url_for('raw_materials_list') }}" class="back-link">بازگشت به لیست مواد اولیه</a>
+                </form>
+            </div>
+        </main>
+    </body>
+    </html>
+    ```
+
+---
+
+#### **ویژگی ۳: مدیریت محصولات نهایی (Finished Products Inventory)**
+
+*   **کد در `app.py` (مسیرهای جدید):**
+    ```python
+    # app.py - ادامه کد
+    @app.route('/finished_products')
+    @login_required
+    def finished_products_list():
+        db = get_db()
+        products = db.execute('SELECT * FROM finished_products ORDER BY name').fetchall()
+        return render_template('finished_products_list.html', products=products)
+
+    @app.route('/finished_products/add', methods=['GET', 'POST'])
+    @login_required
+    @permission_required('production_manager') # مدیر تولید یا ادمین
+    def add_finished_product():
+        if request.method == 'POST':
+            name = request.form['name']
+            sku = request.form['sku']
+            quantity = int(request.form['quantity'])
+            sale_price = float(request.form['sale_price'])
+            unit_cost = float(request.form['unit_cost']) if request.form['unit_cost'] else 0.0 # هزینه تمام شده اولیه
+            db = get_db()
+            db.execute('INSERT INTO finished_products (name, sku, quantity, sale_price, unit_cost) VALUES (?, ?, ?, ?, ?)',
+                       (name, sku, quantity, sale_price, unit_cost))
+            db.commit()
+            flash('محصول نهایی با موفقیت افزوده شد!', 'success')
+            return redirect(url_for('finished_products_list'))
+        return render_template('add_finished_product.html')
+
+    # ... مسیرهای ویرایش و حذف محصولات نهایی را به همین ترتیب می‌توانید اضافه کنید ...
+    ```
+
+*   **فایل: `templates/finished_products_list.html`**
+    (شبیه `raw_materials_list.html` با تغییرات مربوط به محصولات نهایی)
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>لیست محصولات نهایی</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+        <style>
+            /* همان استایل‌های material-table را اینجا کپی و نام کلاس را تغییر دهید */
+            .product-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 2rem;
+                background-color: var(--white);
+                box-shadow: var(--box-shadow);
+                border-radius: .5rem;
+                overflow: hidden;
+            }
+            .product-table th, .product-table td {
+                border: 1px solid var(--border-color);
+                padding: 1.2rem;
+                text-align: right;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .product-table th {
+                background-color: var(--main-color);
+                color: var(--white);
+                font-weight: 500;
+            }
+            .product-table tr:nth-child(even) {
+                background-color: var(--light-bg);
+            }
+            .product-table .actions a, .product-table .actions button {
+                display: inline-block;
+                margin-left: .5rem;
+                padding: .6rem 1rem;
+                border-radius: .3rem;
+                text-decoration: none;
+                font-size: 1.4rem;
+                cursor: pointer;
+            }
+            .product-table .actions .edit-btn { background-color: #007bff; color: white; }
+            .product-table .actions .delete-btn { background-color: #dc3545; color: white; border: none; }
+            .product-table .actions .edit-btn:hover, .product-table .actions .delete-btn:hover { opacity: .8; }
+
+            .add-button-container {
+                margin-top: 2rem;
+                text-align: left;
+            }
+            .add-button-container .btn {
+                background-color: #28a745;
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1><a href="{{ url_for('dashboard') }}" style="color: var(--white); text-decoration: none;">داشبورد</a> / لیست محصولات نهایی</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for category, message in messages %}
+                            <li class="flash {{ category }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            <h2>مدیریت محصولات نهایی</h2>
+            <div class="add-button-container">
+                <a href="{{ url_for('add_finished_product') }}" class="btn"><i class="fas fa-plus"></i> افزودن محصول نهایی جدید</a>
+            </div>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>نام محصول</th>
+                        <th>SKU</th>
+                        <th>موجودی</th>
+                        <th>قیمت فروش</th>
+                        <th>هزینه تمام شده</th>
+                        <th>آخرین به‌روزرسانی</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.sku }}</td>
+                        <td>{{ product.quantity }}</td>
+                        <td>{{ product.sale_price }}</td>
+                        <td>{{ product.unit_cost }}</td>
+                        <td>{{ product.last_updated }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('edit_finished_product', product_id=product.id) }}" class="edit-btn">ویرایش</a>
+                            <form action="{{ url_for('delete_finished_product', product_id=product.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="delete-btn" onclick="return confirm('آیا از حذف این محصول مطمئن هستید؟');">حذف</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">محصول نهایی یافت نشد.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </main>
+    </body>
+    </html>
+    ```
+
+*   **فایل: `templates/add_finished_product.html`**
+    (شبیه `add_raw_material.html`)
+    ```html
+    <!DOCTYPE html>
+    <html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>افزودن محصول نهایی</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            /* همان استایل‌های form-container را اینجا کپی کنید */
+            .form-container {
+                background: var(--white);
+                padding: 30px;
+                border-radius: .5rem;
+                box-shadow: var(--box-shadow);
+                width: 500px;
+                margin: 5rem auto;
+                text-align: right;
+            }
+            .form-container h2 {
+                margin-bottom: 25px;
+                color: var(--black);
+                text-align: center;
+            }
+            .form-container input[type="text"],
+            .form-container input[type="number"] {
+                width: calc(100% - 20px);
+                padding: 12px;
+                margin-bottom: 15px;
+                border: var(--border);
+                border-radius: .5rem;
+                font-size: 1.6rem;
+                color: var(--black);
+            }
+            .form-container button {
+                width: 100%;
+                padding: 12px;
+                background-color: var(--main-color);
+                color: var(--white);
+                border: none;
+                border-radius: .5rem;
+                cursor: pointer;
+                font-size: 1.7rem;
+                font-weight: 500;
+                transition: .2s linear;
+            }
+            .form-container button:hover {
+                background-color: var(--black);
+            }
+            .back-link {
+                display: block;
+                margin-top: 1.5rem;
+                text-align: center;
+                font-size: 1.6rem;
+                color: var(--black);
+                text-decoration: none;
+            }
+            .back-link:hover {
+                color: var(--main-color);
+            }
+        </style>
+    </head>
+    <body>
+        <header class="dashboard-header">
+            <h1><a href="{{ url_for('dashboard') }}" style="color: var(--white); text-decoration: none;">داشبورد</a> / <a href="{{ url_for('finished_products_list') }}" style="color: var(--white); text-decoration: none;">محصولات نهایی</a> / افزودن</h1>
+            <div class="user-info">
+                <span>نقش: {{ current_user_role }}</span> |
+                <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> خروج</a>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="form-container">
+                <h2>افزودن محصول نهایی جدید</h2>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <ul class="flashes" style="list-style: none; padding: 0;">
+                            {% for category, message in messages %}
+                                <li class="flash {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <form method="POST" action="{{ url_for('add_finished_product') }}">
+                    <input type="text" name="name" placeholder="نام محصول (مثلاً جعبه پیتزا سایز متوسط)" required>
+                    <input type="text" name="sku" placeholder="کد محصول (SKU)" required>
+                    <input type="number" name="quantity" placeholder="موجودی اولیه" required>
+                    <input type="number" name="sale_price" step="any" placeholder="قیمت فروش" required>
+                    <input type="number" name="unit_cost" step="any" placeholder="هزینه تمام شده (اختیاری، بعداً محاسبه می‌شود)">
+                    <button type="submit">افزودن محصول نهایی</button>
+                    <a href="{{ url_for('finished_products_list') }}" class="back-link">بازگشت به لیست محصولات</a>
+                </form>
+            </div>
+        </main>
+    </body>
+    </html>
+    ```
+
+---
+
+#### **ویژگی‌های بعدی (مفهومی، بدون کد کامل برای جلوگیری از حجم زیاد)**
+
+بعد از این گام‌های اولیه، می‌توانید به سراغ ویژگی‌های پیچیده‌تر و تخصصی‌تر برای شرکت جعبه‌سازی بروید:
+
+*   **۴. مدیریت سفارشات تولید (Production Orders):**
+    *   قابلیت ایجاد سفارشات تولید جدید برای محصولات نهایی.
+    *   **مهم برای جعبه‌سازی:** **BOM (Bill of Materials)**: هر محصول نهایی از چه مواد اولیه‌ای و به چه مقداری ساخته می‌شود. (این پیچیده‌تر است و نیاز به یک جدول `bill_of_materials` دارد). هنگام ایجاد سفارش تولید، مواد اولیه مربوطه از موجودی کسر شوند.
+    *   ردیابی وضعیت سفارشات (در حال انجام، تکمیل شده).
+    *   **مسیرهای Flask:** `/production_orders`, `/production_orders/create`, `/production_orders/<id>/complete`
+
+*   **۵. مدیریت فروش و فاکتور (Sales & Invoicing):**
+    *   ثبت مشتریان جدید.
+    *   ایجاد، ویرایش و چاپ فاکتورهای فروش برای محصولات نهایی.
+    *   کاهش موجودی محصولات نهایی پس از فروش.
+    *   **مسیرهای Flask:** `/customers`, `/customers/add`, `/invoices`, `/invoices/create`
+
+*   **۶. مدیریت خرید و تامین‌کنندگان (Purchasing & Suppliers):**
+    *   ثبت تامین‌کنندگان.
+    *   ثبت سفارشات خرید مواد اولیه و افزودن به موجودی.
+    *   **مسیرهای Flask:** `/suppliers`, `/suppliers/add`, `/purchase_orders`, `/purchase_orders/create`
+
+*   **۷. مدیریت هزینه‌ها (Expense Management):**
+    *   ثبت انواع هزینه‌ها (اجاره، حقوق، حمل‌ونقل، برق و...).
+    *   دسته‌بندی هزینه‌ها.
+    *   **مسیرهای Flask:** `/expenses`, `/expenses/add`
+
+*   **۸. گزارشات (Reporting):**
+    *   **گزارش موجودی:** موجودی فعلی مواد اولیه و محصولات نهایی، هشدار کمبود موجودی.
+    *   **گزارش تولید:** میزان تولید در یک دوره، مواد مصرفی در تولید.
+    *   **گزارش فروش:** فروش بر اساس مشتری، محصول، تاریخ.
+    *   **گزارش مالی:** صورت سود و زیان، ترازنامه (اینها به پیچیدگی حسابداری دوطرفه نیاز دارند).
+    *   **مسیرهای Flask:** `/reports`, `/reports/inventory`, `/reports/profit_loss`
+
+---
+
+### بخش ۳: بهترین روش‌های مدیریت پروژه (Git and Beyond)
+
+*   **۱. فایل `README.md`:**
+    *   **مشکل:** پروژه شما فاقد این فایل حیاتی در گیت‌هاب است.
+    *   **توضیح:** این فایل توضیح می‌دهد که پروژه شما چیست، چگونه آن را نصب و اجرا کنیم، ویژگی‌های اصلی آن و هر اطلاعات مهم دیگر.
+    *   **راه‌حل و کد اضافه کردن (مثال محتوا):**
+        یک فایل به نام `README.md` در ریشه مخزن گیت‌هاب خود ایجاد کنید:
+        ```markdown
+        # سیستم حسابداری جعبه‌سازی [نام شرکت شما]
+
+        این پروژه یک سیستم حسابداری داخلی است که به طور خاص برای مدیریت فرآیندهای مالی و موجودی یک شرکت جعبه‌سازی طراحی شده است.
+
+        ## ویژگی‌ها (فرانت‌اند فعلی)
+        *   طراحی ریسپانسیو و مدرن
+        *   استفاده از متغیرهای CSS برای سفارشی‌سازی آسان
+        *   بخش نظرات تعاملی با استفاده از Swiper.js
+
+        ## ویژگی‌های در دست توسعه (بک‌اند)
+        *   **مدیریت کاربران:** احراز هویت با سطوح دسترسی (مدیر، حسابدار، مدیر تولید، فروش)
+        *   **مدیریت موجودی مواد اولیه:** ثبت، به‌روزرسانی و پیگیری موجودی (مقوا، چسب، جوهر و...)
+        *   **مدیریت موجودی محصولات نهایی:** ثبت و پیگیری جعبه‌های تولید شده و آماده فروش
+        *   **سیستم مدیریت تولید:** ایجاد سفارشات تولید و کسر مواد اولیه مصرفی
+        *   (و سایر ویژگی‌هایی که قصد دارید اضافه کنید)
+
+        ## تکنولوژی‌های استفاده شده (فرانت‌اند)
+        *   HTML5
+        *   CSS3 (با متغیرهای CSS)
+        *   JavaScript (Vanilla JS, Swiper.js)
+        *   Font Awesome 6.x
+
+        ## تکنولوژی‌های در دست توسعه (بک‌اند و پایگاه داده)
+        *   Backend: Python / Flask
+        *   Database: SQLite (برای توسعه و استقرار اولیه)
+
+        ## راه‌اندازی پروژه (نسخه توسعه)
+
+        ### پیش‌نیازها
+        *   Python 3.x
+        *   pip (مدیریت پکیج پایتون)
+
+        ### نصب
+        1.  مخزن را کلون کنید:
+            ```bash
+            git clone https://github.com/Ramin557/box-accounting20.git
+            cd box-accounting20
+            ```
+        2.  یک محیط مجازی پایتون ایجاد و فعال کنید:
+            ```bash
+            python -m venv venv
+            # در ویندوز:
+            # venv\Scripts\activate
+            # در مک/لینوکس:
+            # source venv/bin/activate
+            ```
+        3.  پکیج‌های مورد نیاز را نصب کنید:
+            ```bash
+            pip install -r requirements.txt
+            ```
+            (نکته: شما باید یک فایل `requirements.txt` ایجاد کنید که شامل `Flask` باشد. می‌توانید با `pip freeze > requirements.txt` آن را بسازید.)
+
+        ### مقداردهی اولیه پایگاه داده
+        ```bash
+        flask --app app.py initdb
+        ```
+        این دستور جداول پایگاه داده را ایجاد می‌کند و یک کاربر `admin` با رمز `adminpass` اضافه می‌کند.
+
+        ### اجرای سرور
+        ```bash
+        flask --app app.py run --debug
+        ```
+        اکنون می‌توانید به آدرس `http://127.0.0.1:5000/login` در مرورگر خود دسترسی پیدا کنید.
+
+        ## مشارکت
+        در حال حاضر پروژه شخصی است.
+
+        ## تماس
+        برای هرگونه سوال یا پیشنهاد، لطفاً از طریق [ایمیل شما] تماس بگیرید.
+        ```
+
+*   **۲. فایل `LICENSE`:**
+    *   **مشکل:** پروژه شما فاقد این فایل است.
+    *   **توضیح:** این فایل حقوق قانونی دیگران را برای استفاده، تغییر و توزیع کد شما مشخص می‌کند. برای یک پروژه شخصی که شاید در آینده قصد انتشار آن را داشته باشید، این فایل لازم است.
+    *   **راه‌حل و کد اضافه کردن:**
+        یک فایل به نام `LICENSE` در ریشه مخزن گیت‌هاب خود ایجاد کنید. برای پروژه‌های متن‌باز و ساده، لایسنس **MIT** یک گزینه محبوب است:
+        ```
+        MIT License
+
+        Copyright (c) [سال جاری] [نام شما یا نام شرکت شما]
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        ```
+        (سال و نام خودتان را جایگزین کنید.)
+
+*   **۳. نام‌گذاری توصیفی برای تصاویر و فایل‌ها:**
+    *   **مشکل:** نام‌های عمومی مثل `pic.png`, `pic1.png` و... توصیفی نیستند.
+    *   **راه‌حل:** نام‌هایی انتخاب کنید که محتوای تصویر را مشخص کنند. مثلاً `hero-banner.png`, `about-us-image.png`, `product-box-a.png`, `raw-material-cardboard.png` و غیره.
+
+---
+
+### نتیجه‌گیری نهایی:
+
+رامین عزیز،
+پروژه `box-accounting20` شما از نظر فرانت‌اند یک پایه بسیار خوب دارد. تغییرات در Font Awesome و افزودن Swiper.js نشان‌دهنده پیشرفت است. با این حال، همانطور که بارها تاکید شد، برای تبدیل شدن به یک "سیستم حسابداری جعبه‌سازی" (حتی شخصی)، نیاز به یک بک‌اند کامل با منطق تجاری و پایگاه داده دارید.
+
+مثال‌های کد ارائه شده در این پاسخ، یک شروع قوی برای بخش بک‌اند با Flask و SQLite هستند و به شما نشان می‌دهند که چگونه می‌توانید احراز هویت و مدیریت موجودی مواد اولیه را پیاده‌سازی کنید. ادامه کار نیازمند پیاده‌سازی دقیق هر یک از ماژول‌های حسابداری و تولیدی ذکر شده است.
+
+**نکات مهم پایانی:**
+*   **امنیت رمز عبور:** در مثال‌های Flask، رمز عبور را هش نکرده‌ام. این فقط برای سادگی مثال است. **در یک سیستم واقعی، حتماً از کتابخانه‌های هش کردن رمز عبور مانند Flask-Bcrypt یا Werkzeug's `generate_password_hash` و `check_password_hash` استفاده کنید.**
+*   **اعتبارسنجی ورودی (Input Validation):** قبل از ذخیره اطلاعات در پایگاه داده، همیشه ورودی‌های کاربر را اعتبارسنجی کنید تا از تزریق SQL، XSS و سایر حملات جلوگیری شود.
+*   **مدیریت خطا:** به جای فقط `flash` کردن پیام، خطاهای بک‌اند را به درستی مدیریت و لاگ کنید.
+*   **پیاده‌سازی تدریجی:** سعی نکنید همه ویژگی‌ها را یک‌باره اضافه کنید. مرحله به مرحله پیش بروید:
+    1.  احراز هویت
+    2.  مدیریت کاربران (در صورت نیاز به ایجاد/ویرایش کاربران توسط ادمین)
+    3.  مدیریت موجودی مواد اولیه
+    4.  مدیریت محصولات نهایی
+    5.  و به همین ترتیب...
+
+امیدوارم این بررسی جامع و مثال‌های کد، راهنمای کاملی برای شما باشد تا پروژه خود را به یک سیستم حسابداری کاربردی تبدیل کنید. هر زمان به راهنمایی بیشتری نیاز داشتید، درنگ نکنید و بپرسید.
