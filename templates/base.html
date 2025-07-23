@@ -17,6 +17,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     
+    <!-- Select2 for Enhanced Dropdowns -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet">
+    
     <!-- Critical CSS - Load Immediately -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/performance-optimized.css') }}">
     
@@ -30,6 +34,10 @@
     <link rel="preload" href="{{ url_for('static', filename='css/persian-improvements.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="{{ url_for('static', filename='css/mobile-responsive.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="{{ url_for('static', filename='css/custom-navigation.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/select2-dark-theme.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/action-bar.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/force-dark-inputs.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='css/ultimate-dark-fix.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
     
     <!-- CSS Variables for better theme management -->
     <style>
@@ -92,6 +100,34 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding-top: 1rem;
+            max-width: 160px !important;
+            min-width: 160px !important;
+            width: 160px !important;
+            flex: 0 0 160px !important;
+            /* Fix scrolling issue: Add overflow handling */
+            overflow-y: auto;
+            overflow-x: hidden;
+            /* Custom scrollbar styling for sidebar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+        }
+        
+        /* Webkit scrollbar styling for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5);
         }
         
         .sidebar .nav-link {
@@ -116,14 +152,25 @@
         }
         
         .main-content {
-            padding: 2rem;
+            padding: 1.5rem !important;
+            background-color: #1a1a2e !important; /* Fix white background: Change to dark theme */
+            min-height: 100vh !important;
+            overflow-x: auto;
+            color: #eee; /* Ensure text is readable on dark background */
+        }
+        
+        /* Ensure proper flexbox container */
+        body > .d-flex {
+            min-height: 100vh;
         }
         
         .card {
             border: none;
             border-radius: 15px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
             margin-bottom: 2rem;
+            background-color: #2a2a4a;
+            color: #eee;
         }
         
         .card-header {
@@ -175,7 +222,17 @@
         }
         
         .table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        .table {
+            background-color: #2a2a4a;
+            color: #eee;
+        }
+        
+        .table tbody tr {
+            background-color: #2a2a4a;
+            color: #eee;
         }
         
         .alert {
@@ -203,33 +260,153 @@
             color: #667eea;
         }
         
+        /* Dark theme text adjustments */
+        .main-content .breadcrumb-item a {
+            color: #a8a8a8;
+        }
+        
+        .main-content .breadcrumb-item a:hover {
+            color: #667eea;
+        }
+        
+        .main-content .text-muted {
+            color: #a8a8a8 !important;
+        }
+        
+        .main-content .text-primary {
+            color: #667eea !important;
+        }
+        
+        /* Enhanced dark theme form controls for main content */
+        .main-content .form-control,
+        .main-content .form-select,
+        .main-content input[type="text"],
+        .main-content input[type="email"],
+        .main-content input[type="password"],
+        .main-content input[type="number"],
+        .main-content input[type="tel"],
+        .main-content textarea,
+        .main-content select {
+            background-color: #2a2a4a !important;
+            border-color: #555 !important;
+            color: #eee !important;
+        }
+        
+        .main-content .form-control:focus,
+        .main-content .form-select:focus,
+        .main-content input:focus,
+        .main-content textarea:focus,
+        .main-content select:focus {
+            background-color: #333 !important;
+            border-color: #667eea !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }
+        
+        .main-content input::placeholder,
+        .main-content textarea::placeholder {
+            color: #aaa !important;
+            opacity: 1;
+        }
+        
+        .main-content select option {
+            background-color: #2a2a4a !important;
+            color: #eee !important;
+        }
+        
+        .main-content .form-label {
+            color: #eee !important;
+        }
+        
         @media (max-width: 768px) {
             .sidebar {
                 min-height: auto;
+                position: relative;
+                padding-bottom: 1rem;
             }
             
             .main-content {
-                padding: 1rem;
+                padding: 1rem !important;
+                background-color: #1a1a2e !important;
             }
+            
+            .sidebar .nav-link {
+                font-size: 0.9rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        /* Better responsive sidebar for extra large screens */
+        @media (min-width: 1200px) {
+            .sidebar {
+                max-width: 160px;
+                flex: 0 0 160px;
+            }
+            
+            .sidebar .nav-link {
+                font-size: 0.8rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                padding: 0.5rem 0.6rem;
+            }
+        }
+        
+        /* Improved sidebar styling for narrow layout */
+        .sidebar .nav-link {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.6rem;
+            margin: 0.1rem 0.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sidebar h5 {
+            font-size: 0.9rem;
+        }
+        
+        /* Make sidebar sections more compact */
+        .sidebar hr {
+            margin: 0.5rem 0;
+        }
+        
+        .sidebar .px-3 {
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        
+        .sidebar small {
+            font-size: 0.7rem;
+        }
+        
+        /* Ensure sidebar bottom sticks to bottom */
+        .sidebar-bottom {
+            margin-top: auto !important;
+            padding: 0.75rem 0.5rem !important;
+        }
+        
+        .sidebar-bottom .btn-sm {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
         }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
+    <div class="d-flex">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar">
-                <div class="text-center py-3">
-                    <h4 class="text-white">
+            <div class="sidebar d-flex flex-column" style="flex: 0 0 160px; max-width: 160px; width: 160px;">
+                <div class="text-center py-1">
+                    <div class="text-white mb-0" style="font-size: 1.2rem;">
                         <i class="fas fa-calculator"></i>
-                        سیستم حسابداری
-                    </h4>
+                    </div>
+                    <div class="d-none d-md-block mt-1" style="font-size: 0.7rem; line-height: 1.2;">سیستم<br>حسابداری</div>
                 </div>
                 
                 {% if current_user.is_authenticated %}
-                <nav class="nav flex-column">
+                <nav class="nav flex-column flex-grow-1">
                     <!-- داشبورد -->
                     <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
                         <i class="fas fa-tachometer-alt"></i>
@@ -355,12 +532,12 @@
                 <div class="sidebar-bottom mt-auto p-3">
                     <!-- Dark Mode Toggle - managed by dark-mode.js -->
                     <div class="text-center mb-2">
-                        <button id="darkModeToggle" class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                        <button id="darkModeToggle" class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;">
                             <span class="toggle-icon">
                                 <i class="fas fa-sun sun-icon" style="opacity: 0;"></i>
                                 <i class="fas fa-moon moon-icon" style="opacity: 1;"></i>
                             </span>
-                            حالت تاریک
+                            <span class="d-none d-lg-inline">حالت تاریک</span>
                         </button>
                     </div>
                     
@@ -373,7 +550,7 @@
             </div>
             
             <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 main-content">
+            <div class="flex-grow-1 main-content">
                 {% if current_user.is_authenticated %}
                 <!-- Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -463,13 +640,16 @@
                 <!-- Page Content -->
                 {% block content %}{% endblock %}
             </div>
-        </div>
     </div>
     
     <!-- Performance Optimized JavaScript Loading -->
     <!-- Critical JS - Load Immediately -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Select2 Enhanced Dropdowns -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="{{ url_for('static', filename='js/enhanced-select.js') }}"></script>
     
     <!-- Enhanced Persian DatePicker (Replaces Flatpickr) -->
     <script src="{{ url_for('static', filename='js/persian-datepicker-optimized.js') }}" defer></script>
@@ -491,6 +671,15 @@
     
     <!-- Custom Navigation JavaScript -->
     <script src="{{ url_for('static', filename='js/custom-navigation.js') }}" defer></script>
+    
+    <!-- Universal Action Bar System -->
+    <script src="{{ url_for('static', filename='js/universal-action-bar.js') }}" defer></script>
+    
+    <!-- Error-free Persian System -->
+    <script src="{{ url_for('static', filename='js/error-free-persian.js') }}" defer></script>
+    
+    <!-- Dropdown Management System -->
+    <script src="{{ url_for('static', filename='js/dropdown-management.js') }}" defer></script>
     
     <!-- PWA Service Worker Registration -->
     <script>

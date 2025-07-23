@@ -30,10 +30,10 @@
             <div class="card-body">
                 <form method="GET" class="row g-3">
                     <div class="col-md-6">
-                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="جستجو در نام، کد یا توضیحات محصول...">
+                        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="جستجو در نام، کد یا توضیحات محصول..." style="background-color: #2a2a4a !important; border: 1px solid #555 !important; color: #ffffff !important;">
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select" name="category">
+                        <select class="form-select" name="category" style="background-color: #2a2a4a !important; border: 1px solid #555 !important; color: #ffffff !important;">
                             <option value="">همه دسته‌بندی‌ها</option>
                             {% for cat in categories %}
                             <option value="{{ cat }}" {% if cat == category %}selected{% endif %}>{{ cat }}</option>

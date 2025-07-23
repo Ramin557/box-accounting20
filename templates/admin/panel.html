@@ -92,7 +92,7 @@
             </div>
             <div class="card-body">
                 <p>مدیریت کاربران سیستم، تعیین نقش‌ها و دسترسی‌ها</p>
-                <a href="#" class="btn btn-primary">
+                <a href="{{ url_for('rbac_users') }}" class="btn btn-primary">
                     <i class="fas fa-users"></i> مدیریت کاربران
                 </a>
             </div>
@@ -136,8 +136,8 @@
             </div>
             <div class="card-body">
                 <p>تنظیمات امنیتی، گزارش‌های فعالیت و کنترل دسترسی</p>
-                <a href="#" class="btn btn-danger">
-                    <i class="fas fa-shield-alt"></i> امنیت
+                <a href="{{ url_for('rbac_roles') }}" class="btn btn-danger">
+                    <i class="fas fa-shield-alt"></i> مدیریت نقش‌ها
                 </a>
             </div>
         </div>

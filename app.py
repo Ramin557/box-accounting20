@@ -37,8 +37,9 @@ try:
 except OSError:
     pass
 
-# Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///" + os.path.join(instance_path, "accounting.db"))
+# Configure the database - Use SQLite for now
+database_url = "sqlite:///" + os.path.join(instance_path, "accounting.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 print(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "pool_recycle": 300,
